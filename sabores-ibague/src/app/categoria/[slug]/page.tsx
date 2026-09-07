@@ -5,6 +5,10 @@ import {
   getCategoryBySlug,
 } from "@/lib/queries";
 
+// Same reasoning as the home page: always ask Supabase fresh, never freeze
+// this page's data at build time.
+export const dynamic = "force-dynamic";
+
 export default async function CategoryPage({
   params,
 }: {
