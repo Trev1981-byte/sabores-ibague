@@ -557,6 +557,12 @@ footer {
   border-color: var(--search-border);
 }
 .field textarea { resize: vertical; }
+.field-hint {
+  margin: 0;
+  font-size: 0.82rem;
+  font-weight: 400;
+  color: var(--text-mute);
+}
 
 .category-checks {
   display: grid;
@@ -577,6 +583,14 @@ footer {
   cursor: pointer;
 }
 .category-check input { flex: none; }
+.category-check-label {
+  /* Words like "Hamburguesas" have no space to break at, so a plain flex
+     child refuses to shrink below the word's full width and spills out of
+     the tile on narrow screens. Letting it break mid-word fixes that. */
+  min-width: 0;
+  overflow-wrap: break-word;
+  word-break: break-word;
+}
 
 .form-hp {
   position: absolute;
