@@ -21,8 +21,9 @@ export default async function AddRestaurantPage() {
       </div>
 
       <p className="form-intro">
-        Sin complicaciones: cuéntanos lo básico y lo revisamos para
-        publicarlo. Gratis, y no necesitas crear una cuenta.
+        ¿Tienes un restaurante, food truck, carrito o puesto de comida en
+        Ibagué? Cuéntanos lo básico y lo revisamos para publicarlo. Gratis, y
+        no necesitas crear una cuenta.
       </p>
 
       <AddRestaurantForm categories={categories} />
