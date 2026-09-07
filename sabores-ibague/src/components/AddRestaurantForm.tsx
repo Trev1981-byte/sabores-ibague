@@ -5,7 +5,11 @@ import type { FormEvent } from "react";
 import { submitRestaurant } from "@/lib/queries";
 import type { Category } from "@/lib/queries";
 
-const PRICE_LEVELS = ["$", "$$", "$$$"] as const;
+const PRICE_LEVELS = [
+  { value: "$", label: "$ — Económico (hasta $15.000 por persona)" },
+  { value: "$$", label: "$$ — Precio medio ($15.000–$30.000 por persona)" },
+  { value: "$$$", label: "$$$ — Más alto (más de $30.000 por persona)" },
+] as const;
 
 export function AddRestaurantForm({ categories }: { categories: Category[] }) {
   const [status, setStatus] = useState<"idle" | "saving" | "done">("idle");
@@ -38,9 +42,12 @@ export function AddRestaurantForm({ categories }: { categories: Category[] }) {
     const neighborhood = String(data.get("neighborhood") ?? "").trim();
     const priceLevel = String(data.get("priceLevel") ?? "");
     const whatsappNumber = String(data.get("whatsappNumber") ?? "").trim();
+    const hoursText = String(data.get("hoursText") ?? "").trim();
 
-    if (!name || !neighborhood || !whatsappNumber) {
-      setError("Por favor completa nombre, barrio y WhatsApp — son obligatorios.");
+    if (!name || !neighborhood || !whatsappNumber || !hoursText) {
+      setError(
+        "Por favor completa nombre, barrio, WhatsApp y horario — son obligatorios."
+      );
       return;
     }
     if (priceLevel !== "$" && priceLevel !== "$$" && priceLevel !== "$$$") {
@@ -60,7 +67,7 @@ export function AddRestaurantForm({ categories }: { categories: Category[] }) {
       priceLevel,
       whatsappNumber,
       phoneNumber: String(data.get("phoneNumber") ?? "").trim() || undefined,
-      hoursText: String(data.get("hoursText") ?? "").trim() || undefined,
+      hoursText,
       mapsLink: String(data.get("mapsLink") ?? "").trim() || undefined,
       blurb: String(data.get("blurb") ?? "").trim() || undefined,
       categoryIds: selectedCategories,
@@ -101,8 +108,18 @@ export function AddRestaurantForm({ categories }: { categories: Category[] }) {
       </div>
 
       <div className="field">
-        <label htmlFor="name">Nombre del restaurante *</label>
-        <input id="name" name="name" type="text" required placeholder="Ej: Asadero Doña Rosa" />
+        <label htmlFor="name">Nombre del negocio *</label>
+        <input
+          id="name"
+          name="name"
+          type="text"
+          required
+          placeholder="Ej: Asadero Doña Rosa, Food Truck El Parche, Carrito Don Beto"
+        />
+        <p className="field-hint">
+          Restaurante, food truck, carrito o puesto de comida — cualquier
+          lugar donde la gente pueda comer.
+        </p>
       </div>
 
       <div className="field">
@@ -117,22 +134,25 @@ export function AddRestaurantForm({ categories }: { categories: Category[] }) {
             Selecciona uno
           </option>
           {PRICE_LEVELS.map((level) => (
-            <option key={level} value={level}>
-              {level}
+            <option key={level.value} value={level.value}>
+              {level.label}
             </option>
           ))}
         </select>
       </div>
 
       <div className="field">
-        <label htmlFor="whatsappNumber">WhatsApp *</label>
+        <label htmlFor="whatsappNumber">Número de WhatsApp *</label>
         <input
           id="whatsappNumber"
           name="whatsappNumber"
           type="tel"
           required
-          placeholder="Ej: 3001234567"
+          placeholder="Ej: 3001234567 (sin +57, solo el número)"
         />
+        <p className="field-hint">
+          Los clientes te escribirán directamente a este número por WhatsApp.
+        </p>
       </div>
 
       <div className="field">
@@ -141,8 +161,8 @@ export function AddRestaurantForm({ categories }: { categories: Category[] }) {
       </div>
 
       <div className="field">
-        <label htmlFor="hoursText">Horario (opcional)</label>
-        <input id="hoursText" name="hoursText" type="text" placeholder="Ej: Lun-Sáb 11am-9pm" />
+        <label htmlFor="hoursText">Horario *</label>
+        <input id="hoursText" name="hoursText" type="text" required placeholder="Ej: Lun-Sáb 11am-9pm" />
       </div>
 
       <div className="field">
@@ -171,7 +191,7 @@ export function AddRestaurantForm({ categories }: { categories: Category[] }) {
                 onChange={() => toggleCategory(category.id)}
               />
               <span aria-hidden="true">{category.emoji}</span>
-              {category.label}
+              <span className="category-check-label">{category.label}</span>
             </label>
           ))}
         </div>
