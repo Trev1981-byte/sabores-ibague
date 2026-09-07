@@ -1,16 +1,19 @@
 import type { Metadata } from "next";
-import { Geist, Geist_Mono } from "next/font/google";
+import { Baloo_2, Karla } from "next/font/google";
 import Link from "next/link";
 import "./globals.css";
 
-const geistSans = Geist({
-  variable: "--font-geist-sans",
+const baloo = Baloo_2({
+  variable: "--font-baloo",
   subsets: ["latin"],
+  weight: ["500", "600", "700", "800"],
 });
 
-const geistMono = Geist_Mono({
-  variable: "--font-geist-mono",
+const karla = Karla({
+  variable: "--font-karla",
   subsets: ["latin"],
+  weight: ["400", "500", "600", "700"],
+  style: ["normal", "italic"],
 });
 
 export const metadata: Metadata = {
@@ -21,22 +24,33 @@ export const metadata: Metadata = {
 
 export default function RootLayout({ children }: LayoutProps<"/">) {
   return (
-    <html
-      lang="es"
-      className={`${geistSans.variable} ${geistMono.variable} h-full antialiased`}
-    >
-      <body className="flex min-h-full flex-col bg-white dark:bg-neutral-950">
-        <header className="border-b border-neutral-200 dark:border-neutral-800">
-          <div className="mx-auto flex w-full max-w-4xl items-center px-4 py-4">
-            <Link
-              href="/"
-              className="text-lg font-semibold text-neutral-900 dark:text-neutral-50"
-            >
-              🍽️ Sabores de Ibagué
+    <html lang="es" className={`${baloo.variable} ${karla.variable}`}>
+      <body>
+        <div className="topbar">
+          <div className="wrap topbar-inner">
+            <Link className="brand" href="/">
+              <span className="brand-mark" aria-hidden="true">
+                🍽️
+              </span>
+              Sabores de Ibagué
             </Link>
+            <span className="brand-loc">Ibagué · Tolima</span>
           </div>
-        </header>
+        </div>
+
         {children}
+
+        <footer>
+          <div className="wrap foot-inner">
+            <span>
+              <span className="brand-mark" aria-hidden="true">
+                🍽️
+              </span>{" "}
+              Sabores de Ibagué
+            </span>
+            <span>Hecho para Ibagué, Tolima</span>
+          </div>
+        </footer>
       </body>
     </html>
   );
