@@ -15,18 +15,22 @@ Sitio de descubrimiento gastronómico para Ibagué, Tolima — en español, prim
 ```
 src/
   app/
-    layout.tsx     # Root layout: sets <html lang="es">, page metadata, fonts
-    page.tsx       # Home page (currently just a placeholder)
-    globals.css    # Tailwind entry point + global styles
+    layout.tsx           # Root layout: <html lang="es">, header/nav, fonts
+    page.tsx              # Home page: search + browse by category
+    categoria/[slug]/
+      page.tsx             # One category's restaurants (or an empty state)
+    globals.css            # Tailwind entry point + global styles
   lib/
     supabase.ts    # Supabase client, typed against the live schema
-  components/      # Empty for now — shared UI pieces go here (step 3+)
+    queries.ts      # Typed data-fetching helpers (categories, restaurants)
+  components/
+    CategoryGrid.tsx  # Client component: search box + category tiles
   types/
     database.ts    # Generated TypeScript types matching the live Supabase schema
 supabase/
   migrations/
     0001_initial_schema.sql  # Documents the live schema — safe to re-run, not required to
-  seed.sql          # The 10 categories currently live, as an idempotent upsert
+  seed.sql          # The 11 categories currently live, as an idempotent upsert
 .env.local.example  # Template for the Supabase keys you'll need locally
 ```
 
@@ -56,11 +60,11 @@ grant what the database's row-level security policies allow.
 
 Four tables, all in the `public` schema:
 
-- **`categories`** — `slug`, `label`, `emoji`, `sort_order`. 10 rows today:
+- **`categories`** — `slug`, `label`, `emoji`, `sort_order`. 11 rows today:
   Hamburguesas, Perros, Salchipapas, Empanadas, Arepas, Almuerzos, Pizza,
-  Pollo, Parrilla, Postres. Deliberately short — restaurants are being added
-  by hand for now, so the list only grows when a real restaurant needs a tag
-  that isn't there yet. (See `supabase/seed.sql` to add more.)
+  Pollo, Parrilla, Postres, Tamales. Deliberately short — restaurants are
+  being added by hand for now, so the list only grows when a real restaurant
+  needs a tag that isn't there yet. (See `supabase/seed.sql` to add more.)
 - **`restaurants`** — `name`, `slug`, `city` (defaults to Ibagué, so this can
   expand to other cities without a schema change), `neighborhood` (free
   text), `price_level` (`$`/`$$`/`$$$`), `blurb`, `whatsapp_number`,
@@ -96,14 +100,28 @@ and when they're actually needed — nothing here blocks adding them later.
 
 ## Status
 
-Schema is live and matches this repo. No UI built against it yet — the home
-page is still the step-1 placeholder.
+Live at https://sabores-ibague.vercel.app — home page and category pages are
+built and deployed. Still zero restaurants, so every category currently
+shows its empty state ("no restaurants here yet").
 
 ## Roadmap
 
 1. ~~Project scaffold~~
 2. ~~Database schema~~ (categories, restaurants, menu_items — live on Supabase)
-3. Build the home page: search + browse by category
-4. Restaurant detail pages (with menu items)
-5. "Add your restaurant" submission form (needs the RLS decision above)
-6. Deploy to Vercel
+3. ~~Build the home page~~ (search box that filters categories, a tile grid
+   linking to `/categoria/[slug]`, which lists that category's approved
+   restaurants or an empty state)
+4. Restaurant detail pages (with menu items) — worth doing once there's at
+   least one real restaurant to build against
+5. "Add your restaurant" submission form (needs the RLS decision noted above)
+6. ~~Deploy to Vercel~~ — auto-deploys on every push to `main` via the
+   GitHub integration
+
+## Publishing changes
+
+This repo is connected to Vercel through GitHub: push to `main` and Vercel
+rebuilds and republishes automatically within a minute or two. No manual
+deploy step. (One setting to remember if this project is ever re-imported
+from scratch: Vercel's **Root Directory** must be set to `sabores-ibague`,
+and **Framework Preset** to **Next.js** — both are already set correctly on
+the live project.)
