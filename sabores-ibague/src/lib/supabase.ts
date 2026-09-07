@@ -7,10 +7,20 @@ import type { Database } from "@/types/database";
 const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL;
 const supabaseAnonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY;
 
+// Warn (don't throw) if these are missing. Throwing here crashes the whole
+// build the moment any route imports this file — including during Next.js's
+// build-time "collect page data" pass over dynamic routes like
+// /categoria/[slug], which evaluates this module without necessarily having
+// the env vars available in that specific phase. Real requests at runtime
+// do have them (they're set in Vercel's Environment Variables), so a
+// missing-value fallback here just needs to not blow up the build; actual
+// Supabase calls with a bad URL/key simply error, and every call site in
+// src/lib/queries.ts already catches that and returns an empty result.
 if (!supabaseUrl || !supabaseAnonKey) {
-  throw new Error(
-    "Missing Supabase environment variables. Copy .env.local.example to " +
-      ".env.local and fill in your project's URL and anon key."
+  console.warn(
+    "Missing Supabase environment variables (NEXT_PUBLIC_SUPABASE_URL / " +
+      "NEXT_PUBLIC_SUPABASE_ANON_KEY). Copy .env.local.example to .env.local " +
+      "locally, or set them in the Vercel project's Environment Variables."
   );
 }
 
@@ -24,4 +34,7 @@ if (!supabaseUrl || !supabaseAnonKey) {
 // Typed against the live schema (src/types/database.ts), so e.g.
 // supabase.from("restaurants").select() knows its columns are `name`,
 // `neighborhood`, `price_level`, etc.
-export const supabase = createClient<Database>(supabaseUrl, supabaseAnonKey);
+export const supabase = createClient<Database>(
+  supabaseUrl ?? "https://placeholder.invalid",
+  supabaseAnonKey ?? "placeholder-anon-key"
+);
