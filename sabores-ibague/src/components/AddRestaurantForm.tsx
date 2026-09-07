@@ -15,6 +15,8 @@ export function AddRestaurantForm({ categories }: { categories: Category[] }) {
   const [status, setStatus] = useState<"idle" | "saving" | "done">("idle");
   const [error, setError] = useState<string | null>(null);
   const [selectedCategories, setSelectedCategories] = useState<string[]>([]);
+  const [editLink, setEditLink] = useState<string | null>(null);
+  const [copied, setCopied] = useState(false);
 
   function toggleCategory(id: string) {
     setSelectedCategories((current) =>
@@ -79,7 +81,20 @@ export function AddRestaurantForm({ categories }: { categories: Category[] }) {
       return;
     }
 
+    setEditLink(`${window.location.origin}/mi-restaurante/${result.editToken}`);
     setStatus("done");
+  }
+
+  async function handleCopyLink() {
+    if (!editLink) return;
+    try {
+      await navigator.clipboard.writeText(editLink);
+      setCopied(true);
+      setTimeout(() => setCopied(false), 2500);
+    } catch {
+      // Clipboard access can fail (older browsers, permissions) — the link
+      // is still selectable and copyable by hand, so this isn't fatal.
+    }
   }
 
   if (status === "done") {
@@ -94,6 +109,32 @@ export function AddRestaurantForm({ categories }: { categories: Category[] }) {
           pronto — normalmente en uno o dos días. Te contactaremos por
           WhatsApp si nos falta algún dato.
         </p>
+
+        {editLink && (
+          <div className="edit-link-box">
+            <p className="edit-link-warning">
+              ⚠️ Guarda este enlace — es el único que te permite editar tu
+              restaurante y agregar tu menú con precios. No lo pierdas.
+            </p>
+            <div className="edit-link-row">
+              <input
+                type="text"
+                readOnly
+                value={editLink}
+                onFocus={(e) => e.currentTarget.select()}
+                aria-label="Tu enlace privado para editar tu restaurante"
+              />
+              <button type="button" onClick={handleCopyLink}>
+                {copied ? "¡Copiado!" : "Copiar"}
+              </button>
+            </div>
+            <p className="edit-link-hint">
+              Puedes usar este enlace ahora mismo para agregar los platos de
+              tu menú con sus precios — no necesitas esperar a que lo
+              aprobemos para eso.
+            </p>
+          </div>
+        )}
       </div>
     );
   }
