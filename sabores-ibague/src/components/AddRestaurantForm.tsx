@@ -1,0 +1,187 @@
+"use client";
+
+import { useState } from "react";
+import type { FormEvent } from "react";
+import { submitRestaurant } from "@/lib/queries";
+import type { Category } from "@/lib/queries";
+
+const PRICE_LEVELS = ["$", "$$", "$$$"] as const;
+
+export function AddRestaurantForm({ categories }: { categories: Category[] }) {
+  const [status, setStatus] = useState<"idle" | "saving" | "done">("idle");
+  const [error, setError] = useState<string | null>(null);
+  const [selectedCategories, setSelectedCategories] = useState<string[]>([]);
+
+  function toggleCategory(id: string) {
+    setSelectedCategories((current) =>
+      current.includes(id)
+        ? current.filter((c) => c !== id)
+        : [...current, id]
+    );
+  }
+
+  async function handleSubmit(event: FormEvent<HTMLFormElement>) {
+    event.preventDefault();
+    setError(null);
+
+    const form = event.currentTarget;
+    const data = new FormData(form);
+
+    // Honeypot: a real visitor never fills this in (it's visually hidden),
+    // so anything here means it's very likely an automated bot.
+    if (String(data.get("company_website") ?? "").trim() !== "") {
+      setStatus("done");
+      return;
+    }
+
+    const name = String(data.get("name") ?? "").trim();
+    const neighborhood = String(data.get("neighborhood") ?? "").trim();
+    const priceLevel = String(data.get("priceLevel") ?? "");
+    const whatsappNumber = String(data.get("whatsappNumber") ?? "").trim();
+
+    if (!name || !neighborhood || !whatsappNumber) {
+      setError("Por favor completa nombre, barrio y WhatsApp — son obligatorios.");
+      return;
+    }
+    if (priceLevel !== "$" && priceLevel !== "$$" && priceLevel !== "$$$") {
+      setError("Selecciona un rango de precios.");
+      return;
+    }
+    if (selectedCategories.length === 0) {
+      setError("Selecciona al menos una categoría.");
+      return;
+    }
+
+    setStatus("saving");
+
+    const result = await submitRestaurant({
+      name,
+      neighborhood,
+      priceLevel,
+      whatsappNumber,
+      phoneNumber: String(data.get("phoneNumber") ?? "").trim() || undefined,
+      hoursText: String(data.get("hoursText") ?? "").trim() || undefined,
+      mapsLink: String(data.get("mapsLink") ?? "").trim() || undefined,
+      blurb: String(data.get("blurb") ?? "").trim() || undefined,
+      categoryIds: selectedCategories,
+    });
+
+    if ("error" in result) {
+      setError(result.error);
+      setStatus("idle");
+      return;
+    }
+
+    setStatus("done");
+  }
+
+  if (status === "done") {
+    return (
+      <div className="form-success">
+        <span className="form-success-emoji" aria-hidden="true">
+          🎉
+        </span>
+        <h2>¡Listo, gracias!</h2>
+        <p>
+          Recibimos tu restaurante. Nuestro equipo lo revisa y lo publica
+          pronto — normalmente en uno o dos días. Te contactaremos por
+          WhatsApp si nos falta algún dato.
+        </p>
+      </div>
+    );
+  }
+
+  return (
+    <form className="add-form" onSubmit={handleSubmit}>
+      {/* Hidden from real visitors via CSS, but a bot filling every field
+          it finds will fill this too — see the honeypot check above. */}
+      <div className="form-hp" aria-hidden="true">
+        <label htmlFor="company_website">No llenar este campo</label>
+        <input id="company_website" name="company_website" type="text" tabIndex={-1} autoComplete="off" />
+      </div>
+
+      <div className="field">
+        <label htmlFor="name">Nombre del restaurante *</label>
+        <input id="name" name="name" type="text" required placeholder="Ej: Asadero Doña Rosa" />
+      </div>
+
+      <div className="field">
+        <label htmlFor="neighborhood">Barrio *</label>
+        <input id="neighborhood" name="neighborhood" type="text" required placeholder="Ej: Belén, Cádiz, El Salado..." />
+      </div>
+
+      <div className="field">
+        <label htmlFor="priceLevel">Rango de precios *</label>
+        <select id="priceLevel" name="priceLevel" required defaultValue="">
+          <option value="" disabled>
+            Selecciona uno
+          </option>
+          {PRICE_LEVELS.map((level) => (
+            <option key={level} value={level}>
+              {level}
+            </option>
+          ))}
+        </select>
+      </div>
+
+      <div className="field">
+        <label htmlFor="whatsappNumber">WhatsApp *</label>
+        <input
+          id="whatsappNumber"
+          name="whatsappNumber"
+          type="tel"
+          required
+          placeholder="Ej: 3001234567"
+        />
+      </div>
+
+      <div className="field">
+        <label htmlFor="phoneNumber">Teléfono fijo (opcional)</label>
+        <input id="phoneNumber" name="phoneNumber" type="tel" placeholder="Ej: 608 1234567" />
+      </div>
+
+      <div className="field">
+        <label htmlFor="hoursText">Horario (opcional)</label>
+        <input id="hoursText" name="hoursText" type="text" placeholder="Ej: Lun-Sáb 11am-9pm" />
+      </div>
+
+      <div className="field">
+        <label htmlFor="mapsLink">Enlace de Google Maps (opcional)</label>
+        <input id="mapsLink" name="mapsLink" type="url" placeholder="https://maps.google.com/..." />
+      </div>
+
+      <div className="field">
+        <label htmlFor="blurb">Cuéntanos de tu restaurante (opcional)</label>
+        <textarea
+          id="blurb"
+          name="blurb"
+          rows={3}
+          placeholder="Ej: Comida a la parrilla, ambiente familiar, parqueadero propio."
+        />
+      </div>
+
+      <div className="field">
+        <span className="field-label-static">Categorías *</span>
+        <div className="category-checks">
+          {categories.map((category) => (
+            <label key={category.id} className="category-check">
+              <input
+                type="checkbox"
+                checked={selectedCategories.includes(category.id)}
+                onChange={() => toggleCategory(category.id)}
+              />
+              <span aria-hidden="true">{category.emoji}</span>
+              {category.label}
+            </label>
+          ))}
+        </div>
+      </div>
+
+      {error && <p className="form-error">{error}</p>}
+
+      <button type="submit" className="form-submit" disabled={status === "saving"}>
+        {status === "saving" ? "Enviando..." : "Enviar restaurante"}
+      </button>
+    </form>
+  );
+}
