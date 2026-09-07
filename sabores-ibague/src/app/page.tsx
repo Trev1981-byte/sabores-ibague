@@ -1,3 +1,4 @@
+import Link from "next/link";
 import { CategoryGrid } from "@/components/CategoryGrid";
 import { getApprovedRestaurantCount, getCategories } from "@/lib/queries";
 
@@ -33,9 +34,12 @@ export default async function Home() {
               <span className="tag">Para vender</span>
             </h3>
             <p>
-              ¿Tienes una fonda o un restaurante en Ibagué? Muy pronto podrás
-              añadirlo tú mismo, sin complicaciones.
+              ¿Tienes una fonda o un restaurante en Ibagué? Añádelo tú mismo,
+              sin complicaciones — es gratis.
             </p>
+            <Link href="/agregar" className="strip-cta">
+              Añadir mi restaurante →
+            </Link>
           </div>
         </div>
       </div>
