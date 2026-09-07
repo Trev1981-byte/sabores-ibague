@@ -44,13 +44,17 @@ export default async function CategoryPage({
       ) : (
         <div className="restaurant-list">
           {restaurants.map((restaurant) => (
-            <div className="restaurant-card" key={restaurant.id}>
+            <Link
+              href={`/restaurante/${restaurant.slug}`}
+              className="restaurant-card"
+              key={restaurant.id}
+            >
               <p className="name">{restaurant.name}</p>
               <p className="meta">
                 {restaurant.neighborhood} · {restaurant.price_level}
               </p>
               {restaurant.blurb && <p className="blurb">{restaurant.blurb}</p>}
-            </div>
+            </Link>
           ))}
         </div>
       )}
