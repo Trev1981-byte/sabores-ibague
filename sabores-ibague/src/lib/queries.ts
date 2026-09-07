@@ -3,6 +3,7 @@ import type { Tables } from "@/types/database";
 
 export type Category = Tables<"categories">;
 export type Restaurant = Tables<"restaurants">;
+export type MenuItem = Tables<"menu_items">;
 
 /** All categories, in the order they should display (sort_order). */
 export async function getCategories(): Promise<Category[]> {
@@ -55,6 +56,91 @@ export async function getApprovedRestaurantsByCategory(
   return (data ?? [])
     .map((row) => row.restaurants)
     .filter((r): r is Restaurant => r !== null && r.is_approved);
+}
+
+/** A single approved restaurant by its slug, for its public page — null if it doesn't exist or isn't approved yet. */
+export async function getRestaurantBySlug(slug: string): Promise<Restaurant | null> {
+  const { data, error } = await supabase
+    .from("restaurants")
+    .select("*")
+    .eq("slug", slug)
+    .eq("is_approved", true)
+    .maybeSingle();
+
+  if (error) {
+    console.error("getRestaurantBySlug failed:", error.message);
+    return null;
+  }
+  return data;
+}
+
+/** A restaurant's menu, in display order. Menu items have no approval gate of their own. */
+export async function getMenuItemsByRestaurant(restaurantId: string): Promise<MenuItem[]> {
+  const { data, error } = await supabase
+    .from("menu_items")
+    .select("*")
+    .eq("restaurant_id", restaurantId)
+    .order("sort_order", { ascending: true })
+    .order("id", { ascending: true });
+
+  if (error) {
+    console.error("getMenuItemsByRestaurant failed:", error.message);
+    return [];
+  }
+  return data ?? [];
+}
+
+/**
+ * Looks up a restaurant by its private edit token — the one thing that
+ * works even before it's approved, since a vendor needs to be able to
+ * build out their own listing while it's still waiting on you. Safe
+ * because it goes through a database function that only ever returns the
+ * one row matching the exact token (see the `get_restaurant_by_edit_token`
+ * function), not a general "restaurants" read.
+ */
+export async function getRestaurantByEditToken(token: string): Promise<Restaurant | null> {
+  const { data, error } = await supabase.rpc("get_restaurant_by_edit_token", {
+    p_token: token,
+  });
+
+  if (error) {
+    console.error("getRestaurantByEditToken failed:", error.message);
+    return null;
+  }
+  return data?.[0] ?? null;
+}
+
+/** Adds a menu item to whichever restaurant this edit token belongs to. */
+export async function addMenuItem(
+  token: string,
+  name: string,
+  price: number
+): Promise<MenuItem | { error: string }> {
+  const { data, error } = await supabase.rpc("add_menu_item_by_token", {
+    p_token: token,
+    p_name: name,
+    p_price: price,
+  });
+
+  if (error || !data || data.length === 0) {
+    console.error("addMenuItem failed:", error?.message);
+    return { error: "No pudimos guardar el plato. Intenta de nuevo." };
+  }
+  return data[0];
+}
+
+/** Removes a menu item — only works if the token actually owns that item. */
+export async function deleteMenuItem(token: string, itemId: string): Promise<boolean> {
+  const { error } = await supabase.rpc("delete_menu_item_by_token", {
+    p_token: token,
+    p_item_id: itemId,
+  });
+
+  if (error) {
+    console.error("deleteMenuItem failed:", error.message);
+    return false;
+  }
+  return true;
 }
 
 /** How many restaurants are live right now — used for the home page's empty state. */
