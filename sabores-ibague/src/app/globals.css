@@ -490,10 +490,19 @@ footer {
   .restaurant-list { grid-template-columns: 1fr 1fr; }
 }
 .restaurant-card {
+  display: block;
   background: var(--surface);
   border: 1px solid var(--line);
   border-radius: 10px;
   padding: 1.25rem 1.4rem;
+  text-decoration: none;
+  color: inherit;
+  transition: transform .15s ease, box-shadow .15s ease, border-color .15s ease;
+}
+.restaurant-card:hover, .restaurant-card:focus-visible {
+  transform: translateY(-2px);
+  border-color: var(--maiz-deep);
+  box-shadow: 0 10px 18px -12px rgba(22,38,74,0.35);
 }
 .restaurant-card .name {
   font-weight: 700;
@@ -641,6 +650,252 @@ footer {
   color: var(--text-soft);
 }
 
+.edit-link-box {
+  margin-top: 1.75rem;
+  text-align: left;
+  background: var(--surface-sunk);
+  border: 1.5px dashed var(--achiote);
+  border-radius: 12px;
+  padding: 1.25rem 1.4rem;
+}
+.edit-link-warning {
+  margin: 0 0 0.85rem;
+  font-weight: 700;
+  font-size: 0.92rem;
+  color: var(--achiote);
+}
+.edit-link-row {
+  display: flex;
+  gap: 0.5rem;
+}
+.edit-link-row input {
+  flex: 1;
+  min-width: 0;
+  font-family: var(--font-karla), sans-serif;
+  font-size: 0.88rem;
+  color: var(--text);
+  background: var(--surface);
+  border: 1.5px solid var(--line);
+  border-radius: 8px;
+  padding: 0.6rem 0.75rem;
+}
+.edit-link-row button {
+  flex: none;
+  background: var(--achiote);
+  color: #fff;
+  border: 0;
+  font-family: var(--font-karla), sans-serif;
+  font-weight: 700;
+  font-size: 0.85rem;
+  padding: 0 1rem;
+  border-radius: 8px;
+  cursor: pointer;
+}
+.edit-link-row button:hover { background: var(--achiote-deep); }
+.edit-link-hint {
+  margin: 0.85rem 0 0;
+  font-size: 0.85rem;
+  color: var(--text-soft);
+}
+
+/* --- private "manage my restaurant" page ----------------------------- */
+.manage-page {
+  padding-bottom: 3rem;
+  max-width: 34rem;
+}
+.manage-loading,
+.manage-notfound {
+  padding: 3rem 1rem;
+  text-align: center;
+  color: var(--text-soft);
+}
+.manage-head {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.75rem;
+  padding-block: 0.5rem 0.5rem;
+}
+.manage-head h1 {
+  font-size: clamp(1.6rem, 4vw, 2.1rem);
+  color: var(--text);
+}
+.status-badge {
+  font-size: 0.75rem;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  padding: 0.35rem 0.75rem;
+  border-radius: 999px;
+  white-space: nowrap;
+}
+.status-badge.is-pending {
+  color: var(--achiote-deep);
+  background: var(--maiz-pale);
+  border: 1px solid var(--maiz-deep);
+}
+.status-badge.is-published {
+  color: #1F6B3A;
+  background: #DCF3E2;
+  border: 1px solid #1F6B3A;
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) .status-badge.is-published {
+    color: #B7EAC8;
+    background: #14351F;
+    border-color: #3E9663;
+  }
+}
+:root[data-theme="dark"] .status-badge.is-published {
+  color: #B7EAC8;
+  background: #14351F;
+  border-color: #3E9663;
+}
+.manage-note {
+  margin: 0.25rem 0 2rem;
+  color: var(--text-soft);
+  font-size: 0.92rem;
+}
+.manage-section-title {
+  font-size: 1.1rem;
+  color: var(--text);
+  margin-bottom: 0.9rem;
+}
+.menu-list {
+  display: grid;
+  gap: 0.6rem;
+  margin-bottom: 1.75rem;
+  padding: 0;
+  list-style: none;
+}
+.menu-item {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.75rem;
+  background: var(--surface);
+  border: 1px solid var(--line);
+  border-radius: 10px;
+  padding: 0.75rem 1rem;
+}
+.menu-item-name {
+  font-weight: 600;
+  color: var(--text);
+  min-width: 0;
+  overflow-wrap: break-word;
+}
+.menu-item-price {
+  font-weight: 700;
+  color: var(--achiote);
+  white-space: nowrap;
+}
+.menu-item-right {
+  display: flex;
+  align-items: center;
+  gap: 0.85rem;
+  flex: none;
+}
+.menu-item-delete {
+  flex: none;
+  background: transparent;
+  border: 1px solid var(--line);
+  color: var(--text-mute);
+  font-size: 0.78rem;
+  font-weight: 600;
+  padding: 0.35rem 0.65rem;
+  border-radius: 8px;
+  cursor: pointer;
+}
+.menu-item-delete:hover { color: var(--achiote); border-color: var(--achiote); }
+.menu-empty {
+  color: var(--text-mute);
+  font-size: 0.92rem;
+  padding: 1rem 0 1.75rem;
+}
+.add-item-form {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.6rem;
+  align-items: flex-start;
+}
+.add-item-form input[type="text"] {
+  flex: 1 1 12rem;
+}
+.add-item-form input[type="number"] {
+  flex: 0 1 9rem;
+}
+.add-item-form input {
+  font-family: var(--font-karla), sans-serif;
+  font-size: 0.95rem;
+  color: var(--text);
+  background: var(--surface);
+  border: 1.5px solid var(--line);
+  border-radius: 8px;
+  padding: 0.6rem 0.8rem;
+}
+.add-item-form input:focus { outline: none; border-color: var(--search-border); }
+.add-item-form button {
+  flex: none;
+  background: var(--anil);
+  color: var(--paper);
+  border: 0;
+  font-family: var(--font-karla), sans-serif;
+  font-weight: 700;
+  font-size: 0.9rem;
+  padding: 0.65rem 1.1rem;
+  border-radius: 8px;
+  cursor: pointer;
+}
+.add-item-form button:hover { opacity: 0.9; }
+.add-item-form button:disabled { opacity: 0.6; cursor: default; }
+
+/* --- public restaurant detail page ------------------------------------ */
+.restaurant-meta-list {
+  display: grid;
+  gap: 0.5rem;
+  margin: 0 0 1.5rem;
+  color: var(--text-soft);
+  font-size: 0.95rem;
+}
+.restaurant-meta-list b { color: var(--text); }
+.whatsapp-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  background: #25D366;
+  color: #06301A;
+  font-weight: 700;
+  font-size: 0.95rem;
+  text-decoration: none;
+  padding: 0.7rem 1.3rem;
+  border-radius: 999px;
+  margin-bottom: 2.25rem;
+}
+.whatsapp-btn:hover { background: #1FB856; }
+.menu-public-list {
+  display: grid;
+  gap: 0.6rem;
+  padding: 0;
+  list-style: none;
+  max-width: 30rem;
+  margin: 0 0 2.5rem;
+}
+.menu-public-item {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 1rem;
+  padding: 0.75rem 0;
+  border-bottom: 1px dashed var(--line);
+}
+.menu-public-item .name { font-weight: 600; color: var(--text); }
+.menu-public-item .price {
+  font-weight: 700;
+  color: var(--achiote);
+  white-space: nowrap;
+  font-variant-numeric: tabular-nums;
+}
+
 @media (prefers-reduced-motion: reduce) {
-  .cat-tile, .search-board button, .form-submit { transition: none; }
+  .cat-tile, .search-board button, .form-submit, .restaurant-card { transition: none; }
 }
