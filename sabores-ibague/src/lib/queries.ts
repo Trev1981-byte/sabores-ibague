@@ -70,3 +70,80 @@ export async function getApprovedRestaurantCount(): Promise<number> {
   }
   return count ?? 0;
 }
+
+export type NewRestaurantInput = {
+  name: string;
+  neighborhood: string;
+  priceLevel: "$" | "$$" | "$$$";
+  whatsappNumber: string;
+  phoneNumber?: string;
+  hoursText?: string;
+  mapsLink?: string;
+  blurb?: string;
+  categoryIds: string[];
+};
+
+function slugify(name: string): string {
+  const base = name
+    .toLowerCase()
+    .normalize("NFD")
+    .replace(/[\u0300-\u036f]/g, "")
+    .replace(/[^a-z0-9]+/g, "-")
+    .replace(/^-+|-+$/g, "");
+  // A random suffix sidesteps slug collisions (two "Donde Pepe"s, say)
+  // without needing a retry-on-conflict dance.
+  const suffix = Math.random().toString(36).slice(2, 6);
+  return `${base || "restaurante"}-${suffix}`;
+}
+
+/**
+ * Submits a new restaurant from the public "add your restaurant" form.
+ * It always lands unapproved — `is_approved` defaults to false in the
+ * database, and the public insert policy forces that regardless of what's
+ * sent — so a moderator has to publish it by hand in the Supabase
+ * dashboard before shoppers ever see it.
+ */
+export async function submitRestaurant(
+  input: NewRestaurantInput
+): Promise<{ editToken: string } | { error: string }> {
+  const { data: restaurant, error: restaurantError } = await supabase
+    .from("restaurants")
+    .insert({
+      name: input.name,
+      slug: slugify(input.name),
+      neighborhood: input.neighborhood,
+      price_level: input.priceLevel,
+      whatsapp_number: input.whatsappNumber,
+      phone_number: input.phoneNumber || null,
+      hours_text: input.hoursText || null,
+      maps_link: input.mapsLink || null,
+      blurb: input.blurb || null,
+    })
+    .select("id, edit_token")
+    .single();
+
+  if (restaurantError || !restaurant) {
+    console.error("submitRestaurant failed:", restaurantError?.message);
+    return {
+      error:
+        "No pudimos guardar tu restaurante. Intenta de nuevo en un momento.",
+    };
+  }
+
+  if (input.categoryIds.length > 0) {
+    const { error: linkError } = await supabase.from("restaurant_categories").insert(
+      input.categoryIds.map((categoryId) => ({
+        restaurant_id: restaurant.id,
+        category_id: categoryId,
+      }))
+    );
+    if (linkError) {
+      // The restaurant itself was saved fine — only the category tags
+      // didn't fully go through, so a moderator can fix that by hand
+      // rather than losing the whole submission.
+      console.error("submitRestaurant category link failed:", linkError.message);
+    }
+  }
+
+  return { editToken: restaurant.edit_token };
+}
