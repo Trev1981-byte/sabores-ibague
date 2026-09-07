@@ -34,7 +34,12 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
               </span>
               Sabores de Ibagué
             </Link>
-            <span className="brand-loc">Ibagué · Tolima</span>
+            <div className="topbar-right">
+              <span className="brand-loc">Ibagué · Tolima</span>
+              <Link className="vendor-link" href="/agregar">
+                Añade tu restaurante
+              </Link>
+            </div>
           </div>
         </div>
 
