@@ -1,6 +1,12 @@
 import { CategoryGrid } from "@/components/CategoryGrid";
 import { getApprovedRestaurantCount, getCategories } from "@/lib/queries";
 
+// Always fetch fresh from Supabase on every visit instead of freezing the
+// category/restaurant list at build time — otherwise anything added or
+// changed directly in the Supabase dashboard would never show up on the
+// live site until the next code deploy.
+export const dynamic = "force-dynamic";
+
 export default async function Home() {
   const [categories, restaurantCount] = await Promise.all([
     getCategories(),
