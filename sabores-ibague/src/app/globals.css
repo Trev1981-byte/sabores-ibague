@@ -160,6 +160,11 @@ img, svg { max-width: 100%; display: block; }
   font-size: 1.4rem;
   line-height: 1;
 }
+.topbar-right {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+}
 .brand-loc {
   font-family: var(--font-karla), sans-serif;
   font-weight: 500;
@@ -168,6 +173,23 @@ img, svg { max-width: 100%; display: block; }
   text-transform: uppercase;
   color: var(--maiz-pale);
   opacity: 0.9;
+}
+.vendor-link {
+  font-family: var(--font-karla), sans-serif;
+  font-weight: 700;
+  font-size: 0.8rem;
+  color: var(--paper);
+  background: rgba(255,255,255,0.12);
+  border: 1px solid rgba(255,255,255,0.28);
+  padding: 0.4rem 0.8rem;
+  border-radius: 999px;
+  text-decoration: none;
+  white-space: nowrap;
+  transition: background-color .15s ease;
+}
+.vendor-link:hover { background: rgba(255,255,255,0.22); }
+@media (max-width: 26rem) {
+  .brand-loc { display: none; }
 }
 
 /* --- hero ----------------------------------------------------------- */
@@ -404,6 +426,15 @@ img, svg { max-width: 100%; display: block; }
   font-size: 0.92rem;
   max-width: 30rem;
 }
+.strip-cta {
+  display: inline-flex;
+  margin-top: 0.9rem;
+  font-weight: 700;
+  font-size: 0.9rem;
+  color: var(--achiote);
+  text-decoration: none;
+}
+.strip-cta:hover { color: var(--achiote-deep); }
 
 /* --- footer ----------------------------------------------------------- */
 footer {
@@ -479,6 +510,123 @@ footer {
   color: var(--text-soft);
 }
 
+/* --- add-your-restaurant form ---------------------------------------- */
+.form-page {
+  padding-bottom: 3rem;
+}
+.form-intro {
+  color: var(--text-soft);
+  font-size: 0.98rem;
+  max-width: 34rem;
+  margin: 0 0 2rem;
+}
+.add-form {
+  display: grid;
+  gap: 1.25rem;
+  max-width: 34rem;
+}
+.field {
+  display: grid;
+  gap: 0.4rem;
+}
+.field label,
+.field-label-static {
+  font-size: 0.88rem;
+  font-weight: 700;
+  color: var(--text);
+}
+.field input,
+.field select,
+.field textarea {
+  font-family: var(--font-karla), sans-serif;
+  font-size: 1rem;
+  color: var(--text);
+  background: var(--surface);
+  border: 1.5px solid var(--line);
+  border-radius: 8px;
+  padding: 0.65rem 0.85rem;
+}
+.field input::placeholder,
+.field textarea::placeholder {
+  color: var(--text-mute);
+}
+.field input:focus,
+.field select:focus,
+.field textarea:focus {
+  outline: none;
+  border-color: var(--search-border);
+}
+.field textarea { resize: vertical; }
+
+.category-checks {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(9.5rem, 1fr));
+  gap: 0.5rem;
+}
+.category-check {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-size: 0.88rem;
+  font-weight: 500;
+  color: var(--text);
+  background: var(--surface);
+  border: 1.5px solid var(--line);
+  border-radius: 8px;
+  padding: 0.55rem 0.7rem;
+  cursor: pointer;
+}
+.category-check input { flex: none; }
+
+.form-hp {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  clip: rect(0 0 0 0);
+  white-space: nowrap;
+}
+
+.form-error {
+  color: var(--achiote);
+  font-weight: 600;
+  font-size: 0.9rem;
+  margin: 0;
+}
+
+.form-submit {
+  justify-self: start;
+  background: var(--achiote);
+  color: #fff;
+  border: 0;
+  font-family: var(--font-karla), sans-serif;
+  font-weight: 700;
+  font-size: 1rem;
+  padding: 0.75rem 1.6rem;
+  border-radius: 999px;
+  cursor: pointer;
+  transition: background-color .15s ease, transform .15s ease, opacity .15s ease;
+}
+.form-submit:hover { background: var(--achiote-deep); transform: translateY(-1px); }
+.form-submit:disabled { opacity: 0.6; cursor: default; transform: none; }
+
+.form-success {
+  max-width: 30rem;
+  text-align: center;
+  padding: 3rem 1.5rem;
+  margin: 0 auto;
+}
+.form-success-emoji {
+  display: block;
+  font-size: 2.6rem;
+  margin-bottom: 0.75rem;
+}
+.form-success h2 { color: var(--text); font-size: 1.6rem; }
+.form-success p {
+  margin-top: 0.75rem;
+  color: var(--text-soft);
+}
+
 @media (prefers-reduced-motion: reduce) {
-  .cat-tile, .search-board button { transition: none; }
+  .cat-tile, .search-board button, .form-submit { transition: none; }
 }
