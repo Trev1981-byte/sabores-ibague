@@ -184,60 +184,43 @@ function slugify(name: string): string {
 
 /**
  * Submits a new restaurant from the public "add your restaurant" form.
- * It always lands unapproved — `is_approved` defaults to false in the
- * database, and the public insert policy forces that regardless of what's
- * sent — so a moderator has to publish it by hand in the Supabase
- * dashboard before shoppers ever see it.
+ * It always lands unapproved — the database function behind this never
+ * touches is_approved or is_featured, so they stay on their defaults
+ * (false) no matter what — a moderator has to publish it by hand in the
+ * Supabase dashboard before shoppers ever see it.
  *
- * The id and edit token are generated right here in the browser, not read
- * back from the database after saving. That's deliberate: the public read
- * rule only shows restaurants that are already approved, so a brand-new,
- * not-yet-approved row can't be handed back by a database read anyway —
- * asking for it that way just makes the whole save fail. Generating both
- * values up front sidesteps that entirely.
+ * This goes through a database function (submit_restaurant) rather than a
+ * plain table insert. A plain insert looked simpler, but Supabase hands
+ * the newly-created row back by default, and Postgres re-checks that row
+ * against the "only show approved restaurants" read rule before handing
+ * it back — which a brand new, not-yet-approved submission can never
+ * pass, so the whole save was silently failing. Doing the insert inside a
+ * database function sidesteps that rule entirely, the same way the
+ * private "manage my menu" functions already do.
  */
 export async function submitRestaurant(
   input: NewRestaurantInput
 ): Promise<{ editToken: string } | { error: string }> {
-  const restaurantId = crypto.randomUUID();
-  const editToken = crypto.randomUUID();
-
-  const { error: restaurantError } = await supabase.from("restaurants").insert({
-    id: restaurantId,
-    edit_token: editToken,
-    name: input.name,
-    slug: slugify(input.name),
-    neighborhood: input.neighborhood,
-    price_level: input.priceLevel,
-    whatsapp_number: input.whatsappNumber,
-    phone_number: input.phoneNumber || null,
-    hours_text: input.hoursText || null,
-    maps_link: input.mapsLink || null,
-    blurb: input.blurb || null,
+  const { data, error } = await supabase.rpc("submit_restaurant", {
+    p_name: input.name,
+    p_slug: slugify(input.name),
+    p_neighborhood: input.neighborhood,
+    p_price_level: input.priceLevel,
+    p_whatsapp_number: input.whatsappNumber,
+    p_phone_number: input.phoneNumber || "",
+    p_hours_text: input.hoursText || "",
+    p_maps_link: input.mapsLink || "",
+    p_blurb: input.blurb || "",
+    p_category_ids: input.categoryIds,
   });
 
-  if (restaurantError) {
-    console.error("submitRestaurant failed:", restaurantError.message);
+  if (error || !data) {
+    console.error("submitRestaurant failed:", error?.message);
     return {
       error:
         "No pudimos guardar tu restaurante. Intenta de nuevo en un momento.",
     };
   }
 
-  if (input.categoryIds.length > 0) {
-    const { error: linkError } = await supabase.from("restaurant_categories").insert(
-      input.categoryIds.map((categoryId) => ({
-        restaurant_id: restaurantId,
-        category_id: categoryId,
-      }))
-    );
-    if (linkError) {
-      // The restaurant itself was saved fine — only the category tags
-      // didn't fully go through, so a moderator can fix that by hand
-      // rather than losing the whole submission.
-      console.error("submitRestaurant category link failed:", linkError.message);
-    }
-  }
-
-  return { editToken };
+  return { editToken: data };
 }
