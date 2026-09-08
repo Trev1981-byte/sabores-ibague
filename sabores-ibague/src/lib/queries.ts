@@ -114,12 +114,14 @@ export async function getRestaurantByEditToken(token: string): Promise<Restauran
 export async function addMenuItem(
   token: string,
   name: string,
-  price: number
+  price: number,
+  photoUrl?: string
 ): Promise<MenuItem | { error: string }> {
   const { data, error } = await supabase.rpc("add_menu_item_by_token", {
     p_token: token,
     p_name: name,
     p_price: price,
+    p_photo_url: photoUrl || "",
   });
 
   if (error || !data || data.length === 0) {
@@ -138,6 +140,40 @@ export async function deleteMenuItem(token: string, itemId: string): Promise<boo
 
   if (error) {
     console.error("deleteMenuItem failed:", error.message);
+    return false;
+  }
+  return true;
+}
+
+/** Sets or replaces a single dish's photo — used both when a photo is added
+ *  right at creation and when one is added or swapped later. */
+export async function setMenuItemPhoto(
+  token: string,
+  itemId: string,
+  photoUrl: string
+): Promise<boolean> {
+  const { error } = await supabase.rpc("set_menu_item_photo_by_token", {
+    p_token: token,
+    p_item_id: itemId,
+    p_photo_url: photoUrl,
+  });
+
+  if (error) {
+    console.error("setMenuItemPhoto failed:", error.message);
+    return false;
+  }
+  return true;
+}
+
+/** Sets or replaces the restaurant's own cover photo. */
+export async function setRestaurantPhoto(token: string, photoUrl: string): Promise<boolean> {
+  const { error } = await supabase.rpc("set_restaurant_photo_by_token", {
+    p_token: token,
+    p_photo_url: photoUrl,
+  });
+
+  if (error) {
+    console.error("setRestaurantPhoto failed:", error.message);
     return false;
   }
   return true;
