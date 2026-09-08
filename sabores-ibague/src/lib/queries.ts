@@ -188,28 +188,36 @@ function slugify(name: string): string {
  * database, and the public insert policy forces that regardless of what's
  * sent — so a moderator has to publish it by hand in the Supabase
  * dashboard before shoppers ever see it.
+ *
+ * The id and edit token are generated right here in the browser, not read
+ * back from the database after saving. That's deliberate: the public read
+ * rule only shows restaurants that are already approved, so a brand-new,
+ * not-yet-approved row can't be handed back by a database read anyway —
+ * asking for it that way just makes the whole save fail. Generating both
+ * values up front sidesteps that entirely.
  */
 export async function submitRestaurant(
   input: NewRestaurantInput
 ): Promise<{ editToken: string } | { error: string }> {
-  const { data: restaurant, error: restaurantError } = await supabase
-    .from("restaurants")
-    .insert({
-      name: input.name,
-      slug: slugify(input.name),
-      neighborhood: input.neighborhood,
-      price_level: input.priceLevel,
-      whatsapp_number: input.whatsappNumber,
-      phone_number: input.phoneNumber || null,
-      hours_text: input.hoursText || null,
-      maps_link: input.mapsLink || null,
-      blurb: input.blurb || null,
-    })
-    .select("id, edit_token")
-    .single();
+  const restaurantId = crypto.randomUUID();
+  const editToken = crypto.randomUUID();
 
-  if (restaurantError || !restaurant) {
-    console.error("submitRestaurant failed:", restaurantError?.message);
+  const { error: restaurantError } = await supabase.from("restaurants").insert({
+    id: restaurantId,
+    edit_token: editToken,
+    name: input.name,
+    slug: slugify(input.name),
+    neighborhood: input.neighborhood,
+    price_level: input.priceLevel,
+    whatsapp_number: input.whatsappNumber,
+    phone_number: input.phoneNumber || null,
+    hours_text: input.hoursText || null,
+    maps_link: input.mapsLink || null,
+    blurb: input.blurb || null,
+  });
+
+  if (restaurantError) {
+    console.error("submitRestaurant failed:", restaurantError.message);
     return {
       error:
         "No pudimos guardar tu restaurante. Intenta de nuevo en un momento.",
@@ -219,7 +227,7 @@ export async function submitRestaurant(
   if (input.categoryIds.length > 0) {
     const { error: linkError } = await supabase.from("restaurant_categories").insert(
       input.categoryIds.map((categoryId) => ({
-        restaurant_id: restaurant.id,
+        restaurant_id: restaurantId,
         category_id: categoryId,
       }))
     );
@@ -231,5 +239,5 @@ export async function submitRestaurant(
     }
   }
 
-  return { editToken: restaurant.edit_token };
+  return { editToken };
 }
