@@ -494,7 +494,7 @@ footer {
   background: var(--surface);
   border: 1px solid var(--line);
   border-radius: 10px;
-  padding: 1.25rem 1.4rem;
+  overflow: hidden;
   text-decoration: none;
   color: inherit;
   transition: transform .15s ease, box-shadow .15s ease, border-color .15s ease;
@@ -504,16 +504,34 @@ footer {
   border-color: var(--maiz-deep);
   box-shadow: 0 10px 18px -12px rgba(22,38,74,0.35);
 }
-.restaurant-card .name {
+.restaurant-card-photo {
+  display: block;
+  width: 100%;
+  aspect-ratio: 16 / 10;
+  object-fit: cover;
+  background: var(--surface-sunk);
+}
+.restaurant-card-photo-empty {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 2.2rem;
+  color: var(--text-mute);
+}
+.restaurant-card-body {
+  display: block;
+  padding: 1.25rem 1.4rem;
+}
+.restaurant-card-body .name {
   font-weight: 700;
   color: var(--text);
 }
-.restaurant-card .meta {
+.restaurant-card-body .meta {
   margin: 0.2rem 0 0;
   font-size: 0.85rem;
   color: var(--text-mute);
 }
-.restaurant-card .blurb {
+.restaurant-card-body .blurb {
   margin: 0.6rem 0 0;
   font-size: 0.9rem;
   color: var(--text-soft);
@@ -756,6 +774,51 @@ footer {
   color: var(--text-soft);
   font-size: 0.92rem;
 }
+.cover-photo-wrap {
+  margin: 0.5rem 0 1.75rem;
+}
+.cover-photo-label {
+  position: relative;
+  display: block;
+  width: 100%;
+  aspect-ratio: 16 / 8;
+  border-radius: 12px;
+  overflow: hidden;
+  cursor: pointer;
+  background: var(--surface-sunk);
+  border: 1.5px dashed var(--line);
+}
+.cover-photo {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+.cover-photo-placeholder {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  padding: 1rem;
+  font-weight: 600;
+  font-size: 0.9rem;
+  color: var(--text-mute);
+}
+.cover-photo-input {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  opacity: 0;
+  cursor: pointer;
+}
+.cover-photo-hint {
+  margin: 0.5rem 0 0;
+  font-size: 0.82rem;
+  color: var(--text-mute);
+}
 .manage-section-title {
   font-size: 1.1rem;
   color: var(--text);
@@ -771,7 +834,6 @@ footer {
 .menu-item {
   display: flex;
   align-items: center;
-  justify-content: space-between;
   gap: 0.75rem;
   background: var(--surface);
   border: 1px solid var(--line);
@@ -779,6 +841,7 @@ footer {
   padding: 0.75rem 1rem;
 }
 .menu-item-name {
+  flex: 1 1 auto;
   font-weight: 600;
   color: var(--text);
   min-width: 0;
@@ -812,11 +875,49 @@ footer {
   font-size: 0.92rem;
   padding: 1rem 0 1.75rem;
 }
+.menu-item-photo-label {
+  position: relative;
+  flex: none;
+  width: 3rem;
+  height: 3rem;
+  border-radius: 8px;
+  overflow: hidden;
+  cursor: pointer;
+  display: block;
+}
+.menu-item-photo {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+.menu-item-photo-placeholder {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  height: 100%;
+  background: var(--surface-sunk);
+  border: 1.5px dashed var(--line);
+  border-radius: 8px;
+  font-size: 1.1rem;
+}
+.menu-item-photo-input {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  opacity: 0;
+  cursor: pointer;
+}
 .add-item-form {
   display: flex;
   flex-wrap: wrap;
   gap: 0.6rem;
   align-items: flex-start;
+}
+.add-item-photo-label {
+  align-self: center;
 }
 .add-item-form input[type="text"] {
   flex: 1 1 12rem;
@@ -850,6 +951,15 @@ footer {
 .add-item-form button:disabled { opacity: 0.6; cursor: default; }
 
 /* --- public restaurant detail page ------------------------------------ */
+.restaurant-cover {
+  display: block;
+  width: 100%;
+  aspect-ratio: 16 / 7;
+  object-fit: cover;
+  border-radius: 12px;
+  margin: 0.5rem 0 1.25rem;
+  background: var(--surface-sunk);
+}
 .restaurant-meta-list {
   display: grid;
   gap: 0.5rem;
@@ -882,14 +992,29 @@ footer {
 }
 .menu-public-item {
   display: flex;
-  align-items: baseline;
-  justify-content: space-between;
-  gap: 1rem;
+  align-items: center;
+  gap: 0.85rem;
   padding: 0.75rem 0;
   border-bottom: 1px dashed var(--line);
 }
-.menu-public-item .name { font-weight: 600; color: var(--text); }
-.menu-public-item .price {
+.menu-public-item-photo {
+  flex: none;
+  width: 3rem;
+  height: 3rem;
+  border-radius: 8px;
+  object-fit: cover;
+  background: var(--surface-sunk);
+}
+.menu-public-item-text {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 1rem;
+  flex: 1 1 auto;
+  min-width: 0;
+}
+.menu-public-item-text .name { font-weight: 600; color: var(--text); }
+.menu-public-item-text .price {
   font-weight: 700;
   color: var(--achiote);
   white-space: nowrap;
