@@ -48,6 +48,7 @@ export type Database = {
         Row: {
           id: string
           name: string
+          photo_url: string | null
           price: number | null
           restaurant_id: string
           sort_order: number
@@ -55,6 +56,7 @@ export type Database = {
         Insert: {
           id?: string
           name: string
+          photo_url?: string | null
           price?: number | null
           restaurant_id: string
           sort_order?: number
@@ -62,6 +64,7 @@ export type Database = {
         Update: {
           id?: string
           name?: string
+          photo_url?: string | null
           price?: number | null
           restaurant_id?: string
           sort_order?: number
@@ -120,6 +123,7 @@ export type Database = {
           name: string
           neighborhood: string
           phone_number: string | null
+          photo_url: string | null
           price_level: string
           slug: string
           whatsapp_number: string
@@ -137,6 +141,7 @@ export type Database = {
           name: string
           neighborhood: string
           phone_number?: string | null
+          photo_url?: string | null
           price_level: string
           slug: string
           whatsapp_number: string
@@ -154,6 +159,7 @@ export type Database = {
           name?: string
           neighborhood?: string
           phone_number?: string | null
+          photo_url?: string | null
           price_level?: string
           slug?: string
           whatsapp_number?: string
@@ -166,10 +172,16 @@ export type Database = {
     }
     Functions: {
       add_menu_item_by_token: {
-        Args: { p_name: string; p_price: number; p_token: string }
+        Args: {
+          p_name: string
+          p_photo_url?: string
+          p_price: number
+          p_token: string
+        }
         Returns: {
           id: string
           name: string
+          photo_url: string | null
           price: number | null
           restaurant_id: string
           sort_order: number
@@ -200,6 +212,7 @@ export type Database = {
           name: string
           neighborhood: string
           phone_number: string | null
+          photo_url: string | null
           price_level: string
           slug: string
           whatsapp_number: string
@@ -210,6 +223,14 @@ export type Database = {
           isOneToOne: false
           isSetofReturn: true
         }
+      }
+      set_menu_item_photo_by_token: {
+        Args: { p_item_id: string; p_photo_url: string; p_token: string }
+        Returns: undefined
+      }
+      set_restaurant_photo_by_token: {
+        Args: { p_photo_url: string; p_token: string }
+        Returns: undefined
       }
       submit_restaurant: {
         Args: {
