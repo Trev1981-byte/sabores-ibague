@@ -53,6 +53,9 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
               </span>{" "}
               Sabores de Ibagué
             </span>
+            <Link className="foot-link" href="/seguridad">
+              Consejos de seguridad
+            </Link>
             <span>Hecho para Ibagué, Tolima</span>
           </div>
         </footer>
