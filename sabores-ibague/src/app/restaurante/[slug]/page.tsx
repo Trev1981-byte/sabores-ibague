@@ -60,6 +60,18 @@ export default async function RestaurantPage({
         {restaurant.blurb && <p>{restaurant.blurb}</p>}
       </div>
 
+      <div className="safety-note">
+        <span className="safety-note-icon" aria-hidden="true">
+          ⚠️
+        </span>
+        <p>
+          Preferimos que pagues contra entrega, sobre todo la primera vez
+          que le compras a este restaurante. Sabores de Ibagué solo los
+          conecta — el pedido y el pago se hacen directamente con ellos.{" "}
+          <Link href="/seguridad">Más consejos de seguridad →</Link>
+        </p>
+      </div>
+
       <a className="whatsapp-btn"
         href={whatsappHref}
         target="_blank"
