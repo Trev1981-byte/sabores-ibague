@@ -450,6 +450,12 @@ footer {
   color: var(--text-mute);
 }
 .foot-inner .brand-mark { font-size: 1rem; }
+.foot-link {
+  color: var(--text-mute);
+  text-decoration: none;
+  font-weight: 600;
+}
+.foot-link:hover { color: var(--achiote); text-decoration: underline; }
 
 /* --- category detail page ------------------------------------------- */
 .back-link {
@@ -982,6 +988,29 @@ footer {
   margin-bottom: 2.25rem;
 }
 .whatsapp-btn:hover { background: #1FB856; }
+.safety-note {
+  display: flex;
+  gap: 0.65rem;
+  align-items: flex-start;
+  background: var(--maiz-pale);
+  border: 1px solid var(--maiz-deep);
+  border-radius: 12px;
+  padding: 0.85rem 1rem;
+  margin: 0 0 1.5rem;
+  max-width: 34rem;
+}
+.safety-note-icon { font-size: 1.15rem; line-height: 1.3; }
+.safety-note p {
+  margin: 0;
+  font-size: 0.87rem;
+  line-height: 1.5;
+  color: var(--achiote-deep);
+}
+.safety-note a {
+  color: inherit;
+  font-weight: 700;
+  text-decoration: underline;
+}
 .menu-public-list {
   display: grid;
   gap: 0.6rem;
@@ -1176,6 +1205,48 @@ footer {
 .review-reject:hover { background: var(--achiote); color: #fff; }
 .review-approve:disabled,
 .review-reject:disabled { opacity: 0.6; cursor: default; }
+
+/* --- "consejos de seguridad" page ------------------------------------ */
+.safety-page { padding-bottom: 3rem; }
+.safety-page h1 {
+  font-size: clamp(1.8rem, 4vw, 2.4rem);
+  margin: 0 0 0.85rem;
+}
+.safety-intro {
+  color: var(--text-soft);
+  font-size: 1rem;
+  max-width: 38rem;
+  margin: 0 0 2rem;
+}
+.safety-list {
+  display: grid;
+  gap: 1.4rem;
+  padding: 0;
+  list-style: none;
+  max-width: 38rem;
+  margin: 0 0 2.25rem;
+}
+.safety-item {
+  display: flex;
+  gap: 0.9rem;
+  align-items: flex-start;
+}
+.safety-item-icon { font-size: 1.4rem; line-height: 1.3; flex-shrink: 0; }
+.safety-item h3 {
+  font-size: 1rem;
+  margin: 0 0 0.25rem;
+  color: var(--text);
+}
+.safety-item p {
+  margin: 0;
+  font-size: 0.92rem;
+  color: var(--text-soft);
+}
+.safety-closing {
+  color: var(--text-soft);
+  font-size: 0.95rem;
+  max-width: 38rem;
+}
 
 @media (prefers-reduced-motion: reduce) {
   .cat-tile, .search-board button, .form-submit, .restaurant-card { transition: none; }
