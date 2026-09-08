@@ -1021,6 +1021,162 @@ footer {
   font-variant-numeric: tabular-nums;
 }
 
+/* --- private review/approval page ------------------------------------ */
+.review-page {
+  padding-bottom: 3rem;
+  max-width: 40rem;
+}
+.review-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  padding-block: 1.25rem 1.5rem;
+}
+.review-head h1 {
+  font-size: clamp(1.5rem, 4vw, 2rem);
+  color: var(--text);
+}
+.review-refresh {
+  flex: none;
+  background: var(--surface-sunk);
+  border: 1px solid var(--line);
+  color: var(--text);
+  font-family: var(--font-karla), sans-serif;
+  font-weight: 700;
+  font-size: 0.85rem;
+  padding: 0.5rem 0.9rem;
+  border-radius: 999px;
+  cursor: pointer;
+}
+.review-refresh:hover { border-color: var(--maiz-deep); }
+
+.review-list {
+  display: grid;
+  gap: 1.25rem;
+  margin-bottom: 2rem;
+}
+.review-card {
+  background: var(--surface);
+  border: 1px solid var(--line);
+  border-radius: 12px;
+  overflow: hidden;
+}
+.review-card-photo {
+  display: block;
+  width: 100%;
+  aspect-ratio: 16 / 8;
+  object-fit: cover;
+  background: var(--surface-sunk);
+}
+.review-card-photo-empty {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 2.4rem;
+  color: var(--text-mute);
+}
+.review-card-body {
+  padding: 1.25rem 1.4rem 1.4rem;
+}
+.review-card-body h2 {
+  font-size: 1.25rem;
+  color: var(--text);
+}
+.review-meta {
+  margin: 0.3rem 0 0;
+  font-size: 0.9rem;
+  color: var(--text-soft);
+}
+.review-blurb {
+  margin: 0.6rem 0 0;
+  font-size: 0.9rem;
+  color: var(--text-soft);
+}
+.review-menu {
+  margin-top: 1rem;
+  padding-top: 1rem;
+  border-top: 1px dashed var(--line);
+}
+.review-menu-title {
+  margin: 0 0 0.6rem;
+  font-size: 0.85rem;
+  font-weight: 700;
+  color: var(--text);
+}
+.review-menu-list {
+  display: grid;
+  gap: 0.5rem;
+  padding: 0;
+  list-style: none;
+}
+.review-menu-item {
+  display: flex;
+  align-items: center;
+  gap: 0.65rem;
+}
+.review-menu-item-photo {
+  flex: none;
+  width: 2.75rem;
+  height: 2.75rem;
+  border-radius: 8px;
+  object-fit: cover;
+  background: var(--surface-sunk);
+}
+.review-menu-item-photo-empty {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: 1.5px dashed var(--line);
+  font-size: 1rem;
+}
+.review-menu-item-text {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 0.75rem;
+  flex: 1 1 auto;
+  min-width: 0;
+  font-size: 0.92rem;
+  color: var(--text);
+}
+.review-menu-item-price {
+  font-weight: 700;
+  color: var(--achiote);
+  white-space: nowrap;
+  font-variant-numeric: tabular-nums;
+}
+.review-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.6rem;
+  margin-top: 1.25rem;
+}
+.review-approve,
+.review-reject {
+  flex: 1 1 10rem;
+  border: 0;
+  font-family: var(--font-karla), sans-serif;
+  font-weight: 700;
+  font-size: 0.92rem;
+  padding: 0.7rem 1rem;
+  border-radius: 8px;
+  cursor: pointer;
+}
+.review-approve {
+  background: #1F6B3A;
+  color: #fff;
+}
+.review-approve:hover { background: #185A2F; }
+.review-reject {
+  background: transparent;
+  border: 1.5px solid var(--achiote);
+  color: var(--achiote);
+}
+.review-reject:hover { background: var(--achiote); color: #fff; }
+.review-approve:disabled,
+.review-reject:disabled { opacity: 0.6; cursor: default; }
+
 @media (prefers-reduced-motion: reduce) {
   .cat-tile, .search-board button, .form-submit, .restaurant-card { transition: none; }
 }
