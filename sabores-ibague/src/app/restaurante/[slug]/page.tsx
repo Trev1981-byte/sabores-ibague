@@ -1,6 +1,9 @@
+import type { Metadata } from "next";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import { getRestaurantBySlug, getMenuItemsByRestaurant } from "@/lib/queries";
+import { ShareButton } from "@/components/ShareButton";
+import { SITE_URL } from "@/lib/site";
 
 // Same reasoning as the other data-backed pages: never freeze this at
 // build time, since a restaurant's menu can change any time in Supabase.
@@ -11,6 +14,41 @@ const pesos = new Intl.NumberFormat("es-CO", {
   currency: "COP",
   maximumFractionDigits: 0,
 });
+
+// Runs alongside the page itself, so a link pasted into WhatsApp or
+// Instagram shows this restaurant's own name, photo and description
+// instead of a bare, generic link.
+export async function generateMetadata({
+  params,
+}: {
+  params: Promise<{ slug: string }>;
+}): Promise<Metadata> {
+  const { slug } = await params;
+  const restaurant = await getRestaurantBySlug(slug);
+
+  if (!restaurant) {
+    return { title: "Restaurante no encontrado — Sabores de Ibagué" };
+  }
+
+  const description =
+    restaurant.blurb ||
+    `${restaurant.neighborhood} · ${restaurant.price_level} — en Sabores de Ibagué.`;
+  const url = `${SITE_URL}/restaurante/${restaurant.slug}`;
+
+  return {
+    title: `${restaurant.name} — Sabores de Ibagué`,
+    description,
+    openGraph: {
+      title: restaurant.name,
+      description,
+      url,
+      siteName: "Sabores de Ibagué",
+      locale: "es_CO",
+      type: "website",
+      images: restaurant.photo_url ? [{ url: restaurant.photo_url }] : undefined,
+    },
+  };
+}
 
 export default async function RestaurantPage({
   params,
@@ -37,8 +75,12 @@ export default async function RestaurantPage({
         <img src={restaurant.photo_url} alt={restaurant.name} className="restaurant-cover" />
       )}
 
-      <div className="detail-head">
+      <div className="restaurant-head">
         <h1>{restaurant.name}</h1>
+        <ShareButton
+          name={restaurant.name}
+          url={`${SITE_URL}/restaurante/${restaurant.slug}`}
+        />
       </div>
 
       <div className="restaurant-meta-list">
