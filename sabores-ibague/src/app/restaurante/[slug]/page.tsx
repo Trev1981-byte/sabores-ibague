@@ -33,6 +33,10 @@ export default async function RestaurantPage({
         ← Volver al inicio
       </Link>
 
+      {restaurant.photo_url && (
+        <img src={restaurant.photo_url} alt={restaurant.name} className="restaurant-cover" />
+      )}
+
       <div className="detail-head">
         <h1>{restaurant.name}</h1>
       </div>
@@ -71,9 +75,14 @@ export default async function RestaurantPage({
         <ul className="menu-public-list">
           {menuItems.map((item) => (
             <li className="menu-public-item" key={item.id}>
-              <span className="name">{item.name}</span>
-              <span className="price">
-                {item.price !== null ? pesos.format(item.price) : ""}
+              {item.photo_url && (
+                <img src={item.photo_url} alt="" className="menu-public-item-photo" />
+              )}
+              <span className="menu-public-item-text">
+                <span className="name">{item.name}</span>
+                <span className="price">
+                  {item.price !== null ? pesos.format(item.price) : ""}
+                </span>
               </span>
             </li>
           ))}
