@@ -211,6 +211,21 @@ export type Database = {
           isSetofReturn: true
         }
       }
+      submit_restaurant: {
+        Args: {
+          p_blurb: string
+          p_category_ids: string[]
+          p_hours_text: string
+          p_maps_link: string
+          p_name: string
+          p_neighborhood: string
+          p_phone_number: string
+          p_price_level: string
+          p_slug: string
+          p_whatsapp_number: string
+        }
+        Returns: string
+      }
     }
     Enums: {
       [_ in never]: never
