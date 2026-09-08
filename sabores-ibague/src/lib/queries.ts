@@ -193,6 +193,77 @@ export async function getApprovedRestaurantCount(): Promise<number> {
   return count ?? 0;
 }
 
+export type PendingMenuItem = {
+  id: string;
+  name: string;
+  price: number | null;
+  photo_url: string | null;
+};
+
+export type PendingRestaurant = {
+  id: string;
+  name: string;
+  neighborhood: string;
+  price_level: string;
+  whatsapp_number: string;
+  phone_number: string | null;
+  hours_text: string | null;
+  maps_link: string | null;
+  blurb: string | null;
+  photo_url: string | null;
+  created_at: string;
+  menu_items: PendingMenuItem[];
+};
+
+/**
+ * The restaurants waiting on moderation, each with its own menu items
+ * nested right alongside it — built specifically so a phone-in-hand review
+ * doesn't mean hunting through separate tables to match a dish photo back
+ * to the restaurant it belongs to.
+ *
+ * There's no login system on this site, so — same idea as a vendor's edit
+ * link — this only works if `adminKey` matches the secret baked into the
+ * `admin_list_pending` database function. Wrong key, or no key, just gets
+ * back an empty list instead of an error.
+ */
+export async function getPendingRestaurants(adminKey: string): Promise<PendingRestaurant[]> {
+  const { data, error } = await supabase.rpc("admin_list_pending", { p_key: adminKey });
+
+  if (error) {
+    console.error("getPendingRestaurants failed:", error.message);
+    return [];
+  }
+  return (data ?? []) as unknown as PendingRestaurant[];
+}
+
+/** Publishes a restaurant — same effect as flipping is_approved to true by hand. */
+export async function approveRestaurant(adminKey: string, id: string): Promise<boolean> {
+  const { error } = await supabase.rpc("admin_approve_restaurant", {
+    p_key: adminKey,
+    p_id: id,
+  });
+
+  if (error) {
+    console.error("approveRestaurant failed:", error.message);
+    return false;
+  }
+  return true;
+}
+
+/** Permanently deletes a restaurant (and its menu items, categories) — for spam/test submissions. */
+export async function rejectRestaurant(adminKey: string, id: string): Promise<boolean> {
+  const { error } = await supabase.rpc("admin_reject_restaurant", {
+    p_key: adminKey,
+    p_id: id,
+  });
+
+  if (error) {
+    console.error("rejectRestaurant failed:", error.message);
+    return false;
+  }
+  return true;
+}
+
 export type NewRestaurantInput = {
   name: string;
   neighborhood: string;
