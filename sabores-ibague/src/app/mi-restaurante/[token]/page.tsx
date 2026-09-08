@@ -58,7 +58,12 @@ export default function ManageRestaurantPage({
     const data = new FormData(form);
     const name = String(data.get("itemName") ?? "").trim();
     const priceRaw = String(data.get("itemPrice") ?? "").trim();
-    const price = Number(priceRaw);
+    // Colombian prices are usually typed with a period as the thousands
+    // separator (10.000 = diez mil), which a plain Number() would read as
+    // 10. Stripping everything but the digits sidesteps that entirely —
+    // "10.000", "10,000" and "10000" all end up meaning the same thing.
+    const priceDigits = priceRaw.replace(/[^\d]/g, "");
+    const price = priceDigits ? Number(priceDigits) : NaN;
 
     if (!name) {
       setItemError("Escribe el nombre del plato.");
@@ -171,11 +176,10 @@ export default function ManageRestaurantPage({
           aria-label="Nombre del plato"
         />
         <input
-          type="number"
+          type="text"
+          inputMode="numeric"
           name="itemPrice"
-          min="0"
-          step="500"
-          placeholder="Ej: 15000"
+          placeholder="Ej: 15.000"
           aria-label="Precio en pesos"
         />
         <button type="submit" disabled={adding}>
