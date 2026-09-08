@@ -1,15 +1,18 @@
 "use client";
 
 import { use, useEffect, useState } from "react";
-import type { FormEvent } from "react";
+import type { ChangeEvent, FormEvent } from "react";
 import Link from "next/link";
 import {
   getRestaurantByEditToken,
   getMenuItemsByRestaurant,
   addMenuItem,
   deleteMenuItem,
+  setMenuItemPhoto,
+  setRestaurantPhoto,
 } from "@/lib/queries";
 import type { Restaurant, MenuItem } from "@/lib/queries";
+import { uploadPhoto } from "@/lib/uploadPhoto";
 
 const pesos = new Intl.NumberFormat("es-CO", {
   style: "currency",
@@ -31,6 +34,10 @@ export default function ManageRestaurantPage({
   const [itemError, setItemError] = useState<string | null>(null);
   const [adding, setAdding] = useState(false);
   const [deletingId, setDeletingId] = useState<string | null>(null);
+  const [uploadingCover, setUploadingCover] = useState(false);
+  const [uploadingItemPhotoId, setUploadingItemPhotoId] = useState<string | null>(null);
+  const [newItemPhotoFile, setNewItemPhotoFile] = useState<File | null>(null);
+  const [newItemPhotoPreview, setNewItemPhotoPreview] = useState<string | null>(null);
 
   useEffect(() => {
     let cancelled = false;
@@ -49,6 +56,56 @@ export default function ManageRestaurantPage({
       cancelled = true;
     };
   }, [token]);
+
+  // The preview is a temporary local URL for the file the vendor just
+  // picked, before it's actually uploaded — this frees it once it's no
+  // longer needed, so the browser doesn't quietly leak memory over time.
+  useEffect(() => {
+    return () => {
+      if (newItemPhotoPreview) URL.revokeObjectURL(newItemPhotoPreview);
+    };
+  }, [newItemPhotoPreview]);
+
+  async function handleCoverPhotoChange(event: ChangeEvent<HTMLInputElement>) {
+    const file = event.target.files?.[0];
+    event.target.value = "";
+    if (!file || !restaurant) return;
+
+    setUploadingCover(true);
+    const url = await uploadPhoto(file, `restaurants/${restaurant.id}`);
+    if (url) {
+      const ok = await setRestaurantPhoto(token, url);
+      if (ok) {
+        setRestaurant((current) => (current ? { ...current, photo_url: url } : current));
+      }
+    }
+    setUploadingCover(false);
+  }
+
+  function handleNewItemPhotoChange(event: ChangeEvent<HTMLInputElement>) {
+    const file = event.target.files?.[0] ?? null;
+    if (newItemPhotoPreview) URL.revokeObjectURL(newItemPhotoPreview);
+    setNewItemPhotoFile(file);
+    setNewItemPhotoPreview(file ? URL.createObjectURL(file) : null);
+  }
+
+  async function handleItemPhotoChange(itemId: string, event: ChangeEvent<HTMLInputElement>) {
+    const file = event.target.files?.[0];
+    event.target.value = "";
+    if (!file || !restaurant) return;
+
+    setUploadingItemPhotoId(itemId);
+    const url = await uploadPhoto(file, `restaurants/${restaurant.id}/items`);
+    if (url) {
+      const ok = await setMenuItemPhoto(token, itemId, url);
+      if (ok) {
+        setMenuItems((current) =>
+          current.map((item) => (item.id === itemId ? { ...item, photo_url: url } : item))
+        );
+      }
+    }
+    setUploadingItemPhotoId(null);
+  }
 
   async function handleAddItem(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
@@ -73,9 +130,17 @@ export default function ManageRestaurantPage({
       setItemError("Escribe un precio válido en pesos.");
       return;
     }
+    if (!restaurant) return;
 
     setAdding(true);
-    const result = await addMenuItem(token, name, price);
+
+    let photoUrl: string | undefined;
+    if (newItemPhotoFile) {
+      const uploaded = await uploadPhoto(newItemPhotoFile, `restaurants/${restaurant.id}/items`);
+      if (uploaded) photoUrl = uploaded;
+    }
+
+    const result = await addMenuItem(token, name, price, photoUrl);
     setAdding(false);
 
     if ("error" in result) {
@@ -85,6 +150,9 @@ export default function ManageRestaurantPage({
 
     setMenuItems((current) => [...current, result]);
     form.reset();
+    if (newItemPhotoPreview) URL.revokeObjectURL(newItemPhotoPreview);
+    setNewItemPhotoFile(null);
+    setNewItemPhotoPreview(null);
   }
 
   async function handleDeleteItem(itemId: string) {
@@ -141,6 +209,32 @@ export default function ManageRestaurantPage({
           : "Todavía estamos revisando tu restaurante, pero puedes agregar tu menú desde ya — se publicará junto con el resto en cuanto lo aprobemos."}
       </p>
 
+      <div className="cover-photo-wrap">
+        <label className="cover-photo-label">
+          {uploadingCover ? (
+            <span className="cover-photo-placeholder">Subiendo foto...</span>
+          ) : restaurant.photo_url ? (
+            <img src={restaurant.photo_url} alt={restaurant.name} className="cover-photo" />
+          ) : (
+            <span className="cover-photo-placeholder">
+              📷 Agregar foto principal de tu restaurante
+            </span>
+          )}
+          <input
+            type="file"
+            accept="image/*"
+            className="cover-photo-input"
+            disabled={uploadingCover}
+            onChange={handleCoverPhotoChange}
+          />
+        </label>
+        <p className="cover-photo-hint">
+          {restaurant.photo_url
+            ? "Toca la foto para cambiarla."
+            : "Esta foto aparece en tu página y en las categorías — sube algo que dé ganas de ir a comer."}
+        </p>
+      </div>
+
       <h2 className="manage-section-title">Tu menú</h2>
 
       {menuItems.length === 0 ? (
@@ -149,6 +243,26 @@ export default function ManageRestaurantPage({
         <ul className="menu-list">
           {menuItems.map((item) => (
             <li className="menu-item" key={item.id}>
+              <label className="menu-item-photo-label">
+                {uploadingItemPhotoId === item.id ? (
+                  <span className="menu-item-photo-placeholder" aria-hidden="true">
+                    …
+                  </span>
+                ) : item.photo_url ? (
+                  <img src={item.photo_url} alt="" className="menu-item-photo" />
+                ) : (
+                  <span className="menu-item-photo-placeholder" aria-hidden="true">
+                    📷
+                  </span>
+                )}
+                <input
+                  type="file"
+                  accept="image/*"
+                  className="menu-item-photo-input"
+                  disabled={uploadingItemPhotoId === item.id}
+                  onChange={(event) => handleItemPhotoChange(item.id, event)}
+                />
+              </label>
               <span className="menu-item-name">{item.name}</span>
               <span className="menu-item-right">
                 <span className="menu-item-price">
@@ -169,6 +283,21 @@ export default function ManageRestaurantPage({
       )}
 
       <form className="add-item-form" onSubmit={handleAddItem}>
+        <label className="menu-item-photo-label add-item-photo-label">
+          {newItemPhotoPreview ? (
+            <img src={newItemPhotoPreview} alt="" className="menu-item-photo" />
+          ) : (
+            <span className="menu-item-photo-placeholder" aria-hidden="true">
+              📷
+            </span>
+          )}
+          <input
+            type="file"
+            accept="image/*"
+            className="menu-item-photo-input"
+            onChange={handleNewItemPhotoChange}
+          />
+        </label>
         <input
           type="text"
           name="itemName"
