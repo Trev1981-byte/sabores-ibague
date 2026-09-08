@@ -193,6 +193,31 @@ export type Database = {
           isSetofReturn: true
         }
       }
+      admin_approve_restaurant: {
+        Args: { p_id: string; p_key: string }
+        Returns: undefined
+      }
+      admin_list_pending: {
+        Args: { p_key: string }
+        Returns: {
+          blurb: string
+          created_at: string
+          hours_text: string
+          id: string
+          maps_link: string
+          menu_items: Json
+          name: string
+          neighborhood: string
+          phone_number: string
+          photo_url: string
+          price_level: string
+          whatsapp_number: string
+        }[]
+      }
+      admin_reject_restaurant: {
+        Args: { p_id: string; p_key: string }
+        Returns: undefined
+      }
       delete_menu_item_by_token: {
         Args: { p_item_id: string; p_token: string }
         Returns: undefined
