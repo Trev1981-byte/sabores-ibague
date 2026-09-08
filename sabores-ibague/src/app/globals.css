@@ -957,6 +957,49 @@ footer {
 .add-item-form button:disabled { opacity: 0.6; cursor: default; }
 
 /* --- public restaurant detail page ------------------------------------ */
+.restaurant-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 0.75rem;
+  padding-block: 0.5rem 2rem;
+}
+.restaurant-head h1 { font-size: clamp(1.9rem, 4vw, 2.6rem); color: var(--text); }
+.share-btn {
+  flex: none;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  background: var(--surface);
+  border: 1.5px solid var(--line);
+  color: var(--text);
+  font-family: var(--font-karla), sans-serif;
+  font-weight: 700;
+  font-size: 0.85rem;
+  padding: 0.55rem 1rem;
+  border-radius: 999px;
+  cursor: pointer;
+  white-space: nowrap;
+}
+.share-btn:hover { border-color: var(--maiz-deep); }
+.share-btn.is-copied {
+  background: #DCF3E2;
+  border-color: #1F6B3A;
+  color: #1F6B3A;
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) .share-btn.is-copied {
+    color: #B7EAC8;
+    background: #14351F;
+    border-color: #3E9663;
+  }
+}
+:root[data-theme="dark"] .share-btn.is-copied {
+  color: #B7EAC8;
+  background: #14351F;
+  border-color: #3E9663;
+}
 .restaurant-cover {
   display: block;
   width: 100%;
