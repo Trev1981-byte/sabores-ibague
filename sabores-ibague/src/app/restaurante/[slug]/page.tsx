@@ -56,8 +56,7 @@ export default async function RestaurantPage({
         {restaurant.blurb && <p>{restaurant.blurb}</p>}
       </div>
 
-      
-        className="whatsapp-btn"
+      <a className="whatsapp-btn"
         href={whatsappHref}
         target="_blank"
         rel="noopener noreferrer"
