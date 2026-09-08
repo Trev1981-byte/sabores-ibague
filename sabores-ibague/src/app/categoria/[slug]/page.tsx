@@ -49,11 +49,27 @@ export default async function CategoryPage({
               className="restaurant-card"
               key={restaurant.id}
             >
-              <p className="name">{restaurant.name}</p>
-              <p className="meta">
-                {restaurant.neighborhood} · {restaurant.price_level}
-              </p>
-              {restaurant.blurb && <p className="blurb">{restaurant.blurb}</p>}
+              {restaurant.photo_url ? (
+                <img
+                  src={restaurant.photo_url}
+                  alt={restaurant.name}
+                  className="restaurant-card-photo"
+                />
+              ) : (
+                <div
+                  className="restaurant-card-photo restaurant-card-photo-empty"
+                  aria-hidden="true"
+                >
+                  🍽️
+                </div>
+              )}
+              <div className="restaurant-card-body">
+                <p className="name">{restaurant.name}</p>
+                <p className="meta">
+                  {restaurant.neighborhood} · {restaurant.price_level}
+                </p>
+                {restaurant.blurb && <p className="blurb">{restaurant.blurb}</p>}
+              </div>
             </Link>
           ))}
         </div>
