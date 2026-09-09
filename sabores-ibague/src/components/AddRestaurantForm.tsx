@@ -4,6 +4,7 @@ import { useState } from "react";
 import type { FormEvent } from "react";
 import { submitRestaurant } from "@/lib/queries";
 import type { Category } from "@/lib/queries";
+import { CategoryIcon } from "@/components/CategoryIcon";
 
 const PRICE_LEVELS = [
   { value: "$", label: "$ — Económico (hasta $15.000 por persona)" },
@@ -231,7 +232,11 @@ export function AddRestaurantForm({ categories }: { categories: Category[] }) {
                 checked={selectedCategories.includes(category.id)}
                 onChange={() => toggleCategory(category.id)}
               />
-              <span aria-hidden="true">{category.emoji}</span>
+              <CategoryIcon
+                category={category}
+                iconClassName="category-check-icon"
+                emojiClassName="category-check-emoji"
+              />
               <span className="category-check-label">{category.label}</span>
             </label>
           ))}
