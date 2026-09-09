@@ -573,7 +573,10 @@ footer {
   font-weight: 700;
   color: var(--text);
 }
-.field input,
+/* :not([type="checkbox"]) keeps this rule off the category checkboxes
+   below — those are plain small boxes, not full-width text fields, and
+   without this exclusion they were stretching to fill their whole tile. */
+.field input:not([type="checkbox"]),
 .field select,
 .field textarea {
   width: 100%;
@@ -591,7 +594,7 @@ footer {
 .field textarea::placeholder {
   color: var(--text-mute);
 }
-.field input:focus,
+.field input:not([type="checkbox"]):focus,
 .field select:focus,
 .field textarea:focus {
   outline: none;
@@ -1063,39 +1066,50 @@ footer {
   font-weight: 700;
   text-decoration: underline;
 }
-.menu-public-list {
+.menu-public-grid {
   display: grid;
-  gap: 0.6rem;
-  padding: 0;
-  list-style: none;
-  max-width: 30rem;
+  gap: 1rem;
+  max-width: 40rem;
   margin: 0 0 2.5rem;
 }
-.menu-public-item {
-  display: flex;
-  align-items: center;
-  gap: 0.85rem;
-  padding: 0.75rem 0;
-  border-bottom: 1px dashed var(--line);
+@media (min-width: 30rem) {
+  .menu-public-grid { grid-template-columns: 1fr 1fr; }
 }
-.menu-public-item-photo {
-  flex: none;
-  width: 3rem;
-  height: 3rem;
-  border-radius: 8px;
+.menu-public-card {
+  background: var(--surface);
+  border: 1px solid var(--line);
+  border-radius: 10px;
+  overflow: hidden;
+}
+.menu-public-card-photo {
+  display: block;
+  width: 100%;
+  aspect-ratio: 4 / 3;
   object-fit: cover;
   background: var(--surface-sunk);
 }
-.menu-public-item-text {
+.menu-public-card-photo-empty {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 2.2rem;
+  color: var(--text-mute);
+}
+.menu-public-card-body {
   display: flex;
   align-items: baseline;
   justify-content: space-between;
-  gap: 1rem;
-  flex: 1 1 auto;
-  min-width: 0;
+  gap: 0.75rem;
+  padding: 0.85rem 1rem;
 }
-.menu-public-item-text .name { font-weight: 600; color: var(--text); }
-.menu-public-item-text .price {
+.menu-public-card-name {
+  font-weight: 600;
+  color: var(--text);
+  min-width: 0;
+  overflow-wrap: break-word;
+}
+.menu-public-card-price {
+  flex: none;
   font-weight: 700;
   color: var(--achiote);
   white-space: nowrap;
