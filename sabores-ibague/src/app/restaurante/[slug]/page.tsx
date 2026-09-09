@@ -128,12 +128,7 @@ export default async function RestaurantPage({
           📞 Llamar
         </a>
         {whatsappHref && (
-          
-            className="whatsapp-btn"
-            href={whatsappHref}
-            target="_blank"
-            rel="noopener noreferrer"
-          >
+          <a className="whatsapp-btn" href={whatsappHref} target="_blank" rel="noopener noreferrer">
             Escribir por WhatsApp
           </a>
         )}
