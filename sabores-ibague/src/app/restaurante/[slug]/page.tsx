@@ -28,22 +28,22 @@ export async function generateMetadata({
   const restaurant = await getRestaurantBySlug(slug);
 
   if (!restaurant) {
-    return { title: "Restaurante no encontrado — Sabores de Ibagué" };
+    return { title: "Restaurante no encontrado — Colcocina" };
   }
 
   const description =
     restaurant.blurb ||
-    `${restaurant.neighborhood} · ${restaurant.price_level} — en Sabores de Ibagué.`;
+    `${restaurant.neighborhood} · ${restaurant.price_level} — en Colcocina.`;
   const url = `${SITE_URL}/restaurante/${restaurant.slug}`;
 
   return {
-    title: `${restaurant.name} — Sabores de Ibagué`,
+    title: `${restaurant.name} — Colcocina`,
     description,
     openGraph: {
       title: restaurant.name,
       description,
       url,
-      siteName: "Sabores de Ibagué",
+      siteName: "Colcocina",
       locale: "es_CO",
       type: "website",
       images: restaurant.photo_url ? [{ url: restaurant.photo_url }] : undefined,
@@ -117,7 +117,7 @@ export default async function RestaurantPage({
         </span>
         <p>
           Preferimos que pagues contra entrega, sobre todo la primera vez
-          que le compras a este restaurante. Sabores de Ibagué solo los
+          que le compras a este restaurante. Colcocina solo los
           conecta — el pedido y el pago se hacen directamente con ellos.{" "}
           <Link href="/seguridad">Más consejos de seguridad →</Link>
         </p>
