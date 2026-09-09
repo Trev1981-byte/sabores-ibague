@@ -205,8 +205,8 @@ export type PendingRestaurant = {
   name: string;
   neighborhood: string;
   price_level: string;
-  whatsapp_number: string;
-  phone_number: string | null;
+  whatsapp_number: string | null;
+  phone_number: string;
   hours_text: string | null;
   maps_link: string | null;
   blurb: string | null;
@@ -271,8 +271,12 @@ export type NewRestaurantInput = {
   name: string;
   neighborhood: string;
   priceLevel: "$" | "$$" | "$$$";
-  whatsappNumber: string;
-  phoneNumber?: string;
+  // Phone is the one every real restaurant has to have — same idea as the
+  // "Call" button in Google's map pack, which shows up whether or not a
+  // place has WhatsApp. WhatsApp is a bonus on top of that, not a
+  // replacement for it.
+  phoneNumber: string;
+  whatsappNumber?: string;
   hoursText?: string;
   mapsLink?: string;
   blurb?: string;
@@ -319,8 +323,8 @@ export async function submitRestaurant(
     p_slug: slugify(input.name),
     p_neighborhood: input.neighborhood,
     p_price_level: input.priceLevel,
-    p_whatsapp_number: input.whatsappNumber,
-    p_phone_number: input.phoneNumber || "",
+    p_whatsapp_number: input.whatsappNumber || "",
+    p_phone_number: input.phoneNumber,
     p_hours_text: input.hoursText || "",
     p_maps_link: input.mapsLink || "",
     p_blurb: input.blurb || "",
