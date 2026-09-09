@@ -3,6 +3,7 @@ import Link from "next/link";
 import { notFound } from "next/navigation";
 import { getRestaurantBySlug, getMenuItemsByRestaurant } from "@/lib/queries";
 import { ShareButton } from "@/components/ShareButton";
+import { ServiceBadges } from "@/components/ServiceBadges";
 import { SITE_URL } from "@/lib/site";
 
 // Same reasoning as the other data-backed pages: never freeze this at
@@ -82,6 +83,8 @@ export default async function RestaurantPage({
           url={`${SITE_URL}/restaurante/${restaurant.slug}`}
         />
       </div>
+
+      <ServiceBadges restaurant={restaurant} />
 
       <div className="restaurant-meta-list">
         <p>
