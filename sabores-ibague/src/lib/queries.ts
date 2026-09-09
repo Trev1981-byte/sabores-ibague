@@ -212,6 +212,9 @@ export type PendingRestaurant = {
   blurb: string | null;
   photo_url: string | null;
   created_at: string;
+  has_delivery: boolean;
+  has_takeout: boolean;
+  has_dine_in: boolean;
   menu_items: PendingMenuItem[];
 };
 
@@ -274,6 +277,9 @@ export type NewRestaurantInput = {
   mapsLink?: string;
   blurb?: string;
   categoryIds: string[];
+  hasDelivery: boolean;
+  hasTakeout: boolean;
+  hasDineIn: boolean;
 };
 
 function slugify(name: string): string {
@@ -319,6 +325,9 @@ export async function submitRestaurant(
     p_maps_link: input.mapsLink || "",
     p_blurb: input.blurb || "",
     p_category_ids: input.categoryIds,
+    p_has_delivery: input.hasDelivery,
+    p_has_takeout: input.hasTakeout,
+    p_has_dine_in: input.hasDineIn,
   });
 
   if (error || !data) {
