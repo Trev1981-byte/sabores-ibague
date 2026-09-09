@@ -925,13 +925,14 @@ footer {
 .add-item-photo-label {
   align-self: center;
 }
-.add-item-form input[type="text"] {
+.add-item-form input[name="itemName"] {
   flex: 1 1 12rem;
 }
-.add-item-form input[type="number"] {
-  flex: 0 1 9rem;
+.add-item-form input[name="itemPrice"] {
+  flex: 1 1 8rem;
 }
 .add-item-form input {
+  min-width: 0;
   font-family: var(--font-karla), sans-serif;
   font-size: 0.95rem;
   color: var(--text);
