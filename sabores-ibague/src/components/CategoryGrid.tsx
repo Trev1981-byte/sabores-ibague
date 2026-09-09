@@ -66,8 +66,6 @@ export function CategoryGrid({
             <span>
               <b>{categories.length}</b> categorías
             </span>
-            <span aria-hidden="true">·</span>
-            <span>en español, primero</span>
           </p>
         </div>
       </header>
