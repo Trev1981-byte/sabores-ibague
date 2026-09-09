@@ -115,6 +115,9 @@ export type Database = {
           city: string
           created_at: string
           edit_token: string
+          has_delivery: boolean
+          has_dine_in: boolean
+          has_takeout: boolean
           hours_text: string | null
           id: string
           is_approved: boolean
@@ -133,6 +136,9 @@ export type Database = {
           city?: string
           created_at?: string
           edit_token?: string
+          has_delivery?: boolean
+          has_dine_in?: boolean
+          has_takeout?: boolean
           hours_text?: string | null
           id?: string
           is_approved?: boolean
@@ -151,6 +157,9 @@ export type Database = {
           city?: string
           created_at?: string
           edit_token?: string
+          has_delivery?: boolean
+          has_dine_in?: boolean
+          has_takeout?: boolean
           hours_text?: string | null
           id?: string
           is_approved?: boolean
@@ -202,6 +211,9 @@ export type Database = {
         Returns: {
           blurb: string
           created_at: string
+          has_delivery: boolean
+          has_dine_in: boolean
+          has_takeout: boolean
           hours_text: string
           id: string
           maps_link: string
@@ -229,6 +241,9 @@ export type Database = {
           city: string
           created_at: string
           edit_token: string
+          has_delivery: boolean
+          has_dine_in: boolean
+          has_takeout: boolean
           hours_text: string | null
           id: string
           is_approved: boolean
@@ -261,6 +276,9 @@ export type Database = {
         Args: {
           p_blurb: string
           p_category_ids: string[]
+          p_has_delivery: boolean
+          p_has_dine_in: boolean
+          p_has_takeout: boolean
           p_hours_text: string
           p_maps_link: string
           p_name: string
