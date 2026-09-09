@@ -49,12 +49,13 @@ export function AddRestaurantForm({ categories }: { categories: Category[] }) {
     const name = String(data.get("name") ?? "").trim();
     const neighborhood = String(data.get("neighborhood") ?? "").trim();
     const priceLevel = String(data.get("priceLevel") ?? "");
+    const phoneNumber = String(data.get("phoneNumber") ?? "").trim();
     const whatsappNumber = String(data.get("whatsappNumber") ?? "").trim();
     const hoursText = String(data.get("hoursText") ?? "").trim();
 
-    if (!name || !neighborhood || !whatsappNumber || !hoursText) {
+    if (!name || !neighborhood || !phoneNumber || !hoursText) {
       setError(
-        "Por favor completa nombre, barrio, WhatsApp y horario — son obligatorios."
+        "Por favor completa nombre, barrio, teléfono y horario — son obligatorios."
       );
       return;
     }
@@ -77,8 +78,8 @@ export function AddRestaurantForm({ categories }: { categories: Category[] }) {
       name,
       neighborhood,
       priceLevel,
-      whatsappNumber,
-      phoneNumber: String(data.get("phoneNumber") ?? "").trim() || undefined,
+      phoneNumber,
+      whatsappNumber: whatsappNumber || undefined,
       hoursText,
       mapsLink: String(data.get("mapsLink") ?? "").trim() || undefined,
       blurb: String(data.get("blurb") ?? "").trim() || undefined,
@@ -196,22 +197,31 @@ export function AddRestaurantForm({ categories }: { categories: Category[] }) {
       </div>
 
       <div className="field">
-        <label htmlFor="whatsappNumber">Número de WhatsApp *</label>
+        <label htmlFor="phoneNumber">Teléfono *</label>
         <input
-          id="whatsappNumber"
-          name="whatsappNumber"
+          id="phoneNumber"
+          name="phoneNumber"
           type="tel"
           required
-          placeholder="Ej: 3001234567 (sin +57, solo el número)"
+          placeholder="Ej: 3001234567 o 608 1234567"
         />
         <p className="field-hint">
-          Los clientes te escribirán directamente a este número por WhatsApp.
+          El número al que los clientes te pueden llamar — celular o fijo.
         </p>
       </div>
 
       <div className="field">
-        <label htmlFor="phoneNumber">Teléfono fijo (opcional)</label>
-        <input id="phoneNumber" name="phoneNumber" type="tel" placeholder="Ej: 608 1234567" />
+        <label htmlFor="whatsappNumber">Número de WhatsApp (opcional)</label>
+        <input
+          id="whatsappNumber"
+          name="whatsappNumber"
+          type="tel"
+          placeholder="Ej: 3001234567 (sin +57, solo el número)"
+        />
+        <p className="field-hint">
+          Si tienes WhatsApp, los clientes también podrán escribirte
+          directamente ahí. Si es el mismo número de arriba, repítelo aquí.
+        </p>
       </div>
 
       <div className="field">
