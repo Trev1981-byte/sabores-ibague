@@ -18,6 +18,11 @@ export function AddRestaurantForm({ categories }: { categories: Category[] }) {
   const [selectedCategories, setSelectedCategories] = useState<string[]>([]);
   const [editLink, setEditLink] = useState<string | null>(null);
   const [copied, setCopied] = useState(false);
+  // Most Ibagué places do at least dine-in, so it starts checked — the
+  // vendor can uncheck it if that's not true for them (a food truck, say).
+  const [hasDineIn, setHasDineIn] = useState(true);
+  const [hasTakeout, setHasTakeout] = useState(false);
+  const [hasDelivery, setHasDelivery] = useState(false);
 
   function toggleCategory(id: string) {
     setSelectedCategories((current) =>
@@ -61,6 +66,10 @@ export function AddRestaurantForm({ categories }: { categories: Category[] }) {
       setError("Selecciona al menos una categoría.");
       return;
     }
+    if (!hasDineIn && !hasTakeout && !hasDelivery) {
+      setError("Selecciona al menos una opción: domicilio, para llevar o comer en el sitio.");
+      return;
+    }
 
     setStatus("saving");
 
@@ -74,6 +83,9 @@ export function AddRestaurantForm({ categories }: { categories: Category[] }) {
       mapsLink: String(data.get("mapsLink") ?? "").trim() || undefined,
       blurb: String(data.get("blurb") ?? "").trim() || undefined,
       categoryIds: selectedCategories,
+      hasDineIn,
+      hasTakeout,
+      hasDelivery,
     });
 
     if ("error" in result) {
@@ -220,6 +232,39 @@ export function AddRestaurantForm({ categories }: { categories: Category[] }) {
           rows={3}
           placeholder="Ej: Comida a la parrilla, ambiente familiar, parqueadero propio."
         />
+      </div>
+
+      <div className="field">
+        <span className="field-label-static">¿Cómo atiendes? *</span>
+        <div className="service-checks">
+          <label className="service-check">
+            <input
+              type="checkbox"
+              checked={hasDineIn}
+              onChange={() => setHasDineIn((v) => !v)}
+            />
+            <span aria-hidden="true">🍽️</span>
+            <span>Comer en el sitio</span>
+          </label>
+          <label className="service-check">
+            <input
+              type="checkbox"
+              checked={hasTakeout}
+              onChange={() => setHasTakeout((v) => !v)}
+            />
+            <span aria-hidden="true">🥡</span>
+            <span>Para llevar</span>
+          </label>
+          <label className="service-check">
+            <input
+              type="checkbox"
+              checked={hasDelivery}
+              onChange={() => setHasDelivery((v) => !v)}
+            />
+            <span aria-hidden="true">🛵</span>
+            <span>Domicilio</span>
+          </label>
+        </div>
       </div>
 
       <div className="field">
