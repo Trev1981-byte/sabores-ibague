@@ -205,7 +205,7 @@ export default function ManageRestaurantPage({
 
       <p className="manage-note">
         {restaurant.is_approved
-          ? "Tu restaurante ya está visible para todos en Sabores de Ibagué."
+          ? "Tu restaurante ya está visible para todos en Colcocina."
           : "Todavía estamos revisando tu restaurante, pero puedes agregar tu menú desde ya — se publicará junto con el resto en cuanto lo aprobemos."}
       </p>
 
