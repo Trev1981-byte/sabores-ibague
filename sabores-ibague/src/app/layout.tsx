@@ -17,9 +17,9 @@ const karla = Karla({
 });
 
 export const metadata: Metadata = {
-  title: "Sabores de Ibagué",
+  title: "Colcocina",
   description:
-    "Descubre los mejores restaurantes, cafés y puestos de comida en Ibagué, Tolima.",
+    "Colcocina — descubre los mejores restaurantes, cafés y puestos de comida en Ibagué, Tolima.",
 };
 
 export default function RootLayout({ children }: LayoutProps<"/">) {
@@ -32,7 +32,7 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
               <span className="brand-mark" aria-hidden="true">
                 🍽️
               </span>
-              Sabores de Ibagué
+              Colcocina
             </Link>
             <div className="topbar-right">
               <span className="brand-loc">Ibagué · Tolima</span>
@@ -51,7 +51,7 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
               <span className="brand-mark" aria-hidden="true">
                 🍽️
               </span>{" "}
-              Sabores de Ibagué
+              Colcocina
             </span>
             <Link className="foot-link" href="/seguridad">
               Consejos de seguridad
