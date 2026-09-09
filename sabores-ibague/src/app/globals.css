@@ -671,7 +671,10 @@ footer {
 
 .category-checks {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(9.5rem, 1fr));
+  /* Wider than the category-tile grid on purpose — "Hamburguesas" and
+     "Salchipapas" need the room, or they wrap to two lines and dwarf the
+     icon next to them. */
+  grid-template-columns: repeat(auto-fill, minmax(11rem, 1fr));
   gap: 0.5rem;
 }
 .category-check {
@@ -688,8 +691,8 @@ footer {
   cursor: pointer;
 }
 .category-check input { flex: none; }
-.category-check-icon { width: 1.2rem; height: 1.2rem; flex: none; }
-.category-check-emoji { font-size: 1.15rem; line-height: 1; flex: none; }
+.category-check-icon { width: 1.5rem; height: 1.5rem; flex: none; }
+.category-check-emoji { font-size: 1.5rem; line-height: 1; flex: none; }
 .category-check-label {
   /* Words like "Hamburguesas" have no space to break at, so a plain flex
      child refuses to shrink below the word's full width and spills out of
