@@ -125,11 +125,11 @@ export type Database = {
           maps_link: string | null
           name: string
           neighborhood: string
-          phone_number: string | null
+          phone_number: string
           photo_url: string | null
           price_level: string
           slug: string
-          whatsapp_number: string
+          whatsapp_number: string | null
         }
         Insert: {
           blurb?: string | null
@@ -146,11 +146,11 @@ export type Database = {
           maps_link?: string | null
           name: string
           neighborhood: string
-          phone_number?: string | null
+          phone_number: string
           photo_url?: string | null
           price_level: string
           slug: string
-          whatsapp_number: string
+          whatsapp_number?: string | null
         }
         Update: {
           blurb?: string | null
@@ -167,11 +167,11 @@ export type Database = {
           maps_link?: string | null
           name?: string
           neighborhood?: string
-          phone_number?: string | null
+          phone_number?: string
           photo_url?: string | null
           price_level?: string
           slug?: string
-          whatsapp_number?: string
+          whatsapp_number?: string | null
         }
         Relationships: []
       }
@@ -251,11 +251,11 @@ export type Database = {
           maps_link: string | null
           name: string
           neighborhood: string
-          phone_number: string | null
+          phone_number: string
           photo_url: string | null
           price_level: string
           slug: string
-          whatsapp_number: string
+          whatsapp_number: string | null
         }[]
         SetofOptions: {
           from: "*"
