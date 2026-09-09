@@ -8,6 +8,7 @@ import {
   rejectRestaurant,
 } from "@/lib/queries";
 import type { PendingRestaurant } from "@/lib/queries";
+import { ServiceBadges } from "@/components/ServiceBadges";
 
 // This page has no login system — the key below stands in for one, the
 // same way a vendor's private edit link stands in for a password. Nobody
@@ -92,6 +93,7 @@ export default function ReviewPage() {
                 <p className="review-meta">
                   {r.neighborhood} · {r.price_level}
                 </p>
+                <ServiceBadges restaurant={r} />
                 <p className="review-meta">📱 WhatsApp: {r.whatsapp_number}</p>
                 {r.phone_number && <p className="review-meta">☎️ Fijo: {r.phone_number}</p>}
                 {r.hours_text && <p className="review-meta">🕐 {r.hours_text}</p>}
