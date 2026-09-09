@@ -126,21 +126,32 @@ export default async function RestaurantPage({
       {menuItems.length === 0 ? (
         <p className="menu-empty">Este restaurante todavía no publicó su menú.</p>
       ) : (
-        <ul className="menu-public-list">
+        <div className="menu-public-grid">
           {menuItems.map((item) => (
-            <li className="menu-public-item" key={item.id}>
-              {item.photo_url && (
-                <img src={item.photo_url} alt="" className="menu-public-item-photo" />
+            <div className="menu-public-card" key={item.id}>
+              {item.photo_url ? (
+                <img
+                  src={item.photo_url}
+                  alt={item.name}
+                  className="menu-public-card-photo"
+                />
+              ) : (
+                <div
+                  className="menu-public-card-photo menu-public-card-photo-empty"
+                  aria-hidden="true"
+                >
+                  🍽️
+                </div>
               )}
-              <span className="menu-public-item-text">
-                <span className="name">{item.name}</span>
-                <span className="price">
+              <div className="menu-public-card-body">
+                <span className="menu-public-card-name">{item.name}</span>
+                <span className="menu-public-card-price">
                   {item.price !== null ? pesos.format(item.price) : ""}
                 </span>
-              </span>
-            </li>
+              </div>
+            </div>
           ))}
-        </ul>
+        </div>
       )}
     </main>
   );
