@@ -4,6 +4,7 @@ import {
   getApprovedRestaurantsByCategory,
   getCategoryBySlug,
 } from "@/lib/queries";
+import { ServiceBadges } from "@/components/ServiceBadges";
 
 // Same reasoning as the home page: always ask Supabase fresh, never freeze
 // this page's data at build time.
@@ -68,6 +69,7 @@ export default async function CategoryPage({
                 <p className="meta">
                   {restaurant.neighborhood} · {restaurant.price_level}
                 </p>
+                <ServiceBadges restaurant={restaurant} />
                 {restaurant.blurb && <p className="blurb">{restaurant.blurb}</p>}
               </div>
             </Link>
