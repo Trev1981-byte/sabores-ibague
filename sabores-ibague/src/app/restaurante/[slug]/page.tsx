@@ -64,7 +64,13 @@ export default async function RestaurantPage({
   }
 
   const menuItems = await getMenuItemsByRestaurant(restaurant.id);
-  const whatsappHref = `https://wa.me/57${restaurant.whatsapp_number.replace(/\D/g, "")}`;
+  // Every restaurant has a phone number — that one's required at signup, so
+  // the call button always shows. WhatsApp is optional on top of that, and
+  // only shows when the restaurant actually has one.
+  const callHref = `tel:${restaurant.phone_number.replace(/\D/g, "")}`;
+  const whatsappHref = restaurant.whatsapp_number
+    ? `https://wa.me/57${restaurant.whatsapp_number.replace(/\D/g, "")}`
+    : null;
 
   return (
     <main className="wrap">
@@ -117,13 +123,21 @@ export default async function RestaurantPage({
         </p>
       </div>
 
-      <a className="whatsapp-btn"
-        href={whatsappHref}
-        target="_blank"
-        rel="noopener noreferrer"
-      >
-        Escribir por WhatsApp
-      </a>
+      <div className="contact-actions">
+        <a className="call-btn" href={callHref}>
+          📞 Llamar
+        </a>
+        {whatsappHref && (
+          
+            className="whatsapp-btn"
+            href={whatsappHref}
+            target="_blank"
+            rel="noopener noreferrer"
+          >
+            Escribir por WhatsApp
+          </a>
+        )}
+      </div>
 
       <h2 className="manage-section-title">Menú</h2>
       {menuItems.length === 0 ? (
