@@ -211,7 +211,7 @@ export function AddRestaurantForm({ categories }: { categories: Category[] }) {
       </div>
 
       <div className="field">
-        <label htmlFor="whatsappNumber">Número de WhatsApp (opcional)</label>
+        <label htmlFor="whatsappNumber">Número de WhatsApp</label>
         <input
           id="whatsappNumber"
           name="whatsappNumber"
@@ -219,8 +219,9 @@ export function AddRestaurantForm({ categories }: { categories: Category[] }) {
           placeholder="Ej: 3001234567 (sin +57, solo el número)"
         />
         <p className="field-hint">
-          Si tienes WhatsApp, los clientes también podrán escribirte
-          directamente ahí. Si es el mismo número de arriba, repítelo aquí.
+          La mayoría de tus clientes va a preferir escribirte antes que
+          llamar — agrégalo si lo tienes. Si es el mismo número de arriba,
+          repítelo aquí.
         </p>
       </div>
 
