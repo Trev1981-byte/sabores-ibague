@@ -94,8 +94,8 @@ export default function ReviewPage() {
                   {r.neighborhood} · {r.price_level}
                 </p>
                 <ServiceBadges restaurant={r} />
-                <p className="review-meta">📱 WhatsApp: {r.whatsapp_number}</p>
-                {r.phone_number && <p className="review-meta">☎️ Fijo: {r.phone_number}</p>}
+                <p className="review-meta">☎️ Teléfono: {r.phone_number}</p>
+                {r.whatsapp_number && <p className="review-meta">📱 WhatsApp: {r.whatsapp_number}</p>}
                 {r.hours_text && <p className="review-meta">🕐 {r.hours_text}</p>}
                 {r.maps_link && (
                   <p className="review-meta">
