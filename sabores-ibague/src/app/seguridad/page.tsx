@@ -1,9 +1,9 @@
 import Link from "next/link";
 
 export const metadata = {
-  title: "Consejos de seguridad — Sabores de Ibagué",
+  title: "Consejos de seguridad — Colcocina",
   description:
-    "Cómo pedir con seguridad en Sabores de Ibagué: qué hacemos nosotros y qué te toca revisar a ti antes de pagar.",
+    "Cómo pedir con seguridad en Colcocina: qué hacemos nosotros y qué te toca revisar a ti antes de pagar.",
 };
 
 export default function SeguridadPage() {
@@ -16,7 +16,7 @@ export default function SeguridadPage() {
       <h1>Consejos para pedir con seguridad</h1>
 
       <p className="safety-intro">
-        Sabores de Ibagué te ayuda a descubrir restaurantes y puestos de
+        Colcocina te ayuda a descubrir restaurantes y puestos de
         comida de la ciudad, y te conecta directamente con ellos por
         WhatsApp. A partir de ahí, el pedido, el pago y la entrega quedan
         entre tú y el restaurante — nosotros no participamos en esa parte,
