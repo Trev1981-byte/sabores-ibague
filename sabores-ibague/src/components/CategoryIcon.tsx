@@ -40,33 +40,25 @@ function SalchipapasIcon({ className }: { className: string }) {
     <svg className={className} viewBox="0 0 32 32" aria-hidden="true">
       {/* paper tray */}
       <path
-        d="M6 15 L26 15 L23.6 27.2c-.16.9-.94 1.5-1.84 1.5H10.24c-.9 0-1.68-.6-1.84-1.5z"
+        d="M5 16.5 L27 16.5 L24 29c-.2 1-1 1.7-2 1.7H10c-1 0-1.8-.7-2-1.7z"
         fill="var(--papas-tray)"
       />
-      {/* fries, fanned out of the tray */}
-      <rect x="9.5" y="8.5" width="2.5" height="13.5" rx="1.2" fill="var(--papas-gold)" transform="rotate(-11 10.75 15.25)" />
-      <rect x="13.1" y="5.5" width="2.5" height="16.5" rx="1.2" fill="var(--papas-gold-deep)" />
-      <rect x="16.5" y="5" width="2.5" height="17" rx="1.2" fill="var(--papas-gold)" />
-      <rect x="20" y="7.5" width="2.5" height="14.5" rx="1.2" fill="var(--papas-gold-deep)" transform="rotate(11 21.25 14.75)" />
+      {/* a bold mound of fries — three wide wedges instead of thin
+          strips, so the shape still reads clearly this small */}
+      <path d="M8.5 17 L11 4.5 L13.5 17 Z" fill="var(--papas-gold)" />
+      <path d="M13 17 L15.8 3 L18.5 17 Z" fill="var(--papas-gold-deep)" />
+      <path d="M18 17 L20.5 5 L23 17 Z" fill="var(--papas-gold)" />
       {/* chopped sausage on top */}
-      <circle cx="12.5" cy="17" r="1.6" fill="var(--salchicha)" />
-      <circle cx="19" cy="16.2" r="1.6" fill="var(--salchicha)" />
-      <circle cx="15.5" cy="20" r="1.6" fill="var(--salchicha)" />
+      <circle cx="12" cy="19" r="2.3" fill="var(--salchicha)" />
+      <circle cx="19" cy="18.3" r="2.3" fill="var(--salchicha)" />
+      <circle cx="15.3" cy="22.3" r="2.3" fill="var(--salchicha)" />
       {/* melted cheese drizzle */}
       <path
-        d="M8.3 18.5c3 2.1 12.4 2.1 15.4 0"
+        d="M7.5 20c3.6 2.7 14.8 2.7 18 0"
         fill="none"
         stroke="var(--queso)"
-        strokeWidth="1.4"
+        strokeWidth="2"
         strokeLinecap="round"
-      />
-      <path
-        d="M9.6 22c2.6 1.5 10 1.5 12.8 0"
-        fill="none"
-        stroke="var(--queso)"
-        strokeWidth="1.1"
-        strokeLinecap="round"
-        opacity="0.8"
       />
     </svg>
   );
@@ -75,25 +67,26 @@ function SalchipapasIcon({ className }: { className: string }) {
 function EmpanadaIcon({ className }: { className: string }) {
   return (
     <svg className={className} viewBox="0 0 32 32" aria-hidden="true">
-      {/* golden fried dough, folded in half — the flat edge is the
-          crimped seam, the curve is the fold */}
-      <path d="M6 13a10 10 0 0 0 20 0z" fill="var(--empanada-gold)" />
+      {/* golden fried dough, folded in half — drawn resting flat-side
+          down like a pastry on a plate: a tall dome on top, the
+          crimped seam along the bottom edge */}
+      <path d="M4 27 Q4 7 16 7 Q28 7 28 27 Z" fill="var(--empanada-gold)" />
       {/* fork-pressed crimp along the seam */}
-      <g stroke="var(--empanada-gold-deep)" strokeWidth="1.1" strokeLinecap="round" fill="none">
-        <path d="M7.6 13c.6 1.1 1.5 1.1 2.1 0" />
-        <path d="M11.4 13c.6 1.4 1.5 1.4 2.1 0" />
-        <path d="M15.2 13c.6 1.6 1.5 1.6 2.1 0" />
-        <path d="M19 13c.6 1.4 1.5 1.4 2.1 0" />
-        <path d="M22.8 13c.6 1.1 1.5 1.1 2.1 0" />
+      <g stroke="var(--empanada-gold-deep)" strokeWidth="1.6" strokeLinecap="round" fill="none">
+        <path d="M5.8 27c.7 1.7 1.9 1.7 2.6 0" />
+        <path d="M11 27c.7 1.9 1.9 1.9 2.6 0" />
+        <path d="M16.2 27c.7 2.1 1.9 2.1 2.6 0" />
+        <path d="M21.4 27c.7 1.9 1.9 1.9 2.6 0" />
+        <path d="M26 27c.5 1.2 1.3 1.2 1.8 0" />
       </g>
       {/* steam vent for texture */}
       <path
-        d="M12.5 18.5c1.6-1.1 5.4-1.1 7 0"
+        d="M10.5 16c3-2 8-2 11 0"
         fill="none"
         stroke="var(--empanada-gold-deep)"
-        strokeWidth="1"
+        strokeWidth="1.3"
         strokeLinecap="round"
-        opacity="0.55"
+        opacity="0.5"
       />
     </svg>
   );
