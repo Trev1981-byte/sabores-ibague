@@ -34,6 +34,13 @@
   --tamal-leaf: #4C7A3D;
   --tamal-leaf-deep: #345429;
   --tamal-tie: #A9762F;
+  --papas-gold: #EDAF3C;
+  --papas-gold-deep: #C98A1F;
+  --papas-tray: #F1E1B8;
+  --salchicha: #9C3F27;
+  --queso: #FFF6DE;
+  --empanada-gold: #E3A63B;
+  --empanada-gold-deep: #B9801F;
 }
 
 @media (prefers-color-scheme: dark) {
@@ -65,6 +72,13 @@
     --tamal-leaf: #6E9C5B;
     --tamal-leaf-deep: #4C7A3D;
     --tamal-tie: #C79A54;
+    --papas-gold: #FFC966;
+    --papas-gold-deep: #E0A542;
+    --papas-tray: #D9C79E;
+    --salchicha: #C1573A;
+    --queso: #FFF3D0;
+    --empanada-gold: #F0B94E;
+    --empanada-gold-deep: #D89A3A;
   }
 }
 
@@ -96,6 +110,13 @@
   --tamal-leaf: #6E9C5B;
   --tamal-leaf-deep: #4C7A3D;
   --tamal-tie: #C79A54;
+  --papas-gold: #FFC966;
+  --papas-gold-deep: #E0A542;
+  --papas-tray: #D9C79E;
+  --salchicha: #C1573A;
+  --queso: #FFF3D0;
+  --empanada-gold: #F0B94E;
+  --empanada-gold-deep: #D89A3A;
 }
 
 * { box-sizing: border-box; }
@@ -627,6 +648,8 @@ footer {
   cursor: pointer;
 }
 .category-check input { flex: none; }
+.category-check-icon { width: 1.2rem; height: 1.2rem; flex: none; }
+.category-check-emoji { font-size: 1.15rem; line-height: 1; flex: none; }
 .category-check-label {
   /* Words like "Hamburguesas" have no space to break at, so a plain flex
      child refuses to shrink below the word's full width and spills out of
