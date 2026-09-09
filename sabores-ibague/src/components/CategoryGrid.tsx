@@ -3,43 +3,13 @@
 import Link from "next/link";
 import { useMemo, useState } from "react";
 import type { Category } from "@/lib/queries";
+import { CategoryIcon } from "@/components/CategoryIcon";
 
 function normalize(text: string): string {
   return text
     .toLowerCase()
     .normalize("NFD")
     .replace(/[\u0300-\u036f]/g, ""); // strip accents so "arepa" matches "Arepas"
-}
-
-// The stored emoji for tamales (🫔) is the Mexican-style husk-wrapped
-// tamale — pointed at both ends. A Colombian tamal is round, wrapped in
-// banana leaf and tied off with a knot at the top, so it gets a small
-// hand-drawn icon here instead of the emoji from the database.
-function TamalIcon() {
-  return (
-    <svg className="cat-icon" viewBox="0 0 32 32" aria-hidden="true">
-      <circle cx="16" cy="19" r="9.5" fill="var(--tamal-leaf)" />
-      <path
-        d="M12.2 9.6c0-2.4 1.7-4.1 3.8-4.1s3.8 1.7 3.8 4.1c0 2.1-1.7 3.4-3.8 3.4s-3.8-1.3-3.8-3.4z"
-        fill="var(--tamal-leaf)"
-      />
-      <path
-        d="M14.6 5.6c.5-.9 1.4-1.4 1.4-1.4s.9.5 1.4 1.4"
-        fill="none"
-        stroke="var(--tamal-tie)"
-        strokeWidth="1.3"
-        strokeLinecap="round"
-      />
-      <path
-        d="M7.3 16.6c3-1.1 14.4-1.1 17.4 0M7 20.8c3.2-1.2 14.8-1.2 18 0M8.4 24.7c2.6-1 12.2-1 14.8 0"
-        fill="none"
-        stroke="var(--tamal-leaf-deep)"
-        strokeWidth="1.1"
-        strokeLinecap="round"
-        opacity="0.55"
-      />
-    </svg>
-  );
 }
 
 export function CategoryGrid({
@@ -134,13 +104,11 @@ export function CategoryGrid({
                   className="cat-tile"
                   href={`/categoria/${category.slug}`}
                 >
-                  {category.slug === "tamales" ? (
-                    <TamalIcon />
-                  ) : (
-                    <span className="cat-emoji" aria-hidden="true">
-                      {category.emoji}
-                    </span>
-                  )}
+                  <CategoryIcon
+                    category={category}
+                    iconClassName="cat-icon"
+                    emojiClassName="cat-emoji"
+                  />
                   <span className="cat-label">{category.label}</span>
                 </Link>
               ))}
