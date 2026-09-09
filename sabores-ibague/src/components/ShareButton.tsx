@@ -15,7 +15,7 @@ export function ShareButton({ name, url }: { name: string; url: string }) {
       try {
         await navigator.share({
           title: name,
-          text: `Mira ${name} en Sabores de Ibagué`,
+          text: `Mira ${name} en Colcocina`,
           url,
         });
       } catch {
