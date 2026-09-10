@@ -1,7 +1,12 @@
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import { CategoryGrid } from "@/components/CategoryGrid";
-import { getApprovedRestaurantCount, getCategories } from "@/lib/queries";
+import {
+  getApprovedRestaurantCount,
+  getApprovedRestaurantsForSearch,
+  getCategories,
+  getMenuItemsForSearch,
+} from "@/lib/queries";
 import { getCityBySlug } from "@/lib/cities";
 
 // Always fetch fresh from Supabase on every visit instead of freezing the
@@ -22,9 +27,11 @@ export default async function CityHome({
     notFound();
   }
 
-  const [categories, restaurantCount] = await Promise.all([
+  const [categories, restaurantCount, restaurants, menuItems] = await Promise.all([
     getCategories(),
     getApprovedRestaurantCount(city.name),
+    getApprovedRestaurantsForSearch(city.name),
+    getMenuItemsForSearch(city.name),
   ]);
 
   return (
@@ -34,6 +41,8 @@ export default async function CityHome({
         restaurantCount={restaurantCount}
         citySlug={city.slug}
         cityName={city.name}
+        restaurants={restaurants}
+        menuItems={menuItems}
       />
 
       <div className="strip">
