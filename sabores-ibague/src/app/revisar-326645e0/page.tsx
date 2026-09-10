@@ -96,6 +96,7 @@ export default function ReviewPage() {
                 <ServiceBadges restaurant={r} />
                 <p className="review-meta">☎️ Teléfono: {r.phone_number}</p>
                 {r.whatsapp_number && <p className="review-meta">📱 WhatsApp: {r.whatsapp_number}</p>}
+                {r.address && <p className="review-meta">📍 {r.address}</p>}
                 {r.hours_text && <p className="review-meta">🕐 {r.hours_text}</p>}
                 {r.maps_link && (
                   <p className="review-meta">
