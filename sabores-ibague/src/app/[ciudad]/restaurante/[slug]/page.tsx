@@ -81,8 +81,13 @@ export default async function RestaurantPage({
   // the call button always shows. WhatsApp is optional on top of that, and
   // only shows when the restaurant actually has one.
   const callHref = `tel:${restaurant.phone_number.replace(/\D/g, "")}`;
+  // Pre-fills the chat with a line identifying Colcocina as the source —
+  // generic enough to fit any kind of inquiry (not just orders), and the
+  // bare domain text auto-links once WhatsApp sends it.
   const whatsappHref = restaurant.whatsapp_number
-    ? `https://wa.me/57${restaurant.whatsapp_number.replace(/\D/g, "")}`
+    ? `https://wa.me/57${restaurant.whatsapp_number.replace(/\D/g, "")}?text=${encodeURIComponent(
+        "Hola, te escribo desde Colcocina.com 👋\n\n"
+      )}`
     : null;
 
   return (
