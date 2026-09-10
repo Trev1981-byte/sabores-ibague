@@ -111,6 +111,7 @@ export type Database = {
       }
       restaurants: {
         Row: {
+          address: string | null
           blurb: string | null
           city: string
           created_at: string
@@ -132,6 +133,7 @@ export type Database = {
           whatsapp_number: string | null
         }
         Insert: {
+          address?: string | null
           blurb?: string | null
           city?: string
           created_at?: string
@@ -153,6 +155,7 @@ export type Database = {
           whatsapp_number?: string | null
         }
         Update: {
+          address?: string | null
           blurb?: string | null
           city?: string
           created_at?: string
@@ -209,6 +212,7 @@ export type Database = {
       admin_list_pending: {
         Args: { p_key: string }
         Returns: {
+          address: string
           blurb: string
           created_at: string
           has_delivery: boolean
@@ -237,6 +241,7 @@ export type Database = {
       get_restaurant_by_edit_token: {
         Args: { p_token: string }
         Returns: {
+          address: string | null
           blurb: string | null
           city: string
           created_at: string
@@ -274,6 +279,7 @@ export type Database = {
       }
       submit_restaurant: {
         Args: {
+          p_address?: string
           p_blurb: string
           p_category_ids: string[]
           p_has_delivery: boolean
