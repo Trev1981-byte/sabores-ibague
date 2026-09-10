@@ -82,6 +82,7 @@ export function AddRestaurantForm({ categories }: { categories: Category[] }) {
       whatsappNumber: whatsappNumber || undefined,
       hoursText,
       mapsLink: String(data.get("mapsLink") ?? "").trim() || undefined,
+      address: String(data.get("address") ?? "").trim() || undefined,
       blurb: String(data.get("blurb") ?? "").trim() || undefined,
       categoryIds: selectedCategories,
       hasDineIn,
@@ -228,6 +229,20 @@ export function AddRestaurantForm({ categories }: { categories: Category[] }) {
       <div className="field">
         <label htmlFor="hoursText">Horario *</label>
         <input id="hoursText" name="hoursText" type="text" required placeholder="Ej: Lun-Sáb 11am-9pm" />
+      </div>
+
+      <div className="field">
+        <label htmlFor="address">Dirección (opcional)</label>
+        <input
+          id="address"
+          name="address"
+          type="text"
+          placeholder="Ej: Carrera 5 #12-34"
+        />
+        <p className="field-hint">
+          La dirección exacta, si la tienes — útil incluso para quien no
+          use el enlace de Google Maps.
+        </p>
       </div>
 
       <div className="field">
