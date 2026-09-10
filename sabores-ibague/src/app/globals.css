@@ -432,6 +432,54 @@ img, svg { max-width: 100%; display: block; }
   font-size: 0.95rem;
 }
 
+/* --- home page search results (restaurants + dishes) ------------- */
+.search-result-block {
+  margin-bottom: 2.25rem;
+}
+.search-result-title {
+  font-size: 0.78rem;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--text-mute);
+  margin: 0 0 0.75rem;
+}
+.search-result-list {
+  display: flex;
+  flex-direction: column;
+  gap: 0.6rem;
+}
+.search-result-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.75rem;
+  background: var(--surface);
+  border: 1px solid var(--line);
+  border-radius: 10px;
+  padding: 0.85rem 1.1rem;
+  text-decoration: none;
+  color: var(--text);
+  transition: transform .15s ease, box-shadow .15s ease, border-color .15s ease;
+}
+.search-result-row:hover, .search-result-row:focus-visible {
+  transform: translateY(-2px);
+  border-color: var(--maiz-deep);
+  box-shadow: 0 10px 18px -12px rgba(22,38,74,0.35);
+}
+.search-result-name {
+  font-weight: 700;
+}
+.search-result-meta {
+  font-size: 0.85rem;
+  color: var(--text-mute);
+  white-space: nowrap;
+}
+.search-result-arrow {
+  color: var(--achiote);
+  font-weight: 700;
+}
+
 /* --- two-sided strip ------------------------------------------------ */
 .strip {
   background: var(--surface-sunk);
@@ -1443,5 +1491,5 @@ footer {
 .legal-page a { color: var(--achiote); font-weight: 600; }
 
 @media (prefers-reduced-motion: reduce) {
-  .cat-tile, .search-board button, .form-submit, .restaurant-card { transition: none; }
+  .cat-tile, .search-board button, .form-submit, .restaurant-card, .search-result-row { transition: none; }
 }
