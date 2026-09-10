@@ -173,7 +173,7 @@ img, svg { max-width: 100%; display: block; }
   gap: 0.55rem;
   font-family: var(--font-baloo), sans-serif;
   font-weight: 700;
-  font-size: 1.15rem;
+  font-size: clamp(1.3rem, 4.5vw, 1.55rem);
   letter-spacing: 0.01em;
   text-decoration: none;
   color: var(--paper);
@@ -181,12 +181,16 @@ img, svg { max-width: 100%; display: block; }
 /* The grilled-arepa mark — fixed brand colors on purpose, so the logo looks
    the same in light and dark mode instead of shifting with the theme. */
 .brand-mark-icon {
-  width: 1.5rem;
-  height: 1.5rem;
+  width: 1.8rem;
+  height: 1.8rem;
   flex: none;
 }
-.brand-name {
-  color: var(--achiote);
+/* Scoped to the header logo only (not the smaller footer mention) — a warm
+   gold glow behind the paper-colored text it already inherits from .brand,
+   replacing the old achiote red, which was too low-contrast against the
+   dark topbar to read easily. */
+.brand .brand-name {
+  text-shadow: 0 0 3px rgba(255, 199, 44, 0.75), 0 0 14px rgba(255, 199, 44, 0.45);
 }
 .foot-brand {
   display: inline-flex;
