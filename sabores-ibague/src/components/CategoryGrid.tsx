@@ -15,9 +15,13 @@ function normalize(text: string): string {
 export function CategoryGrid({
   categories,
   restaurantCount,
+  citySlug,
+  cityName,
 }: {
   categories: Category[];
   restaurantCount: number;
+  citySlug: string;
+  cityName: string;
 }) {
   const [query, setQuery] = useState("");
 
@@ -32,11 +36,11 @@ export function CategoryGrid({
       <header className="hero">
         <div className="hero-glow" aria-hidden="true"></div>
         <div className="wrap hero-inner">
-          <span className="eyebrow">Recién empezando en Ibagué</span>
+          <span className="eyebrow">Recién empezando en {cityName}</span>
           <h1>¿Qué se te antoja&nbsp;hoy?</h1>
           <p className="lede">
             Tamales, salchipapas, almuerzos corrientes, la parrilla del
-            barrio — encuentra dónde comer en Ibagué, por categoría.
+            barrio — encuentra dónde comer en {cityName}, por categoría.
           </p>
 
           <form
@@ -100,7 +104,7 @@ export function CategoryGrid({
                 <Link
                   key={category.id}
                   className="cat-tile"
-                  href={`/categoria/${category.slug}`}
+                  href={`/${citySlug}/categoria/${category.slug}`}
                 >
                   <CategoryIcon
                     category={category}
