@@ -62,6 +62,12 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
             <Link className="foot-link" href="/seguridad">
               Consejos de seguridad
             </Link>
+            <Link className="foot-link" href="/terminos">
+              Términos de uso
+            </Link>
+            <Link className="foot-link" href="/privacidad">
+              Privacidad
+            </Link>
             <span>Hecho para Ibagué, Tolima</span>
           </div>
         </footer>
