@@ -21,6 +21,9 @@ export const metadata: Metadata = {
   title: "Colcocina",
   description:
     "Colcocina — descubre los mejores restaurantes, cafés y puestos de comida en Ibagué, Tolima.",
+  verification: {
+    google: "C3GATrTemY396ZBYzu9DjAe6o1z3KRjJY6KBB4kdNFo",
+  },
 };
 
 export default function RootLayout({ children }: LayoutProps<"/">) {
