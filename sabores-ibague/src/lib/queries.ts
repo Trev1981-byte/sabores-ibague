@@ -203,6 +203,83 @@ export async function getApprovedRestaurantSlugs(cityName: string): Promise<stri
   return (data ?? []).map((row) => row.slug);
 }
 
+export type RestaurantSearchResult = {
+  id: string;
+  name: string;
+  slug: string;
+};
+
+/**
+ * Name + slug for every approved restaurant in a city — lightweight data
+ * (no photos, no menu) for the home page's search bar, so typing a
+ * restaurant's actual name finds that restaurant directly instead of only
+ * matching category names.
+ */
+export async function getApprovedRestaurantsForSearch(
+  cityName: string
+): Promise<RestaurantSearchResult[]> {
+  const { data, error } = await supabase
+    .from("restaurants")
+    .select("id, name, slug")
+    .eq("is_approved", true)
+    .eq("city", cityName);
+
+  if (error) {
+    console.error("getApprovedRestaurantsForSearch failed:", error.message);
+    return [];
+  }
+  return data ?? [];
+}
+
+export type MenuSearchResult = {
+  id: string;
+  name: string;
+  restaurantName: string;
+  restaurantSlug: string;
+};
+
+type MenuItemSearchRow = {
+  id: string;
+  name: string;
+  restaurants:
+    | { name: string; slug: string; is_approved: boolean; city: string }
+    | { name: string; slug: string; is_approved: boolean; city: string }[]
+    | null;
+};
+
+/**
+ * Every dish name in a city, each tagged with the restaurant that serves
+ * it — lightweight data for the home page's search bar, so typing a
+ * specific food (e.g. "cheeseburger") finds the restaurants that actually
+ * serve it, not just a matching category. Joins straight through to
+ * restaurants so only approved, in-city dishes ever come back.
+ */
+export async function getMenuItemsForSearch(cityName: string): Promise<MenuSearchResult[]> {
+  const { data, error } = await supabase
+    .from("menu_items")
+    .select("id, name, restaurants!inner(name, slug, is_approved, city)")
+    .eq("restaurants.is_approved", true)
+    .eq("restaurants.city", cityName);
+
+  if (error) {
+    console.error("getMenuItemsForSearch failed:", error.message);
+    return [];
+  }
+
+  return ((data ?? []) as unknown as MenuItemSearchRow[])
+    .map((row) => {
+      const restaurant = Array.isArray(row.restaurants) ? row.restaurants[0] : row.restaurants;
+      if (!restaurant) return null;
+      return {
+        id: row.id,
+        name: row.name,
+        restaurantName: restaurant.name,
+        restaurantSlug: restaurant.slug,
+      };
+    })
+    .filter((r): r is MenuSearchResult => r !== null);
+}
+
 /** How many restaurants are live right now in a given city — used for that city's home page empty state. */
 export async function getApprovedRestaurantCount(cityName: string): Promise<number> {
   const { count, error } = await supabase
@@ -317,7 +394,7 @@ function slugify(name: string): string {
   const base = name
     .toLowerCase()
     .normalize("NFD")
-    .replace(/[\u0300-\u036f]/g, "")
+    .replace(/[̀-ͯ]/g, "")
     .replace(/[^a-z0-9]+/g, "-")
     .replace(/^-+|-+$/g, "");
   // A random suffix sidesteps slug collisions (two "Donde Pepe"s, say)
