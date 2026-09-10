@@ -35,13 +35,14 @@ export async function getCategoryBySlug(slug: string): Promise<Category | null> 
 }
 
 /**
- * Approved restaurants tagged with a given category, newest first.
- * Restaurants aren't public until is_approved = true (see
+ * Approved restaurants tagged with a given category, in a given city,
+ * newest first. Restaurants aren't public until is_approved = true (see
  * supabase/migrations/0001_initial_schema.sql), so this only ever returns
  * what a shopper is actually meant to see.
  */
 export async function getApprovedRestaurantsByCategory(
-  categoryId: string
+  categoryId: string,
+  cityName: string
 ): Promise<Restaurant[]> {
   const { data, error } = await supabase
     .from("restaurant_categories")
@@ -55,15 +56,23 @@ export async function getApprovedRestaurantsByCategory(
 
   return (data ?? [])
     .map((row) => row.restaurants)
-    .filter((r): r is Restaurant => r !== null && r.is_approved);
+    .filter((r): r is Restaurant => r !== null && r.is_approved && r.city === cityName);
 }
 
-/** A single approved restaurant by its slug, for its public page — null if it doesn't exist or isn't approved yet. */
-export async function getRestaurantBySlug(slug: string): Promise<Restaurant | null> {
+/**
+ * A single approved restaurant by its slug within a given city, for its
+ * public page — null if it doesn't exist, isn't approved yet, or belongs
+ * to a different city than the URL claims.
+ */
+export async function getRestaurantBySlug(
+  slug: string,
+  cityName: string
+): Promise<Restaurant | null> {
   const { data, error } = await supabase
     .from("restaurants")
     .select("*")
     .eq("slug", slug)
+    .eq("city", cityName)
     .eq("is_approved", true)
     .maybeSingle();
 
@@ -179,12 +188,13 @@ export async function setRestaurantPhoto(token: string, photoUrl: string): Promi
   return true;
 }
 
-/** How many restaurants are live right now — used for the home page's empty state. */
-export async function getApprovedRestaurantCount(): Promise<number> {
+/** How many restaurants are live right now in a given city — used for that city's home page empty state. */
+export async function getApprovedRestaurantCount(cityName: string): Promise<number> {
   const { count, error } = await supabase
     .from("restaurants")
     .select("*", { count: "exact", head: true })
-    .eq("is_approved", true);
+    .eq("is_approved", true)
+    .eq("city", cityName);
 
   if (error) {
     console.error("getApprovedRestaurantCount failed:", error.message);
@@ -210,6 +220,7 @@ export type PendingRestaurant = {
   hours_text: string | null;
   maps_link: string | null;
   blurb: string | null;
+  address: string | null;
   photo_url: string | null;
   created_at: string;
   has_delivery: boolean;
@@ -279,6 +290,7 @@ export type NewRestaurantInput = {
   whatsappNumber?: string;
   hoursText?: string;
   mapsLink?: string;
+  address?: string;
   blurb?: string;
   categoryIds: string[];
   hasDelivery: boolean;
@@ -327,6 +339,7 @@ export async function submitRestaurant(
     p_phone_number: input.phoneNumber,
     p_hours_text: input.hoursText || "",
     p_maps_link: input.mapsLink || "",
+    p_address: input.address || "",
     p_blurb: input.blurb || "",
     p_category_ids: input.categoryIds,
     p_has_delivery: input.hasDelivery,
