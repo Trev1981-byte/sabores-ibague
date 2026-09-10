@@ -1,48 +1,11 @@
-import Link from "next/link";
-import { CategoryGrid } from "@/components/CategoryGrid";
-import { getApprovedRestaurantCount, getCategories } from "@/lib/queries";
+import { redirect } from "next/navigation";
+import { DEFAULT_CITY_SLUG } from "@/lib/cities";
 
-// Always fetch fresh from Supabase on every visit instead of freezing the
-// category/restaurant list at build time — otherwise anything added or
-// changed directly in the Supabase dashboard would never show up on the
-// live site until the next code deploy.
-export const dynamic = "force-dynamic";
-
-export default async function Home() {
-  const [categories, restaurantCount] = await Promise.all([
-    getCategories(),
-    getApprovedRestaurantCount(),
-  ]);
-
-  return (
-    <>
-      <CategoryGrid categories={categories} restaurantCount={restaurantCount} />
-
-      <div className="strip">
-        <div className="wrap strip-grid">
-          <div className="strip-card">
-            <h3>
-              <span className="tag">Para comer</span>
-            </h3>
-            <p>
-              Busca por lo que se te antoja y encuentra el puesto o
-              restaurante más cercano en tu barrio.
-            </p>
-          </div>
-          <div className="strip-card">
-            <h3>
-              <span className="tag">Para vender</span>
-            </h3>
-            <p>
-              ¿Tienes una fonda o un restaurante en Ibagué? Añádelo tú mismo,
-              sin complicaciones — es gratis.
-            </p>
-            <Link href="/agregar" className="strip-cta">
-              Añadir mi restaurante →
-            </Link>
-          </div>
-        </div>
-      </div>
-    </>
-  );
+// The site's actual home page now lives at /[ciudad] (e.g. /ibague), so
+// every city can have its own. This just sends a bare visit to "/" to
+// today's only city. Once there's more than one, this is the one spot
+// that would start guessing a visitor's city instead of always picking
+// Ibagué.
+export default function RootPage() {
+  redirect(`/${DEFAULT_CITY_SLUG}`);
 }
