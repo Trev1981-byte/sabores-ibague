@@ -2,14 +2,14 @@
 
 import Link from "next/link";
 import { useMemo, useState } from "react";
-import type { Category } from "@/lib/queries";
+import type { Category, MenuSearchResult, RestaurantSearchResult } from "@/lib/queries";
 import { CategoryIcon } from "@/components/CategoryIcon";
 
 function normalize(text: string): string {
   return text
     .toLowerCase()
     .normalize("NFD")
-    .replace(/[\u0300-\u036f]/g, ""); // strip accents so "arepa" matches "Arepas"
+    .replace(/[̀-ͯ]/g, ""); // strip accents so "arepa" matches "Arepas"
 }
 
 export function CategoryGrid({
@@ -17,19 +17,42 @@ export function CategoryGrid({
   restaurantCount,
   citySlug,
   cityName,
+  restaurants,
+  menuItems,
 }: {
   categories: Category[];
   restaurantCount: number;
   citySlug: string;
   cityName: string;
+  restaurants: RestaurantSearchResult[];
+  menuItems: MenuSearchResult[];
 }) {
   const [query, setQuery] = useState("");
+  const hasQuery = query.trim().length > 0;
 
-  const filtered = useMemo(() => {
+  const filteredCategories = useMemo(() => {
     const q = normalize(query.trim());
     if (!q) return categories;
     return categories.filter((c) => normalize(c.label).includes(q));
   }, [categories, query]);
+
+  // Restaurant names and specific dishes only ever show up once someone's
+  // actually typed something — with no query, the categories below are
+  // the whole home page, same as always.
+  const filteredRestaurants = useMemo(() => {
+    if (!hasQuery) return [];
+    const q = normalize(query.trim());
+    return restaurants.filter((r) => normalize(r.name).includes(q));
+  }, [restaurants, query, hasQuery]);
+
+  const filteredMenuItems = useMemo(() => {
+    if (!hasQuery) return [];
+    const q = normalize(query.trim());
+    return menuItems.filter((m) => normalize(m.name).includes(q));
+  }, [menuItems, query, hasQuery]);
+
+  const totalMatches =
+    filteredCategories.length + filteredRestaurants.length + filteredMenuItems.length;
 
   return (
     <>
@@ -53,14 +76,14 @@ export function CategoryGrid({
               <path d="M21 21l-4.3-4.3" stroke="currentColor" strokeWidth="2" strokeLinecap="round" />
             </svg>
             <label htmlFor="category-search" className="sr-only">
-              Buscar por categoría
+              Buscar por categoría, restaurante o plato
             </label>
             <input
               id="category-search"
               type="search"
               value={query}
               onChange={(e) => setQuery(e.target.value)}
-              placeholder="Buscar: hamburguesas, arepas, tamales..."
+              placeholder="Buscar: hamburguesas, Donde Pepe, cheeseburger..."
               autoComplete="off"
             />
             <button type="button">Buscar</button>
@@ -82,39 +105,84 @@ export function CategoryGrid({
 
       <main>
         <div className="wrap section">
-          <div className="section-head">
-            <div>
-              <h2>Explora por categoría</h2>
-              <p>Cada fonda y restaurante puede aparecer en más de una.</p>
-            </div>
-            <span className="count-pill">
-              {query.trim()
-                ? `${filtered.length} de ${categories.length} categorías`
-                : `${categories.length} categorías`}
-            </span>
-          </div>
-
-          {filtered.length === 0 ? (
+          {hasQuery && totalMatches === 0 ? (
             <p className="no-match">
-              No hay categorías que coincidan con &ldquo;{query}&rdquo;.
+              No encontramos nada para &ldquo;{query}&rdquo;. Prueba con otra
+              palabra.
             </p>
           ) : (
-            <div className="cat-grid">
-              {filtered.map((category) => (
-                <Link
-                  key={category.id}
-                  className="cat-tile"
-                  href={`/${citySlug}/categoria/${category.slug}`}
-                >
-                  <CategoryIcon
-                    category={category}
-                    iconClassName="cat-icon"
-                    emojiClassName="cat-emoji"
-                  />
-                  <span className="cat-label">{category.label}</span>
-                </Link>
-              ))}
-            </div>
+            <>
+              {hasQuery && filteredRestaurants.length > 0 && (
+                <div className="search-result-block">
+                  <h2 className="search-result-title">Restaurantes</h2>
+                  <div className="search-result-list">
+                    {filteredRestaurants.map((restaurant) => (
+                      <Link
+                        key={restaurant.id}
+                        href={`/${citySlug}/restaurante/${restaurant.slug}`}
+                        className="search-result-row"
+                      >
+                        <span className="search-result-name">{restaurant.name}</span>
+                        <span className="search-result-arrow" aria-hidden="true">
+                          →
+                        </span>
+                      </Link>
+                    ))}
+                  </div>
+                </div>
+              )}
+
+              {hasQuery && filteredMenuItems.length > 0 && (
+                <div className="search-result-block">
+                  <h2 className="search-result-title">Platos</h2>
+                  <div className="search-result-list">
+                    {filteredMenuItems.map((item) => (
+                      <Link
+                        key={item.id}
+                        href={`/${citySlug}/restaurante/${item.restaurantSlug}`}
+                        className="search-result-row"
+                      >
+                        <span className="search-result-name">{item.name}</span>
+                        <span className="search-result-meta">en {item.restaurantName}</span>
+                      </Link>
+                    ))}
+                  </div>
+                </div>
+              )}
+
+              {(!hasQuery || filteredCategories.length > 0) && (
+                <>
+                  <div className="section-head">
+                    <div>
+                      <h2>Explora por categoría</h2>
+                      <p>Cada fonda y restaurante puede aparecer en más de una.</p>
+                    </div>
+                    <span className="count-pill">
+                      {hasQuery
+                        ? `${filteredCategories.length} de ${categories.length} categorías`
+                        : `${categories.length} categorías`}
+                    </span>
+                  </div>
+
+                  <div className="cat-grid">
+                    {filteredCategories.map((category) => (
+                      <Link
+                        key={category.id}
+                        className="cat-tile"
+                        href={`/${citySlug}/categoria/${category.slug}`}
+                      >
+                        <CategoryIcon
+                          category={category}
+                          iconClassName="cat-icon"
+                          emojiClassName="cat-emoji"
+                        />
+                        <span className="cat-label">{category.label}</span>
+                      </Link>
+                    ))}
+                  </div>
+                </>
+              )}
+            </>
           )}
 
           {restaurantCount === 0 && (
