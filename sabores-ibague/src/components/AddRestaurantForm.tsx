@@ -24,6 +24,12 @@ export function AddRestaurantForm({ categories }: { categories: Category[] }) {
   const [hasTakeout, setHasTakeout] = useState(false);
   const [hasDelivery, setHasDelivery] = useState(false);
 
+  // If people can walk in or pick up an order, they need to know where —
+  // so the address stops being optional. A delivery-only place (often run
+  // out of someone's home) has a real reason to keep that private, so it
+  // stays optional for them.
+  const addressRequired = hasDineIn || hasTakeout;
+
   function toggleCategory(id: string) {
     setSelectedCategories((current) =>
       current.includes(id)
@@ -52,6 +58,7 @@ export function AddRestaurantForm({ categories }: { categories: Category[] }) {
     const phoneNumber = String(data.get("phoneNumber") ?? "").trim();
     const whatsappNumber = String(data.get("whatsappNumber") ?? "").trim();
     const hoursText = String(data.get("hoursText") ?? "").trim();
+    const address = String(data.get("address") ?? "").trim();
 
     if (!name || !neighborhood || !phoneNumber || !hoursText) {
       setError(
@@ -71,6 +78,12 @@ export function AddRestaurantForm({ categories }: { categories: Category[] }) {
       setError("Selecciona al menos una opción: domicilio, para llevar o comer en el sitio.");
       return;
     }
+    if (addressRequired && !address) {
+      setError(
+        "Agrega una dirección — si la gente puede comer en el sitio o pasar a recoger su pedido, necesita saber dónde encontrarte."
+      );
+      return;
+    }
 
     setStatus("saving");
 
@@ -82,7 +95,7 @@ export function AddRestaurantForm({ categories }: { categories: Category[] }) {
       whatsappNumber: whatsappNumber || undefined,
       hoursText,
       mapsLink: String(data.get("mapsLink") ?? "").trim() || undefined,
-      address: String(data.get("address") ?? "").trim() || undefined,
+      address: address || undefined,
       blurb: String(data.get("blurb") ?? "").trim() || undefined,
       categoryIds: selectedCategories,
       hasDineIn,
@@ -232,16 +245,20 @@ export function AddRestaurantForm({ categories }: { categories: Category[] }) {
       </div>
 
       <div className="field">
-        <label htmlFor="address">Dirección (opcional)</label>
+        <label htmlFor="address">
+          Dirección{addressRequired ? " *" : " (opcional)"}
+        </label>
         <input
           id="address"
           name="address"
           type="text"
-          placeholder="Ej: Carrera 5 #12-34"
+          required={addressRequired}
+          placeholder="Ej: Carrera 5 #12-34, o Esquina Calle 15 con Carrera 3"
         />
         <p className="field-hint">
-          La dirección exacta, si la tienes — útil incluso para quien no
-          use el enlace de Google Maps.
+          {addressRequired
+            ? "Como la gente puede comer en el sitio o pasar a recoger su pedido, necesita saber dónde encontrarte. No tiene que ser una dirección formal — un punto de referencia también sirve (\"frente al parque de Belén\", \"esquina de la 15 con 3ra\")."
+            : "Si tienes una, ayuda — aunque sea un punto de referencia. Útil incluso para quien no use el enlace de Google Maps."}
         </p>
       </div>
 
