@@ -130,10 +130,6 @@ body {
   font-size: 16px;
   line-height: 1.55;
   -webkit-font-smoothing: antialiased;
-  /* A safety net: this page should only ever scroll vertically. If some
-     element ever miscalculates its own width again the way the price
-     dropdown just did, this stops it from dragging the whole page
-     sideways instead of just clipping that one element. */
   overflow-x: hidden;
 }
 
@@ -685,9 +681,6 @@ footer {
 
 .category-checks {
   display: grid;
-  /* Wider than the category-tile grid on purpose — "Hamburguesas" and
-     "Salchipapas" need the room, or they wrap to two lines and dwarf the
-     icon next to them. */
   grid-template-columns: repeat(auto-fill, minmax(11rem, 1fr));
   gap: 0.5rem;
 }
@@ -708,9 +701,6 @@ footer {
 .category-check-icon { width: 1.5rem; height: 1.5rem; flex: none; }
 .category-check-emoji { font-size: 1.5rem; line-height: 1; flex: none; }
 .category-check-label {
-  /* Words like "Hamburguesas" have no space to break at, so a plain flex
-     child refuses to shrink below the word's full width and spills out of
-     the tile on narrow screens. Letting it break mid-word fixes that. */
   min-width: 0;
   overflow-wrap: break-word;
   word-break: break-word;
@@ -1109,8 +1099,6 @@ footer {
   font-size: 0.95rem;
 }
 .restaurant-meta-list b { color: var(--text); }
-/* A restaurant might have WhatsApp, a landline, or both — the buttons sit
-   side by side, and either one can appear alone. */
 .contact-actions {
   display: flex;
   flex-wrap: wrap;
@@ -1414,6 +1402,41 @@ footer {
   font-size: 0.95rem;
   max-width: 38rem;
 }
+
+/* --- términos / privacidad (legal pages) ------------------------------ */
+.legal-page {
+  padding-bottom: 3rem;
+  max-width: 40rem;
+}
+.legal-page h1 {
+  font-size: clamp(1.8rem, 4vw, 2.4rem);
+  margin: 0 0 0.5rem;
+}
+.legal-updated {
+  color: var(--text-mute);
+  font-size: 0.85rem;
+  margin: 0 0 2rem;
+}
+.legal-page h2 {
+  font-size: 1.15rem;
+  margin: 2rem 0 0.75rem;
+  color: var(--text);
+}
+.legal-page p {
+  margin: 0 0 1rem;
+  color: var(--text-soft);
+  font-size: 0.95rem;
+  line-height: 1.65;
+}
+.legal-page ul {
+  margin: 0 0 1rem;
+  padding-left: 1.25rem;
+  color: var(--text-soft);
+  font-size: 0.95rem;
+  line-height: 1.65;
+}
+.legal-page li { margin-bottom: 0.4rem; }
+.legal-page a { color: var(--achiote); font-weight: 600; }
 
 @media (prefers-reduced-motion: reduce) {
   .cat-tile, .search-board button, .form-submit, .restaurant-card { transition: none; }
