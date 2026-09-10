@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import { Baloo_2, Karla } from "next/font/google";
+import { GoogleAnalytics } from "@next/third-parties/google";
 import Link from "next/link";
 import "./globals.css";
 
@@ -72,6 +73,12 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
           </div>
         </footer>
       </body>
+      {/* Uses Next.js's official GA integration instead of pasting the raw
+          gtag.js snippet by hand — it also correctly tracks pageviews as
+          people move between pages here (a plain script tag only fires once
+          on the very first load, since this site never does a full page
+          reload after that). */}
+      <GoogleAnalytics gaId="G-T1F3737Z8J" />
     </html>
   );
 }
