@@ -188,6 +188,21 @@ export async function setRestaurantPhoto(token: string, photoUrl: string): Promi
   return true;
 }
 
+/** The slugs of every approved restaurant in a given city — used to build the sitemap. */
+export async function getApprovedRestaurantSlugs(cityName: string): Promise<string[]> {
+  const { data, error } = await supabase
+    .from("restaurants")
+    .select("slug")
+    .eq("is_approved", true)
+    .eq("city", cityName);
+
+  if (error) {
+    console.error("getApprovedRestaurantSlugs failed:", error.message);
+    return [];
+  }
+  return (data ?? []).map((row) => row.slug);
+}
+
 /** How many restaurants are live right now in a given city — used for that city's home page empty state. */
 export async function getApprovedRestaurantCount(cityName: string): Promise<number> {
   const { count, error } = await supabase
