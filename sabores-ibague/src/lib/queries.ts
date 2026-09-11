@@ -491,3 +491,51 @@ export async function adminCreateRestaurant(
 
   return { editToken: data };
 }
+
+/**
+ * Fire-and-forget: records one tap of "Llamar" or "Escribir por WhatsApp"
+ * on a restaurant's public page. Never surfaces an error back to the
+ * visitor — a failed analytics write should never get in the way of
+ * someone actually trying to reach a restaurant.
+ */
+export async function logContactClick(
+  restaurantId: string,
+  kind: "call" | "whatsapp"
+): Promise<void> {
+  const { error } = await supabase.rpc("log_contact_click", {
+    p_restaurant_id: restaurantId,
+    p_kind: kind,
+  });
+
+  if (error) {
+    console.error("logContactClick failed:", error.message);
+  }
+}
+
+export type ContactClickCounts = {
+  callCount: number;
+  whatsappCount: number;
+};
+
+/**
+ * How many times people have tapped "Llamar" and "Escribir por WhatsApp"
+ * on this restaurant's public page — shown back to the vendor on their own
+ * manage page as proof the listing is actually sending them business.
+ * Same token-gated pattern as the rest of that page: an invalid token just
+ * comes back as zeros instead of an error.
+ */
+export async function getContactClickCounts(token: string): Promise<ContactClickCounts> {
+  const { data, error } = await supabase.rpc("get_contact_click_counts", {
+    p_token: token,
+  });
+
+  if (error || !data || data.length === 0) {
+    if (error) console.error("getContactClickCounts failed:", error.message);
+    return { callCount: 0, whatsappCount: 0 };
+  }
+
+  return {
+    callCount: data[0].call_count ?? 0,
+    whatsappCount: data[0].whatsapp_count ?? 0,
+  };
+}
