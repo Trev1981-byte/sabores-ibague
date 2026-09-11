@@ -5,6 +5,7 @@ import { getRestaurantBySlug, getMenuItemsByRestaurant } from "@/lib/queries";
 import { getCityBySlug } from "@/lib/cities";
 import { ShareButton } from "@/components/ShareButton";
 import { ServiceBadges } from "@/components/ServiceBadges";
+import { ContactButtons } from "@/components/ContactButtons";
 import { SITE_URL } from "@/lib/site";
 
 // Same reasoning as the other data-backed pages: never freeze this at
@@ -146,16 +147,11 @@ export default async function RestaurantPage({
         </p>
       </div>
 
-      <div className="contact-actions">
-        <a className="call-btn" href={callHref}>
-          📞 Llamar
-        </a>
-        {whatsappHref && (
-          <a className="whatsapp-btn" href={whatsappHref} target="_blank" rel="noopener noreferrer">
-            Escribir por WhatsApp
-          </a>
-        )}
-      </div>
+      <ContactButtons
+        restaurantId={restaurant.id}
+        callHref={callHref}
+        whatsappHref={whatsappHref}
+      />
 
       <h2 className="manage-section-title">Menú</h2>
       {menuItems.length === 0 ? (
