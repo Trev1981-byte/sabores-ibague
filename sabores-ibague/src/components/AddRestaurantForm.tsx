@@ -45,9 +45,14 @@ export function AddRestaurantForm({ categories }: { categories: Category[] }) {
     const form = event.currentTarget;
     const data = new FormData(form);
 
-    // Honeypot: a real visitor never fills this in (it's visually hidden),
-    // so anything here means it's very likely an automated bot.
-    if (String(data.get("company_website") ?? "").trim() !== "") {
+    // Honeypot: a real visitor never fills this in, since it's hidden with
+    // display:none (not just visually clipped) — that's what actually keeps
+    // browsers and password managers from autofilling it. Its name is also
+    // deliberately meaningless ("no known-website/company field for
+    // autofill to latch onto") rather than something like "company_website",
+    // which Chrome and some password managers were autofilling on their
+    // own, silently triggering this bot check for real vendors.
+    if (String(data.get("extra_confirm_9f2") ?? "").trim() !== "") {
       setStatus("done");
       return;
     }
@@ -169,11 +174,12 @@ export function AddRestaurantForm({ categories }: { categories: Category[] }) {
 
   return (
     <form className="add-form" onSubmit={handleSubmit}>
-      {/* Hidden from real visitors via CSS, but a bot filling every field
-          it finds will fill this too — see the honeypot check above. */}
+      {/* Hidden from real visitors via display:none, but a bot filling
+          every field it finds will still fill this in — see the honeypot
+          check above. */}
       <div className="form-hp" aria-hidden="true">
-        <label htmlFor="company_website">No llenar este campo</label>
-        <input id="company_website" name="company_website" type="text" tabIndex={-1} autoComplete="off" />
+        <label htmlFor="extra_confirm_9f2">No llenar este campo</label>
+        <input id="extra_confirm_9f2" name="extra_confirm_9f2" type="text" tabIndex={-1} autoComplete="off" />
       </div>
 
       <div className="field">
