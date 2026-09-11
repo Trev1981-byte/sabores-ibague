@@ -10,8 +10,9 @@ import {
   deleteMenuItem,
   setMenuItemPhoto,
   setRestaurantPhoto,
+  getContactClickCounts,
 } from "@/lib/queries";
-import type { Restaurant, MenuItem } from "@/lib/queries";
+import type { Restaurant, MenuItem, ContactClickCounts } from "@/lib/queries";
 import { uploadPhoto } from "@/lib/uploadPhoto";
 
 const pesos = new Intl.NumberFormat("es-CO", {
@@ -38,6 +39,10 @@ export default function ManageRestaurantPage({
   const [uploadingItemPhotoId, setUploadingItemPhotoId] = useState<string | null>(null);
   const [newItemPhotoFile, setNewItemPhotoFile] = useState<File | null>(null);
   const [newItemPhotoPreview, setNewItemPhotoPreview] = useState<string | null>(null);
+  const [clickCounts, setClickCounts] = useState<ContactClickCounts>({
+    callCount: 0,
+    whatsappCount: 0,
+  });
 
   useEffect(() => {
     let cancelled = false;
@@ -50,6 +55,8 @@ export default function ManageRestaurantPage({
         const items = await getMenuItemsByRestaurant(found.id);
         if (!cancelled) setMenuItems(items);
       }
+      const counts = await getContactClickCounts(token);
+      if (!cancelled) setClickCounts(counts);
     })();
 
     return () => {
@@ -202,6 +209,22 @@ export default function ManageRestaurantPage({
           {restaurant.is_approved ? "Publicado" : "Pendiente de revisión"}
         </span>
       </div>
+
+      <div className="stats-box">
+        <div className="stats-box-item">
+          <span className="stats-box-number">{clickCounts.callCount}</span>
+          <span className="stats-box-label">📞 Llamadas</span>
+        </div>
+        <div className="stats-box-item">
+          <span className="stats-box-number">{clickCounts.whatsappCount}</span>
+          <span className="stats-box-label">💬 WhatsApp</span>
+        </div>
+      </div>
+      <p className="stats-box-hint">
+        Cuántas veces la gente ha tocado "Llamar" o "Escribir por WhatsApp"
+        en tu página — prueba real de que Colcocina te está mandando
+        clientes.
+      </p>
 
       <p className="manage-note">
         {restaurant.is_approved
