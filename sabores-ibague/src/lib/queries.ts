@@ -449,3 +449,45 @@ export async function submitRestaurant(
 
   return { editToken: data };
 }
+
+/**
+ * Same idea as submitRestaurant, but for you — it publishes the restaurant
+ * immediately (is_approved = true from the moment it's created) instead of
+ * landing in the review queue, since you're the one curating it, not a
+ * stranger submitting through the public form. Gated by the same admin key
+ * as the review page; a wrong or missing key returns no edit token instead
+ * of throwing, so it fails quietly the same way the other admin functions
+ * do.
+ */
+export async function adminCreateRestaurant(
+  adminKey: string,
+  input: NewRestaurantInput
+): Promise<{ editToken: string } | { error: string }> {
+  const { data, error } = await supabase.rpc("admin_create_restaurant", {
+    p_key: adminKey,
+    p_name: input.name,
+    p_slug: slugify(input.name),
+    p_neighborhood: input.neighborhood,
+    p_price_level: input.priceLevel,
+    p_whatsapp_number: input.whatsappNumber || "",
+    p_phone_number: input.phoneNumber,
+    p_hours_text: input.hoursText || "",
+    p_maps_link: input.mapsLink || "",
+    p_address: input.address || "",
+    p_blurb: input.blurb || "",
+    p_category_ids: input.categoryIds,
+    p_has_delivery: input.hasDelivery,
+    p_has_takeout: input.hasTakeout,
+    p_has_dine_in: input.hasDineIn,
+  });
+
+  if (error || !data) {
+    console.error("adminCreateRestaurant failed:", error?.message);
+    return {
+      error:
+        "No pudimos guardar el restaurante. Intenta de nuevo en un momento.",
+    };
+  }
+
+  return { editToken: data };
+}
