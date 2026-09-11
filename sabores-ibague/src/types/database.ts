@@ -38,6 +38,35 @@ export type Database = {
         }
         Relationships: []
       }
+      contact_clicks: {
+        Row: {
+          created_at: string
+          id: string
+          kind: string
+          restaurant_id: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          kind: string
+          restaurant_id: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          kind?: string
+          restaurant_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "contact_clicks_restaurant_id_fkey"
+            columns: ["restaurant_id"]
+            isOneToOne: false
+            referencedRelation: "restaurants"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       menu_items: {
         Row: {
           id: string
@@ -252,6 +281,13 @@ export type Database = {
         Args: { p_item_id: string; p_token: string }
         Returns: undefined
       }
+      get_contact_click_counts: {
+        Args: { p_token: string }
+        Returns: {
+          call_count: number
+          whatsapp_count: number
+        }[]
+      }
       get_restaurant_by_edit_token: {
         Args: { p_token: string }
         Returns: {
@@ -282,6 +318,10 @@ export type Database = {
           isOneToOne: false
           isSetofReturn: true
         }
+      }
+      log_contact_click: {
+        Args: { p_kind: string; p_restaurant_id: string }
+        Returns: undefined
       }
       set_menu_item_photo_by_token: {
         Args: { p_item_id: string; p_photo_url: string; p_token: string }
