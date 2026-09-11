@@ -164,19 +164,12 @@ export default async function RestaurantPage({
         <div className="menu-public-grid">
           {menuItems.map((item) => (
             <div className="menu-public-card" key={item.id}>
-              {item.photo_url ? (
+              {item.photo_url && (
                 <img
                   src={item.photo_url}
                   alt={item.name}
                   className="menu-public-card-photo"
                 />
-              ) : (
-                <div
-                  className="menu-public-card-photo menu-public-card-photo-empty"
-                  aria-hidden="true"
-                >
-                  🍽️
-                </div>
               )}
               <div className="menu-public-card-body">
                 <span className="menu-public-card-name">{item.name}</span>
