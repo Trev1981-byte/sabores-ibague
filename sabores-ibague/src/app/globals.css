@@ -629,6 +629,12 @@ footer {
   margin: 0.6rem 0 0;
   font-size: 0.9rem;
   color: var(--text-soft);
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  line-clamp: 2;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 
 .service-badges {
