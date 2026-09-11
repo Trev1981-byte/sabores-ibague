@@ -765,12 +765,12 @@ footer {
 }
 
 .form-hp {
-  position: absolute;
-  width: 1px;
-  height: 1px;
-  overflow: hidden;
-  clip: rect(0 0 0 0);
-  white-space: nowrap;
+  /* display:none (rather than the old visually-hidden-but-in-layout trick)
+     is what actually keeps browsers from autofilling this field — Chrome
+     and most password managers will still autofill a field that's just
+     clipped to 1px, which was silently tripping the bot check for real
+     visitors. */
+  display: none;
 }
 
 .form-error {
