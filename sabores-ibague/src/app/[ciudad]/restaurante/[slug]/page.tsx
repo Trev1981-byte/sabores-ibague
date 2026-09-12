@@ -6,7 +6,7 @@ import {
   getRestaurantBySlug,
   getMenuItemsByRestaurant,
   logRestaurantView,
-  PRICE_LEVEL_LABELS,
+  priceLevelBadge,
 } from "@/lib/queries";
 import { getCityBySlug } from "@/lib/cities";
 import { ShareButton } from "@/components/ShareButton";
@@ -121,12 +121,10 @@ export default async function RestaurantPage({
         />
       </div>
 
-      <div className="badges-row">
-        <span className="price-badge">
-          {PRICE_LEVEL_LABELS[restaurant.price_level] ?? restaurant.price_level}
-        </span>
-        <ServiceBadges restaurant={restaurant} />
+      <div className="price-row">
+        <span className="price-badge">{priceLevelBadge(restaurant.price_level)}</span>
       </div>
+      <ServiceBadges restaurant={restaurant} />
 
       <div className="restaurant-meta-list">
         <p>
