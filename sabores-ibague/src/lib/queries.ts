@@ -5,6 +5,15 @@ export type Category = Tables<"categories">;
 export type Restaurant = Tables<"restaurants">;
 export type MenuItem = Tables<"menu_items">;
 
+/** Short label for each price tier — used anywhere the raw "$" / "$$" /
+ *  "$$$" symbol needs to read as an actual feature instead of just a stray
+ *  currency sign (the public restaurant page, category cards, etc). */
+export const PRICE_LEVEL_LABELS: Record<string, string> = {
+  "$": "Económico",
+  "$$": "Precio medio",
+  "$$$": "Más alto",
+};
+
 /** All categories, in the order they should display (sort_order). */
 export async function getCategories(): Promise<Category[]> {
   const { data, error } = await supabase
@@ -512,30 +521,118 @@ export async function logContactClick(
   }
 }
 
-export type ContactClickCounts = {
+/**
+ * Records one load of a restaurant's own public page — a "profile view."
+ * Called server-side (see the restaurant page itself), scheduled with
+ * Next's `after()` so it never adds latency to the page the visitor is
+ * actually waiting on.
+ */
+export async function logRestaurantView(restaurantId: string): Promise<void> {
+  const { error } = await supabase.rpc("log_restaurant_view", {
+    p_restaurant_id: restaurantId,
+  });
+
+  if (error) {
+    console.error("logRestaurantView failed:", error.message);
+  }
+}
+
+/**
+ * Records one "impression" for every restaurant card shown on a category
+ * page in a single call, rather than one write per card. Also scheduled
+ * with `after()` from the category page itself.
+ */
+export async function logRestaurantImpressions(restaurantIds: string[]): Promise<void> {
+  if (restaurantIds.length === 0) return;
+
+  const { error } = await supabase.rpc("log_restaurant_impressions", {
+    p_restaurant_ids: restaurantIds,
+  });
+
+  if (error) {
+    console.error("logRestaurantImpressions failed:", error.message);
+  }
+}
+
+export type RestaurantStats = {
   callCount: number;
   whatsappCount: number;
+  viewCount: number;
+  impressionCount: number;
 };
 
 /**
- * How many times people have tapped "Llamar" and "Escribir por WhatsApp"
- * on this restaurant's public page — shown back to the vendor on their own
- * manage page as proof the listing is actually sending them business.
- * Same token-gated pattern as the rest of that page: an invalid token just
- * comes back as zeros instead of an error.
+ * All four numbers for a vendor's stats box in one call: calls, WhatsApp
+ * taps, profile views, and category-page impressions. Same token-gated
+ * pattern as the rest of the manage page — a bad token just comes back as
+ * all zeros instead of an error.
  */
-export async function getContactClickCounts(token: string): Promise<ContactClickCounts> {
-  const { data, error } = await supabase.rpc("get_contact_click_counts", {
+export async function getRestaurantStats(token: string): Promise<RestaurantStats> {
+  const { data, error } = await supabase.rpc("get_restaurant_stats", {
     p_token: token,
   });
 
   if (error || !data || data.length === 0) {
-    if (error) console.error("getContactClickCounts failed:", error.message);
-    return { callCount: 0, whatsappCount: 0 };
+    if (error) console.error("getRestaurantStats failed:", error.message);
+    return { callCount: 0, whatsappCount: 0, viewCount: 0, impressionCount: 0 };
+  }
+
+  const row = data[0];
+  return {
+    callCount: row.call_count ?? 0,
+    whatsappCount: row.whatsapp_count ?? 0,
+    viewCount: row.view_count ?? 0,
+    impressionCount: row.impression_count ?? 0,
+  };
+}
+
+export type RestaurantLikeInfo = {
+  likeCount: number;
+  likedByMe: boolean;
+};
+
+/**
+ * How many likes a restaurant has, and whether this exact browser (via its
+ * device id, see LikeButton) has already liked it — so the heart renders
+ * filled/unfilled correctly even after the page reloads.
+ */
+export async function getRestaurantLikeInfo(
+  restaurantId: string,
+  deviceId: string
+): Promise<RestaurantLikeInfo> {
+  const { data, error } = await supabase.rpc("get_restaurant_like_info", {
+    p_restaurant_id: restaurantId,
+    p_device_id: deviceId,
+  });
+
+  if (error || !data || data.length === 0) {
+    if (error) console.error("getRestaurantLikeInfo failed:", error.message);
+    return { likeCount: 0, likedByMe: false };
   }
 
   return {
-    callCount: data[0].call_count ?? 0,
-    whatsappCount: data[0].whatsapp_count ?? 0,
+    likeCount: data[0].like_count ?? 0,
+    likedByMe: data[0].liked_by_me ?? false,
   };
+}
+
+/**
+ * Likes or un-likes a restaurant for this browser's device id. Returns the
+ * new liked state (true = now liked) so the button can trust the server's
+ * answer over its own optimistic guess.
+ */
+export async function toggleRestaurantLike(
+  restaurantId: string,
+  deviceId: string
+): Promise<boolean> {
+  const { data, error } = await supabase.rpc("toggle_restaurant_like", {
+    p_restaurant_id: restaurantId,
+    p_device_id: deviceId,
+  });
+
+  if (error) {
+    console.error("toggleRestaurantLike failed:", error.message);
+    return false;
+  }
+  return Boolean(data);
 }
