@@ -11,8 +11,23 @@ export type MenuItem = Tables<"menu_items">;
 export const PRICE_LEVEL_LABELS: Record<string, string> = {
   "$": "Económico",
   "$$": "Precio medio",
-  "$$$": "Más alto",
+  "$$$": "Gama alta",
 };
+
+/** The badge text shown on cards and the restaurant page: the raw "$"
+ *  symbol (the at-a-glance scale people already know from Google/Yelp)
+ *  paired with a plain-language label, so "$$$" reads as "$$$ · Gama
+ *  alta" instead of a lone symbol, or the old "Más alto" wording, which
+ *  read as vague out of context and, on a vendor's own listing, could
+ *  land as "the website is calling my food expensive." "Gama alta"
+ *  frames the same $$$ tier as upscale/high-end instead — a restaurant's
+ *  own overall price positioning (same convention Google Maps uses), not
+ *  a literal per-dish number, which is why it can stay a category rather
+ *  than a computed price range even though individual dishes vary. */
+export function priceLevelBadge(level: string): string {
+  const label = PRICE_LEVEL_LABELS[level];
+  return label ? `${level} · ${label}` : level;
+}
 
 /** All categories, in the order they should display (sort_order). */
 export async function getCategories(): Promise<Category[]> {
