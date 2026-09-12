@@ -1,7 +1,13 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import { notFound } from "next/navigation";
-import { getRestaurantBySlug, getMenuItemsByRestaurant } from "@/lib/queries";
+import { after } from "next/server";
+import {
+  getRestaurantBySlug,
+  getMenuItemsByRestaurant,
+  logRestaurantView,
+  PRICE_LEVEL_LABELS,
+} from "@/lib/queries";
 import { getCityBySlug } from "@/lib/cities";
 import { ShareButton } from "@/components/ShareButton";
 import { ServiceBadges } from "@/components/ServiceBadges";
@@ -78,6 +84,12 @@ export default async function RestaurantPage({
   }
 
   const menuItems = await getMenuItemsByRestaurant(restaurant.id);
+
+  // One "profile view" for this load — scheduled with after() so it runs
+  // once the page has already been sent, instead of adding a database
+  // round-trip in front of the page the visitor is waiting on.
+  after(() => logRestaurantView(restaurant.id));
+
   // Every restaurant has a phone number — that one's required at signup, so
   // the call button always shows. WhatsApp is optional on top of that, and
   // only shows when the restaurant actually has one.
@@ -109,11 +121,16 @@ export default async function RestaurantPage({
         />
       </div>
 
-      <ServiceBadges restaurant={restaurant} />
+      <div className="badges-row">
+        <span className="price-badge">
+          {PRICE_LEVEL_LABELS[restaurant.price_level] ?? restaurant.price_level}
+        </span>
+        <ServiceBadges restaurant={restaurant} />
+      </div>
 
       <div className="restaurant-meta-list">
         <p>
-          <b>Barrio:</b> {restaurant.neighborhood} · {restaurant.price_level}
+          <b>Barrio:</b> {restaurant.neighborhood}
         </p>
         {restaurant.address && (
           <p>
