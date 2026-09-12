@@ -5,7 +5,7 @@ import {
   getApprovedRestaurantsByCategory,
   getCategoryBySlug,
   logRestaurantImpressions,
-  PRICE_LEVEL_LABELS,
+  priceLevelBadge,
 } from "@/lib/queries";
 import { getCityBySlug } from "@/lib/cities";
 import { ServiceBadges } from "@/components/ServiceBadges";
@@ -73,12 +73,10 @@ export default async function CategoryPage({
                 <div className="restaurant-card-body">
                   <p className="name">{restaurant.name}</p>
                   <p className="meta">{restaurant.neighborhood}</p>
-                  <div className="badges-row">
-                    <span className="price-badge">
-                      {PRICE_LEVEL_LABELS[restaurant.price_level] ?? restaurant.price_level}
-                    </span>
-                    <ServiceBadges restaurant={restaurant} />
+                  <div className="price-row">
+                    <span className="price-badge">{priceLevelBadge(restaurant.price_level)}</span>
                   </div>
+                  <ServiceBadges restaurant={restaurant} />
                   {restaurant.blurb && <p className="blurb">{restaurant.blurb}</p>}
                 </div>
               </Link>
