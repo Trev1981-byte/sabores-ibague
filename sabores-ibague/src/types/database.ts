@@ -132,6 +132,61 @@ export type Database = {
           },
         ]
       }
+      restaurant_likes: {
+        Row: {
+          created_at: string
+          device_id: string
+          restaurant_id: string
+        }
+        Insert: {
+          created_at?: string
+          device_id: string
+          restaurant_id: string
+        }
+        Update: {
+          created_at?: string
+          device_id?: string
+          restaurant_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "restaurant_likes_restaurant_id_fkey"
+            columns: ["restaurant_id"]
+            isOneToOne: false
+            referencedRelation: "restaurants"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      restaurant_page_events: {
+        Row: {
+          created_at: string
+          id: string
+          kind: string
+          restaurant_id: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          kind: string
+          restaurant_id: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          kind?: string
+          restaurant_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "restaurant_page_events_restaurant_id_fkey"
+            columns: ["restaurant_id"]
+            isOneToOne: false
+            referencedRelation: "restaurants"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       restaurants: {
         Row: {
           address: string | null
@@ -319,8 +374,32 @@ export type Database = {
           isSetofReturn: true
         }
       }
+      get_restaurant_like_info: {
+        Args: { p_device_id: string; p_restaurant_id: string }
+        Returns: {
+          like_count: number
+          liked_by_me: boolean
+        }[]
+      }
+      get_restaurant_stats: {
+        Args: { p_token: string }
+        Returns: {
+          call_count: number
+          impression_count: number
+          view_count: number
+          whatsapp_count: number
+        }[]
+      }
       log_contact_click: {
         Args: { p_kind: string; p_restaurant_id: string }
+        Returns: undefined
+      }
+      log_restaurant_impressions: {
+        Args: { p_restaurant_ids: string[] }
+        Returns: undefined
+      }
+      log_restaurant_view: {
+        Args: { p_restaurant_id: string }
         Returns: undefined
       }
       set_menu_item_photo_by_token: {
@@ -349,6 +428,10 @@ export type Database = {
           p_whatsapp_number: string
         }
         Returns: string
+      }
+      toggle_restaurant_like: {
+        Args: { p_device_id: string; p_restaurant_id: string }
+        Returns: boolean
       }
     }
     Enums: {
