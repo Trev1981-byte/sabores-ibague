@@ -10,9 +10,9 @@ import {
   deleteMenuItem,
   setMenuItemPhoto,
   setRestaurantPhoto,
-  getContactClickCounts,
+  getRestaurantStats,
 } from "@/lib/queries";
-import type { Restaurant, MenuItem, ContactClickCounts } from "@/lib/queries";
+import type { Restaurant, MenuItem, RestaurantStats } from "@/lib/queries";
 import { uploadPhoto } from "@/lib/uploadPhoto";
 
 const pesos = new Intl.NumberFormat("es-CO", {
@@ -39,9 +39,11 @@ export default function ManageRestaurantPage({
   const [uploadingItemPhotoId, setUploadingItemPhotoId] = useState<string | null>(null);
   const [newItemPhotoFile, setNewItemPhotoFile] = useState<File | null>(null);
   const [newItemPhotoPreview, setNewItemPhotoPreview] = useState<string | null>(null);
-  const [clickCounts, setClickCounts] = useState<ContactClickCounts>({
+  const [stats, setStats] = useState<RestaurantStats>({
     callCount: 0,
     whatsappCount: 0,
+    viewCount: 0,
+    impressionCount: 0,
   });
 
   useEffect(() => {
@@ -55,8 +57,8 @@ export default function ManageRestaurantPage({
         const items = await getMenuItemsByRestaurant(found.id);
         if (!cancelled) setMenuItems(items);
       }
-      const counts = await getContactClickCounts(token);
-      if (!cancelled) setClickCounts(counts);
+      const restaurantStats = await getRestaurantStats(token);
+      if (!cancelled) setStats(restaurantStats);
     })();
 
     return () => {
@@ -201,29 +203,35 @@ export default function ManageRestaurantPage({
 
       <div className="manage-head">
         <h1>{restaurant.name}</h1>
-        <span
-          className={`status-badge ${
-            restaurant.is_approved ? "is-published" : "is-pending"
-          }`}
-        >
+        <span className={`status-badge ${restaurant.is_approved ? "is-published" : "is-pending"}`}>
           {restaurant.is_approved ? "Publicado" : "Pendiente de revisión"}
         </span>
       </div>
 
       <div className="stats-box">
         <div className="stats-box-item">
-          <span className="stats-box-number">{clickCounts.callCount}</span>
+          <span className="stats-box-number">{stats.impressionCount}</span>
+          <span className="stats-box-label">👀 Impresiones</span>
+        </div>
+        <div className="stats-box-item">
+          <span className="stats-box-number">{stats.viewCount}</span>
+          <span className="stats-box-label">📄 Vistas de tu página</span>
+        </div>
+        <div className="stats-box-item">
+          <span className="stats-box-number">{stats.callCount}</span>
           <span className="stats-box-label">📞 Llamadas</span>
         </div>
         <div className="stats-box-item">
-          <span className="stats-box-number">{clickCounts.whatsappCount}</span>
+          <span className="stats-box-number">{stats.whatsappCount}</span>
           <span className="stats-box-label">💬 WhatsApp</span>
         </div>
       </div>
       <p className="stats-box-hint">
-        Cuántas veces la gente ha tocado "Llamar" o "Escribir por WhatsApp"
-        en tu página — prueba real de que Colcocina te está mandando
-        clientes.
+        Impresiones: cuántas veces tu restaurante apareció en una categoría.
+        Vistas: cuántas veces alguien entró a tu página completa. Llamadas y
+        WhatsApp: cuántas veces tocaron esos botones — prueba real de que
+        Colcocina te está mandando clientes, incluso antes de que suene el
+        teléfono.
       </p>
 
       <p className="manage-note">
@@ -291,12 +299,7 @@ export default function ManageRestaurantPage({
                 <span className="menu-item-price">
                   {item.price !== null ? pesos.format(item.price) : "—"}
                 </span>
-                <button
-                  type="button"
-                  className="menu-item-delete"
-                  disabled={deletingId === item.id}
-                  onClick={() => handleDeleteItem(item.id)}
-                >
+                <button type="button" className="menu-item-delete" disabled={deletingId === item.id} onClick={() => handleDeleteItem(item.id)}>
                   {deletingId === item.id ? "Borrando..." : "Borrar"}
                 </button>
               </span>
