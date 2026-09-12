@@ -665,13 +665,14 @@ footer {
   white-space: nowrap;
 }
 
-/* Wraps the price badge next to whatever ServiceBadges renders, on both
-   the category card and the restaurant's own page. */
-.badges-row {
-  display: flex;
-  flex-wrap: wrap;
-  align-items: center;
-  gap: 0.4rem;
+/* A standalone row for the price badge, on both the category card and the
+   restaurant's own page. Price and the eat-in/takeout/delivery badges used
+   to share one flex row (.badges-row) and just wrap onto a second line on
+   narrow screens — same row, so it read as one confusing cluster of tags.
+   Splitting them into two actual rows, each with their own top margin,
+   makes "this is the price" and "this is how you can eat here" read as
+   two separate, scannable facts instead of a jumble. */
+.price-row {
   margin: 0.5rem 0 0;
 }
 .price-badge {
