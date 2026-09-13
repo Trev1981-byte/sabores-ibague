@@ -31,8 +31,6 @@ export default function AdminAddRestaurantPage() {
   const [hasTakeout, setHasTakeout] = useState(false);
   const [hasDelivery, setHasDelivery] = useState(false);
 
-  const addressRequired = hasDineIn || hasTakeout;
-
   useEffect(() => {
     (async () => {
       const data = await getCategories();
@@ -79,9 +77,9 @@ export default function AdminAddRestaurantPage() {
       );
       return;
     }
-    if (addressRequired && !address) {
+    if (!address) {
       setError(
-        "Agrega una dirección — si la gente puede comer en el sitio o pasar a recoger su pedido, necesita saber dónde encontrarlo."
+        "Agrega una dirección — aunque sea solo domicilio, alguien necesita poder ubicar el negocio si hay un problema con un pedido."
       );
       return;
     }
@@ -96,7 +94,7 @@ export default function AdminAddRestaurantPage() {
       whatsappNumber: whatsappNumber || undefined,
       hoursText: hoursText || undefined,
       mapsLink: String(data.get("mapsLink") ?? "").trim() || undefined,
-      address: address || undefined,
+      address,
       blurb: String(data.get("blurb") ?? "").trim() || undefined,
       categoryIds: selectedCategories,
       hasDineIn,
@@ -207,16 +205,18 @@ export default function AdminAddRestaurantPage() {
           </div>
 
           <div className="field">
-            <label htmlFor="address">
-              Dirección{addressRequired ? " *" : " (opcional)"}
-            </label>
+            <label htmlFor="address">Dirección *</label>
             <input
               id="address"
               name="address"
               type="text"
-              required={addressRequired}
+              required
               placeholder="Ej: Carrera 5 #12-34, o Esquina Calle 15 con Carrera 3"
             />
+            <p className="field-hint">
+              Obligatoria para todos, incluso domicilio-only — un punto de
+              referencia también sirve.
+            </p>
           </div>
 
           <div className="field">
