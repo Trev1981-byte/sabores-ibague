@@ -406,7 +406,12 @@ export type NewRestaurantInput = {
   whatsappNumber?: string;
   hoursText?: string;
   mapsLink?: string;
-  address?: string;
+  // No longer optional — every restaurant needs a real (even if informal)
+  // location on file, delivery-only ones included, so a customer with a
+  // problem has somewhere to start. Enforced again on the database side
+  // (submit_restaurant / admin_create_restaurant reject a blank address),
+  // this is just the type-level reminder that it's always expected here.
+  address: string;
   blurb?: string;
   categoryIds: string[];
   hasDelivery: boolean;
@@ -455,7 +460,7 @@ export async function submitRestaurant(
     p_phone_number: input.phoneNumber,
     p_hours_text: input.hoursText || "",
     p_maps_link: input.mapsLink || "",
-    p_address: input.address || "",
+    p_address: input.address,
     p_blurb: input.blurb || "",
     p_category_ids: input.categoryIds,
     p_has_delivery: input.hasDelivery,
@@ -497,7 +502,7 @@ export async function adminCreateRestaurant(
     p_phone_number: input.phoneNumber,
     p_hours_text: input.hoursText || "",
     p_maps_link: input.mapsLink || "",
-    p_address: input.address || "",
+    p_address: input.address,
     p_blurb: input.blurb || "",
     p_category_ids: input.categoryIds,
     p_has_delivery: input.hasDelivery,
