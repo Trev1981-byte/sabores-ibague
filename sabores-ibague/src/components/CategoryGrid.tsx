@@ -83,7 +83,7 @@ export function CategoryGrid({
               type="search"
               value={query}
               onChange={(e) => setQuery(e.target.value)}
-              placeholder="Buscar: hamburguesas, Donde Pepe, cheeseburger..."
+              placeholder="Buscar: hamburguesas, Asadero Doña Rosa, arepa con queso..."
               autoComplete="off"
             />
             <button type="button">Buscar</button>
