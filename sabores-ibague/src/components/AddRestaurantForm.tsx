@@ -24,12 +24,6 @@ export function AddRestaurantForm({ categories }: { categories: Category[] }) {
   const [hasTakeout, setHasTakeout] = useState(false);
   const [hasDelivery, setHasDelivery] = useState(false);
 
-  // If people can walk in or pick up an order, they need to know where —
-  // so the address stops being optional. A delivery-only place (often run
-  // out of someone's home) has a real reason to keep that private, so it
-  // stays optional for them.
-  const addressRequired = hasDineIn || hasTakeout;
-
   function toggleCategory(id: string) {
     setSelectedCategories((current) =>
       current.includes(id)
@@ -83,9 +77,9 @@ export function AddRestaurantForm({ categories }: { categories: Category[] }) {
       setError("Selecciona al menos una opción: domicilio, para llevar o comer en el sitio.");
       return;
     }
-    if (addressRequired && !address) {
+    if (!address) {
       setError(
-        "Agrega una dirección — si la gente puede comer en el sitio o pasar a recoger su pedido, necesita saber dónde encontrarte."
+        "Agrega una dirección — aunque sea solo domicilio, alguien necesita poder ubicarte si hay un problema con un pedido."
       );
       return;
     }
@@ -100,7 +94,7 @@ export function AddRestaurantForm({ categories }: { categories: Category[] }) {
       whatsappNumber: whatsappNumber || undefined,
       hoursText,
       mapsLink: String(data.get("mapsLink") ?? "").trim() || undefined,
-      address: address || undefined,
+      address,
       blurb: String(data.get("blurb") ?? "").trim() || undefined,
       categoryIds: selectedCategories,
       hasDineIn,
@@ -251,20 +245,20 @@ export function AddRestaurantForm({ categories }: { categories: Category[] }) {
       </div>
 
       <div className="field">
-        <label htmlFor="address">
-          Dirección{addressRequired ? " *" : " (opcional)"}
-        </label>
+        <label htmlFor="address">Dirección *</label>
         <input
           id="address"
           name="address"
           type="text"
-          required={addressRequired}
+          required
           placeholder="Ej: Carrera 5 #12-34, o Esquina Calle 15 con Carrera 3"
         />
         <p className="field-hint">
-          {addressRequired
-            ? "Como la gente puede comer en el sitio o pasar a recoger su pedido, necesita saber dónde encontrarte. No tiene que ser una dirección formal — un punto de referencia también sirve (\"frente al parque de Belén\", \"esquina de la 15 con 3ra\")."
-            : "Si tienes una, ayuda — aunque sea un punto de referencia. Útil incluso para quien no use el enlace de Google Maps."}
+          Toda ubicación cuenta, incluso si solo haces domicilios — así
+          alguien puede ubicarte si hay un problema con un pedido. No tiene
+          que ser una dirección formal — un punto de referencia también
+          sirve (&quot;frente al parque de Belén&quot;, &quot;esquina de la
+          15 con 3ra&quot;).
         </p>
       </div>
 
