@@ -5,6 +5,8 @@ import { after } from "next/server";
 import {
   getRestaurantBySlug,
   getMenuItemsByRestaurant,
+  getRestaurantCategories,
+  getRestaurantNeighborsInCategory,
   logRestaurantView,
   priceLevelBadge,
 } from "@/lib/queries";
@@ -12,6 +14,7 @@ import { getCityBySlug } from "@/lib/cities";
 import { ShareButton } from "@/components/ShareButton";
 import { ServiceBadges } from "@/components/ServiceBadges";
 import { ContactButtons } from "@/components/ContactButtons";
+import { BackLink } from "@/components/BackLink";
 import { SITE_URL } from "@/lib/site";
 
 // Same reasoning as the other data-backed pages: never freeze this at
@@ -85,6 +88,16 @@ export default async function RestaurantPage({
 
   const menuItems = await getMenuItemsByRestaurant(restaurant.id);
 
+  // A restaurant can sit in more than one category (an asadero selling
+  // both pollo and parrilla, say) — the first one, in the same order the
+  // home page lists categories, is treated as "primary" for the
+  // prev/next pair at the bottom of the page.
+  const categories = await getRestaurantCategories(restaurant.id);
+  const primaryCategory = categories[0] ?? null;
+  const neighbors = primaryCategory
+    ? await getRestaurantNeighborsInCategory(primaryCategory.id, city.name, restaurant.slug)
+    : { prev: null, next: null };
+
   // One "profile view" for this load — scheduled with after() so it runs
   // once the page has already been sent, instead of adding a database
   // round-trip in front of the page the visitor is waiting on.
@@ -105,9 +118,7 @@ export default async function RestaurantPage({
 
   return (
     <main className="wrap">
-      <Link href={`/${city.slug}`} className="back-link">
-        ← Volver al inicio
-      </Link>
+      <BackLink fallbackHref={`/${city.slug}`} label="← Volver" />
 
       {restaurant.photo_url && (
         <img src={restaurant.photo_url} alt={restaurant.name} className="restaurant-cover" />
@@ -191,6 +202,41 @@ export default async function RestaurantPage({
             </div>
           ))}
         </div>
+      )}
+
+      {primaryCategory && (neighbors.prev || neighbors.next) && (
+        <nav className="restaurant-pager" aria-label="Más restaurantes en esta categoría">
+          <Link
+            href={`/${city.slug}/categoria/${primaryCategory.slug}`}
+            className="restaurant-pager-category"
+          >
+            Más en {primaryCategory.emoji} {primaryCategory.label} →
+          </Link>
+          <div className="restaurant-pager-row">
+            {neighbors.prev ? (
+              <Link
+                href={`/${city.slug}/restaurante/${neighbors.prev.slug}`}
+                className="restaurant-pager-link restaurant-pager-prev"
+              >
+                <span className="restaurant-pager-dir">← Anterior</span>
+                <span className="restaurant-pager-name">{neighbors.prev.name}</span>
+              </Link>
+            ) : (
+              <span />
+            )}
+            {neighbors.next ? (
+              <Link
+                href={`/${city.slug}/restaurante/${neighbors.next.slug}`}
+                className="restaurant-pager-link restaurant-pager-next"
+              >
+                <span className="restaurant-pager-dir">Siguiente →</span>
+                <span className="restaurant-pager-name">{neighbors.next.name}</span>
+              </Link>
+            ) : (
+              <span />
+            )}
+          </div>
+        </nav>
       )}
     </main>
   );
