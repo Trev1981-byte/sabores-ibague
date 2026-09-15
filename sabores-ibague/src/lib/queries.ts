@@ -88,6 +88,32 @@ export async function getApprovedRestaurantsByCategory(
     .sort((a, b) => a.name.localeCompare(b.name, "es"));
 }
 
+/**
+ * One random approved restaurant in a city, for the "Sorpréndeme" button —
+ * picked fresh on every call (each visitor's own click gets its own draw,
+ * not a single shared pick everyone's funneled toward), which spreads
+ * demand across every listing instead of concentrating it on whichever
+ * place happened to be "featured" at that moment. Only fetches id+slug,
+ * not full rows, since a redirect is all this needs.
+ */
+export async function getRandomApprovedRestaurant(
+  cityName: string
+): Promise<{ slug: string } | null> {
+  const { data, error } = await supabase
+    .from("restaurants")
+    .select("slug")
+    .eq("city", cityName)
+    .eq("is_approved", true);
+
+  if (error) {
+    console.error("getRandomApprovedRestaurant failed:", error.message);
+    return null;
+  }
+  if (!data || data.length === 0) return null;
+
+  return data[Math.floor(Math.random() * data.length)];
+}
+
 export type CategoryRef = {
   id: string;
   slug: string;
