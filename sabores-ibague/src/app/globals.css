@@ -860,8 +860,15 @@ footer {
 
 .category-checks {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(11rem, 1fr));
-  gap: 0.5rem;
+  /* 13.5rem (was 11rem) — the old width squeezed "Comida internacional"
+     (the longest category label) onto two or three lines on a wide
+     screen, since the form itself caps at 34rem regardless of viewport,
+     so a narrower minimum just meant more, tighter columns instead of
+     more breathing room. This width keeps every label on one line at
+     two columns within that 34rem cap; a phone, where the form is
+     already narrower than two columns' worth, is unaffected. */
+  grid-template-columns: repeat(auto-fill, minmax(13.5rem, 1fr));
+  gap: 0.6rem;
 }
 .category-check {
   display: flex;
@@ -873,7 +880,7 @@ footer {
   background: var(--surface);
   border: 1.5px solid var(--line);
   border-radius: 8px;
-  padding: 0.55rem 0.7rem;
+  padding: 0.7rem 0.9rem;
   cursor: pointer;
 }
 .category-check input { flex: none; }
@@ -1310,7 +1317,11 @@ footer {
 .restaurant-meta-list {
   display: grid;
   gap: 0.5rem;
-  margin: 0 0 1.5rem;
+  /* Top margin added (was 0) — the service badges row right above this
+     (eat-in/takeout/delivery) only carries its own top margin, so with
+     nothing below it the "Barrio" line was landing right up against the
+     badges with no breathing room, especially cramped on a phone. */
+  margin: 1rem 0 1.5rem;
   color: var(--text-soft);
   font-size: 0.95rem;
 }
