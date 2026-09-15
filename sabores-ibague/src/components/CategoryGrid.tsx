@@ -89,6 +89,10 @@ export function CategoryGrid({
             <button type="button">Buscar</button>
           </form>
 
+          <Link href={`/${citySlug}/sorpresa`} className="surprise-btn">
+            🎲 Sorpréndeme
+          </Link>
+
           <p className="hero-tags">
             <span>
               <b>{categories.length}</b> categorías
