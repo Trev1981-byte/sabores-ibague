@@ -194,9 +194,11 @@ export default async function RestaurantPage({
           ⚠️
         </span>
         <p>
-          Preferimos que pagues contra entrega, sobre todo la primera vez
-          que le compras a este restaurante. Colcocina solo los
-          conecta — el pedido y el pago se hacen directamente con ellos.{" "}
+          Preferimos que no pagues ni transfieras dinero por adelantado,
+          sobre todo la primera vez que le compras a este restaurante — paga
+          en persona, ya sea al recibir tu pedido o directamente en el
+          restaurante. Colcocina solo los conecta — el pedido y el pago se
+          hacen directamente con ellos.{" "}
           <Link href="/seguridad">Más consejos de seguridad →</Link>
         </p>
       </div>
