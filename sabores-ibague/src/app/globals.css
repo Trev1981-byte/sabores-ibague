@@ -321,6 +321,33 @@ img, svg { max-width: 100%; display: block; }
 }
 .search-board button:hover { background: var(--achiote-deep); transform: translateY(-1px); }
 
+/* Secondary CTA next to the search board — outlined instead of filled so it
+   doesn't compete with "Buscar" for attention, but still reads as clickable
+   against the hero background in both themes. */
+.surprise-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  width: fit-content;
+  margin-top: 0.6rem;
+  background: var(--eyebrow-bg);
+  border: 1.5px solid var(--achiote);
+  color: var(--achiote);
+  font-family: var(--font-karla), sans-serif;
+  font-weight: 700;
+  font-size: 0.92rem;
+  text-decoration: none;
+  padding: 0.55rem 1.1rem;
+  border-radius: 999px;
+  cursor: pointer;
+  transition: background-color .15s ease, color .15s ease, transform .15s ease;
+}
+.surprise-btn:hover {
+  background: var(--achiote);
+  color: #fff;
+  transform: translateY(-1px);
+}
+
 .hero-tags {
   display: flex;
   flex-wrap: wrap;
@@ -729,6 +756,26 @@ footer {
 }
 :root[data-theme="dark"] .like-count {
   color: var(--anil);
+}
+
+/* Sits opposite the like button on a category card's photo — same overlay
+   pattern, opposite corner, filled solid so "new" reads as a badge rather
+   than a rating/reaction like the like pill next to it. */
+.new-badge {
+  position: absolute;
+  top: 0.6rem;
+  left: 0.6rem;
+  z-index: 1;
+  background: var(--achiote);
+  color: #fff;
+  font-size: 0.72rem;
+  font-weight: 700;
+  letter-spacing: 0.03em;
+  text-transform: uppercase;
+  line-height: 1;
+  padding: 0.35rem 0.6rem;
+  border-radius: 999px;
+  box-shadow: 0 2px 6px rgba(22, 38, 74, 0.18);
 }
 
 /* --- add-your-restaurant form ---------------------------------------- */
