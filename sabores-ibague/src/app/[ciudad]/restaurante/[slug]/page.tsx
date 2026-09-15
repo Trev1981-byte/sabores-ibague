@@ -116,8 +116,36 @@ export default async function RestaurantPage({
       )}`
     : null;
 
+  // Structured data so Google can understand this as an actual place, not
+  // just a page of text — name, address, phone, price tier. Deliberately
+  // leaves out things like opening hours or a rating: hours_text is
+  // free-form Spanish ("Lunes a sábado, 8am–3pm"), not the strict format
+  // schema.org expects, and there's no real rating data yet — claiming
+  // either would risk a Search Console error instead of helping.
+  const restaurantJsonLd = {
+    "@context": "https://schema.org",
+    "@type": "Restaurant",
+    name: restaurant.name,
+    url: `${SITE_URL}/${city.slug}/restaurante/${restaurant.slug}`,
+    ...(restaurant.photo_url ? { image: restaurant.photo_url } : {}),
+    telephone: restaurant.phone_number,
+    priceRange: restaurant.price_level,
+    address: {
+      "@type": "PostalAddress",
+      streetAddress: restaurant.address || restaurant.neighborhood,
+      addressLocality: city.name,
+      addressRegion: city.department,
+      addressCountry: "CO",
+    },
+    ...(primaryCategory ? { servesCuisine: primaryCategory.label } : {}),
+  };
+
   return (
     <main className="wrap">
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(restaurantJsonLd) }}
+      />
       <BackLink fallbackHref={`/${city.slug}`} label="← Volver" />
 
       {restaurant.photo_url && (
