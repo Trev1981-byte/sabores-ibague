@@ -80,7 +80,74 @@ export async function getApprovedRestaurantsByCategory(
 
   return (data ?? [])
     .map((row) => row.restaurants)
-    .filter((r): r is Restaurant => r !== null && r.is_approved && r.city === cityName);
+    .filter((r): r is Restaurant => r !== null && r.is_approved && r.city === cityName)
+    // Alphabetical, not insertion order — makes the list predictable for a
+    // shopper scanning it, and gives the restaurant page's prev/next
+    // links (see getRestaurantNeighborsInCategory) something stable to
+    // walk through in the same order this page shows them in.
+    .sort((a, b) => a.name.localeCompare(b.name, "es"));
+}
+
+export type CategoryRef = {
+  id: string;
+  slug: string;
+  label: string;
+  emoji: string;
+};
+
+/**
+ * Every category a restaurant is tagged under, in the same order the home
+ * page lists categories in (sort_order). A restaurant can belong to more
+ * than one, so the restaurant page treats the first one here as its
+ * "primary" category for the prev/next links at the bottom of the page.
+ */
+export async function getRestaurantCategories(restaurantId: string): Promise<CategoryRef[]> {
+  const { data, error } = await supabase
+    .from("restaurant_categories")
+    .select("categories(id, slug, label, emoji, sort_order)")
+    .eq("restaurant_id", restaurantId);
+
+  if (error) {
+    console.error("getRestaurantCategories failed:", error.message);
+    return [];
+  }
+
+  return (data ?? [])
+    .map((row) => row.categories)
+    .filter((c): c is NonNullable<typeof c> => c !== null)
+    .sort((a, b) => a.sort_order - b.sort_order);
+}
+
+export type RestaurantNeighbor = { name: string; slug: string };
+
+/**
+ * The restaurant immediately before and after this one within a given
+ * category, alphabetically — the same order that category's own page
+ * lists them in. Powers the "anterior / siguiente" links at the bottom of
+ * a restaurant's page: real, crawlable links back into that category
+ * instead of a dead end, which is also just better internal linking for
+ * search engines. No wraparound — the first restaurant in a category
+ * simply has no "anterior," same for "siguiente" on the last.
+ */
+export async function getRestaurantNeighborsInCategory(
+  categoryId: string,
+  cityName: string,
+  currentSlug: string
+): Promise<{ prev: RestaurantNeighbor | null; next: RestaurantNeighbor | null }> {
+  const restaurants = await getApprovedRestaurantsByCategory(categoryId, cityName);
+  const index = restaurants.findIndex((r) => r.slug === currentSlug);
+
+  if (index === -1) {
+    return { prev: null, next: null };
+  }
+
+  const prev = index > 0 ? restaurants[index - 1] : null;
+  const next = index < restaurants.length - 1 ? restaurants[index + 1] : null;
+
+  return {
+    prev: prev ? { name: prev.name, slug: prev.slug } : null,
+    next: next ? { name: next.name, slug: next.slug } : null,
+  };
 }
 
 /**
@@ -522,7 +589,7 @@ export async function adminCreateRestaurant(
 }
 
 /**
- * Fire-and-forget: records one tap of "Llamar" or "Escribir por WhatsApp"
+ * Fire-and-forget: records one tap of "Llamar" o "Escribir por WhatsApp"
  * on a restaurant's public page. Never surfaces an error back to the
  * visitor — a failed analytics write should never get in the way of
  * someone actually trying to reach a restaurant.
