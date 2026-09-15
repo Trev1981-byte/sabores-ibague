@@ -17,6 +17,17 @@ import { SITE_URL } from "@/lib/site";
 // this page's data at build time.
 export const dynamic = "force-dynamic";
 
+// How long a restaurant keeps its "Nuevo" badge after being added — long
+// enough to actually be seen by returning visitors, short enough that the
+// badge still means something instead of sitting on half the category
+// forever.
+const NEW_BADGE_DAYS = 30;
+
+function isNewListing(createdAt: string): boolean {
+  const ageMs = Date.now() - new Date(createdAt).getTime();
+  return ageMs < NEW_BADGE_DAYS * 24 * 60 * 60 * 1000;
+}
+
 // Every category used to inherit the site-wide "Colcocina" title, which
 // meant a search for "hamburguesas Ibagué" had nothing on the page itself
 // to match against. Each category now gets its own title and description,
@@ -148,6 +159,9 @@ export default async function CategoryPage({
                   {restaurant.blurb && <p className="blurb">{restaurant.blurb}</p>}
                 </div>
               </Link>
+              {isNewListing(restaurant.created_at) && (
+                <span className="new-badge">Nuevo</span>
+              )}
               <LikeButton restaurantId={restaurant.id} />
             </div>
           ))}
