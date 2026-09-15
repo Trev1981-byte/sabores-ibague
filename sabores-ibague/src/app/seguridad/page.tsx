@@ -26,14 +26,15 @@ export default function SeguridadPage() {
       <ul className="safety-list">
         <li className="safety-item">
           <span className="safety-item-icon" aria-hidden="true">
-            🚚
+            💵
           </span>
           <div>
-            <h3>Prefiere pagar contra entrega</h3>
+            <h3>Evita pagar por adelantado</h3>
             <p>
               Sobre todo si es la primera vez que le compras a ese
-              restaurante. Es la forma más segura de asegurarte de que tu
-              pedido sí llega antes de pagar por él.
+              restaurante. No transfieras dinero antes de tener tu pedido o
+              de estar en el restaurante — paga en persona, ya sea a
+              domicilio, para recoger o comiendo ahí.
             </p>
           </div>
         </li>
