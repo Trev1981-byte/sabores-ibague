@@ -56,6 +56,11 @@ export async function generateMetadata({
   return {
     title: `${restaurant.name} — Colcocina`,
     description,
+    // Same reasoning as the other data-backed pages' canonical: declares
+    // this URL as the authoritative one for this restaurant's page.
+    alternates: {
+      canonical: url,
+    },
     openGraph: {
       title: restaurant.name,
       description,
