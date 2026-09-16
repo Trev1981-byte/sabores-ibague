@@ -1129,6 +1129,69 @@ footer {
   font-size: 0.82rem;
   color: var(--text-mute);
 }
+
+/* Confirms a saved edit — same green as the "published" status badge, so
+   it reads as "this worked" rather than a generic notice. */
+.manage-edit-saved {
+  margin: 0 0 1rem;
+  color: #1F6B3A;
+  font-weight: 600;
+  font-size: 0.9rem;
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) .manage-edit-saved { color: #B7EAC8; }
+}
+:root[data-theme="dark"] .manage-edit-saved { color: #B7EAC8; }
+
+.manage-edit-toggle {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  background: transparent;
+  border: 1.5px solid var(--line);
+  color: var(--text);
+  font-family: var(--font-karla), sans-serif;
+  font-weight: 700;
+  font-size: 0.88rem;
+  padding: 0.55rem 1rem;
+  border-radius: 999px;
+  cursor: pointer;
+  margin: 0 0 1.75rem;
+}
+.manage-edit-toggle:hover { border-color: var(--maiz-deep); }
+
+/* The self-edit form for everything about a listing except its name's
+   effect on the URL — reuses the same .field / .service-checks /
+   .category-checks styling as the add-restaurant form, just inside its
+   own bordered card so it reads as a distinct, temporary editing mode
+   rather than part of the page's normal layout. */
+.manage-edit-form {
+  display: grid;
+  gap: 1.25rem;
+  margin: 0 0 2rem;
+  padding: 1.25rem 1.4rem;
+  background: var(--surface);
+  border: 1px solid var(--line);
+  border-radius: 12px;
+}
+.manage-edit-actions {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+}
+.manage-edit-cancel {
+  background: transparent;
+  border: 0;
+  color: var(--text-mute);
+  font-family: var(--font-karla), sans-serif;
+  font-weight: 600;
+  font-size: 0.9rem;
+  cursor: pointer;
+  padding: 0.5rem 0;
+}
+.manage-edit-cancel:hover { color: var(--achiote); }
+.manage-edit-cancel:disabled { opacity: 0.6; cursor: default; }
+
 .manage-section-title {
   font-size: 1.1rem;
   color: var(--text);
@@ -1656,6 +1719,80 @@ footer {
 .review-reject:hover { background: var(--achiote); color: #fff; }
 .review-approve:disabled,
 .review-reject:disabled { opacity: 0.6; cursor: default; }
+
+/* Third option alongside approve/reject — for a submission that turns
+   out to be a restaurant already on the site under a different name or
+   number. Deliberately a third color (neither the green "approve" nor
+   the red "reject") so it reads as its own distinct action. */
+.review-merge {
+  flex: 1 1 10rem;
+  background: transparent;
+  border: 1.5px solid var(--anil-soft);
+  color: var(--anil-soft);
+  font-family: var(--font-karla), sans-serif;
+  font-weight: 700;
+  font-size: 0.92rem;
+  padding: 0.7rem 1rem;
+  border-radius: 8px;
+  cursor: pointer;
+}
+.review-merge:hover { background: var(--anil-soft); color: var(--surface); }
+.review-merge:disabled { opacity: 0.6; cursor: default; }
+
+/* The inline "which existing restaurant is this?" search shown under a
+   pending card once "Ya existe" is clicked. */
+.merge-picker {
+  margin-top: 1rem;
+  padding-top: 1rem;
+  border-top: 1px dashed var(--line);
+}
+.merge-picker-label {
+  margin: 0 0 0.5rem;
+  font-size: 0.85rem;
+  font-weight: 700;
+  color: var(--text);
+}
+.merge-picker input {
+  width: 100%;
+  font-family: var(--font-karla), sans-serif;
+  font-size: 0.92rem;
+  color: var(--text);
+  background: var(--surface);
+  border: 1.5px solid var(--line);
+  border-radius: 8px;
+  padding: 0.6rem 0.8rem;
+  margin-bottom: 0.6rem;
+}
+.merge-picker input:focus { outline: none; border-color: var(--search-border); }
+.merge-picker-list {
+  display: grid;
+  gap: 0.4rem;
+  max-height: 12rem;
+  overflow-y: auto;
+}
+.merge-picker-item {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.6rem;
+  width: 100%;
+  background: var(--surface-sunk);
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  padding: 0.55rem 0.8rem;
+  font-family: var(--font-karla), sans-serif;
+  font-size: 0.88rem;
+  color: var(--text);
+  text-align: left;
+  cursor: pointer;
+}
+.merge-picker-item:hover { border-color: var(--maiz-deep); }
+.merge-picker-item:disabled { opacity: 0.6; cursor: default; }
+.merge-picker-empty {
+  font-size: 0.85rem;
+  color: var(--text-mute);
+  padding: 0.4rem 0 0;
+}
 
 /* --- "consejos de seguridad" page ------------------------------------ */
 .safety-page { padding-bottom: 3rem; }
