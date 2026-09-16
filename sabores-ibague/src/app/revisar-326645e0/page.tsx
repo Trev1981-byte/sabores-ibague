@@ -1,14 +1,17 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import Link from "next/link";
 import {
   getPendingRestaurants,
   approveRestaurant,
   rejectRestaurant,
+  mergeRestaurant,
+  getApprovedRestaurantsForSearch,
 } from "@/lib/queries";
-import type { PendingRestaurant } from "@/lib/queries";
+import type { PendingRestaurant, RestaurantSearchResult } from "@/lib/queries";
 import { ServiceBadges } from "@/components/ServiceBadges";
+import { CITIES } from "@/lib/cities";
 
 // This page has no login system — the key below stands in for one, the
 // same way a vendor's private edit link stands in for a password. Nobody
@@ -26,9 +29,26 @@ const pesos = new Intl.NumberFormat("es-CO", {
   maximumFractionDigits: 0,
 });
 
+function normalize(text: string): string {
+  return text
+    .toLowerCase()
+    .normalize("NFD")
+    .replace(/[̀-ͯ]/g, ""); // strip accents so "cafe" matches "Café"
+}
+
 export default function ReviewPage() {
   const [restaurants, setRestaurants] = useState<PendingRestaurant[] | null>(null);
   const [busyId, setBusyId] = useState<string | null>(null);
+
+  // --- "this is already listed" merge flow ------------------------------
+  // A pending submission can turn out to be a restaurant that's already
+  // published under a different name, number, or both. Instead of
+  // approving it as a confusing second copy, this folds it into the
+  // existing listing (same URL, same stats) via admin_merge_restaurant.
+  const [existingRestaurants, setExistingRestaurants] = useState<RestaurantSearchResult[]>([]);
+  const [mergingId, setMergingId] = useState<string | null>(null);
+  const [mergeQuery, setMergeQuery] = useState("");
+  const [mergeBusyId, setMergeBusyId] = useState<string | null>(null);
 
   async function load() {
     const data = await getPendingRestaurants(ADMIN_KEY);
@@ -37,10 +57,20 @@ export default function ReviewPage() {
 
   useEffect(() => {
     (async () => {
-      const data = await getPendingRestaurants(ADMIN_KEY);
-      setRestaurants(data);
+      const [pending, existing] = await Promise.all([
+        getPendingRestaurants(ADMIN_KEY),
+        getApprovedRestaurantsForSearch(CITIES[0].name),
+      ]);
+      setRestaurants(pending);
+      setExistingRestaurants(existing);
     })();
   }, []);
+
+  const mergeMatches = useMemo(() => {
+    const q = normalize(mergeQuery.trim());
+    if (!q) return existingRestaurants.slice(0, 8);
+    return existingRestaurants.filter((r) => normalize(r.name).includes(q)).slice(0, 8);
+  }, [existingRestaurants, mergeQuery]);
 
   async function handleApprove(id: string) {
     setBusyId(id);
@@ -60,6 +90,33 @@ export default function ReviewPage() {
     setBusyId(null);
     if (ok) {
       setRestaurants((current) => (current ?? []).filter((r) => r.id !== id));
+    }
+  }
+
+  function toggleMergePicker(id: string) {
+    setMergingId((current) => (current === id ? null : id));
+    setMergeQuery("");
+  }
+
+  async function handleMergeConfirm(
+    pendingId: string,
+    pendingName: string,
+    existingId: string,
+    existingName: string
+  ) {
+    if (
+      !window.confirm(
+        `¿Actualizar "${existingName}" con la información que envió "${pendingName}"? El enlace y las estadísticas de "${existingName}" se mantienen — esto no se puede deshacer.`
+      )
+    ) {
+      return;
+    }
+    setMergeBusyId(pendingId);
+    const ok = await mergeRestaurant(ADMIN_KEY, pendingId, existingId);
+    setMergeBusyId(null);
+    if (ok) {
+      setRestaurants((current) => (current ?? []).filter((r) => r.id !== pendingId));
+      setMergingId(null);
     }
   }
 
@@ -150,6 +207,14 @@ export default function ReviewPage() {
                   </button>
                   <button
                     type="button"
+                    className="review-merge"
+                    disabled={busyId === r.id}
+                    onClick={() => toggleMergePicker(r.id)}
+                  >
+                    🔗 Ya existe — actualizar
+                  </button>
+                  <button
+                    type="button"
                     className="review-reject"
                     disabled={busyId === r.id}
                     onClick={() => handleReject(r.id, r.name)}
@@ -157,6 +222,39 @@ export default function ReviewPage() {
                     🗑️ Rechazar
                   </button>
                 </div>
+
+                {mergingId === r.id && (
+                  <div className="merge-picker">
+                    <p className="merge-picker-label">
+                      ¿Cuál restaurante ya publicado es en realidad este mismo?
+                    </p>
+                    <input
+                      type="text"
+                      placeholder="Busca por nombre..."
+                      value={mergeQuery}
+                      onChange={(event) => setMergeQuery(event.target.value)}
+                      autoFocus
+                    />
+                    {mergeMatches.length === 0 ? (
+                      <p className="merge-picker-empty">No encontramos ningún restaurante con ese nombre.</p>
+                    ) : (
+                      <div className="merge-picker-list">
+                        {mergeMatches.map((existing) => (
+                          <button
+                            type="button"
+                            key={existing.id}
+                            className="merge-picker-item"
+                            disabled={mergeBusyId === r.id}
+                            onClick={() => handleMergeConfirm(r.id, r.name, existing.id, existing.name)}
+                          >
+                            <span>{existing.name}</span>
+                            <span aria-hidden="true">→</span>
+                          </button>
+                        ))}
+                      </div>
+                    )}
+                  </div>
+                )}
               </div>
             </div>
           ))}
