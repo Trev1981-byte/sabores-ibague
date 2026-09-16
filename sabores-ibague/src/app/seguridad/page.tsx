@@ -1,9 +1,13 @@
 import Link from "next/link";
+import { SITE_URL } from "@/lib/site";
 
 export const metadata = {
   title: "Consejos de seguridad — Colcocina",
   description:
     "Cómo pedir con seguridad en Colcocina: qué hacemos nosotros y qué te toca revisar a ti antes de pagar.",
+  alternates: {
+    canonical: `${SITE_URL}/seguridad`,
+  },
 };
 
 export default function SeguridadPage() {
