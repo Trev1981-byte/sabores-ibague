@@ -45,6 +45,14 @@ export async function generateMetadata({
   return {
     title,
     description,
+    // Tells Google this exact URL is the authoritative version of this
+    // page. Without it, the same content reachable at a www/http variant
+    // or Vercel's own project domain reads as an unresolved duplicate
+    // ("Duplicate without user-selected canonical" in Search Console)
+    // instead of pointing back here.
+    alternates: {
+      canonical: url,
+    },
     openGraph: {
       title,
       description,
