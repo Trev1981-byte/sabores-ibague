@@ -305,6 +305,58 @@ export async function setRestaurantPhoto(token: string, photoUrl: string): Promi
   return true;
 }
 
+export type RestaurantInfoInput = {
+  name: string;
+  neighborhood: string;
+  priceLevel: string;
+  whatsappNumber?: string;
+  phoneNumber: string;
+  hoursText?: string;
+  mapsLink?: string;
+  blurb?: string;
+  address: string;
+  hasDelivery: boolean;
+  hasTakeout: boolean;
+  hasDineIn: boolean;
+  categoryIds: string[];
+};
+
+/**
+ * Lets a restaurant edit its own listing — name, phone, hours, address,
+ * categories, everything except the slug, which is what its URL is built
+ * from and never changes no matter what this saves (see
+ * update_restaurant_info_by_token). Works the same way every other
+ * token-scoped write on this page does: no login, just the private link
+ * standing in for one.
+ */
+export async function updateRestaurantInfo(
+  token: string,
+  info: RestaurantInfoInput
+): Promise<boolean> {
+  const { data, error } = await supabase.rpc("update_restaurant_info_by_token", {
+    p_token: token,
+    p_name: info.name,
+    p_neighborhood: info.neighborhood,
+    p_price_level: info.priceLevel,
+    p_whatsapp_number: info.whatsappNumber || "",
+    p_phone_number: info.phoneNumber,
+    p_hours_text: info.hoursText || "",
+    p_maps_link: info.mapsLink || "",
+    p_blurb: info.blurb || "",
+    p_address: info.address,
+    p_has_delivery: info.hasDelivery,
+    p_has_takeout: info.hasTakeout,
+    p_has_dine_in: info.hasDineIn,
+    p_category_ids: info.categoryIds,
+  });
+
+  if (error) {
+    console.error("updateRestaurantInfo failed:", error.message);
+    return false;
+  }
+  return data === true;
+}
+
 /** The slugs of every approved restaurant in a given city — used to build the sitemap. */
 export async function getApprovedRestaurantSlugs(cityName: string): Promise<string[]> {
   const { data, error } = await supabase
@@ -485,6 +537,35 @@ export async function rejectRestaurant(adminKey: string, id: string): Promise<bo
     return false;
   }
   return true;
+}
+
+/**
+ * Folds a duplicate pending submission into an already-published
+ * restaurant instead of publishing it as a second listing — for when
+ * someone resubmits a place that's already on the site (different name,
+ * different number, same restaurant). Copies the submitter's fresh info
+ * — plus the edit token they were already shown at submission — onto the
+ * existing row, moves over any menu items they'd already added, and
+ * discards the now-redundant pending row. See admin_merge_restaurant for
+ * exactly what's preserved (the existing row's id, slug and stats never
+ * change).
+ */
+export async function mergeRestaurant(
+  adminKey: string,
+  pendingId: string,
+  existingId: string
+): Promise<boolean> {
+  const { data, error } = await supabase.rpc("admin_merge_restaurant", {
+    p_key: adminKey,
+    p_pending_id: pendingId,
+    p_existing_id: existingId,
+  });
+
+  if (error) {
+    console.error("mergeRestaurant failed:", error.message);
+    return false;
+  }
+  return data === true;
 }
 
 export type NewRestaurantInput = {
