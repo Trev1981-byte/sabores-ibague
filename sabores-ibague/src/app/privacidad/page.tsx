@@ -1,9 +1,13 @@
 import Link from "next/link";
+import { SITE_URL } from "@/lib/site";
 
 export const metadata = {
   title: "Política de privacidad — Colcocina",
   description:
     "Qué información recolecta Colcocina, para qué la usamos, y cómo ejercer tus derechos sobre tus datos personales.",
+  alternates: {
+    canonical: `${SITE_URL}/privacidad`,
+  },
 };
 
 export default function PrivacidadPage() {
