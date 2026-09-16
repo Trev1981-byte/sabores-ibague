@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import { Baloo_2, Karla } from "next/font/google";
 import { GoogleAnalytics } from "@next/third-parties/google";
 import Link from "next/link";
+import { SITE_URL } from "@/lib/site";
 import "./globals.css";
 
 const baloo = Baloo_2({
@@ -18,6 +19,11 @@ const karla = Karla({
 });
 
 export const metadata: Metadata = {
+  // Every page's metadata builds its own absolute URL by hand (using
+  // SITE_URL), so this isn't needed to resolve those — but Next.js still
+  // wants metadataBase set to safely resolve any relative URL (Open Graph
+  // images, etc.) that a page might add later without repeating the domain.
+  metadataBase: new URL(SITE_URL),
   title: "Colcocina",
   description:
     "Colcocina — descubre los mejores restaurantes, cafés y puestos de comida en Ibagué, Tolima.",
