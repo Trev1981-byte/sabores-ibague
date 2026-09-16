@@ -60,6 +60,13 @@ export async function generateMetadata({
   return {
     title,
     description,
+    // Same reasoning as the city home page's canonical: declares this URL
+    // as the authoritative one so Search Console doesn't flag it as a
+    // duplicate against any other domain/host the page is also reachable
+    // through.
+    alternates: {
+      canonical: url,
+    },
     openGraph: {
       title,
       description,
