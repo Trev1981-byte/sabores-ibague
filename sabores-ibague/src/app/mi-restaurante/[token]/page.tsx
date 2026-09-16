@@ -11,15 +11,25 @@ import {
   setMenuItemPhoto,
   setRestaurantPhoto,
   getRestaurantStats,
+  getCategories,
+  getRestaurantCategories,
+  updateRestaurantInfo,
 } from "@/lib/queries";
-import type { Restaurant, MenuItem, RestaurantStats } from "@/lib/queries";
+import type { Category, Restaurant, MenuItem, RestaurantStats } from "@/lib/queries";
 import { uploadPhoto } from "@/lib/uploadPhoto";
+import { CategoryIcon } from "@/components/CategoryIcon";
 
 const pesos = new Intl.NumberFormat("es-CO", {
   style: "currency",
   currency: "COP",
   maximumFractionDigits: 0,
 });
+
+const PRICE_LEVELS = [
+  { value: "$", label: "$ — Económico (hasta $15.000 por persona)" },
+  { value: "$$", label: "$$ — Precio medio ($15.000–$30.000 por persona)" },
+  { value: "$$$", label: "$$$ — Más alto (más de $30.000 por persona)" },
+] as const;
 
 export default function ManageRestaurantPage({
   params,
@@ -46,17 +56,49 @@ export default function ManageRestaurantPage({
     impressionCount: 0,
   });
 
+  // --- editing the restaurant's own info (everything except the slug,
+  // which is what its URL is built from and never changes) -------------
+  const [categories, setCategories] = useState<Category[]>([]);
+  const [editing, setEditing] = useState(false);
+  const [savingInfo, setSavingInfo] = useState(false);
+  const [infoError, setInfoError] = useState<string | null>(null);
+  const [infoSaved, setInfoSaved] = useState(false);
+  const [editHasDineIn, setEditHasDineIn] = useState(true);
+  const [editHasTakeout, setEditHasTakeout] = useState(false);
+  const [editHasDelivery, setEditHasDelivery] = useState(false);
+  const [editCategoryIds, setEditCategoryIds] = useState<string[]>([]);
+
+  function toggleEditCategory(id: string) {
+    setEditCategoryIds((current) =>
+      current.includes(id) ? current.filter((c) => c !== id) : [...current, id]
+    );
+  }
+
   useEffect(() => {
     let cancelled = false;
 
     (async () => {
-      const found = await getRestaurantByEditToken(token);
+      const [found, cats] = await Promise.all([
+        getRestaurantByEditToken(token),
+        getCategories(),
+      ]);
       if (cancelled) return;
       setRestaurant(found);
+      setCategories(cats);
+
       if (found) {
-        const items = await getMenuItemsByRestaurant(found.id);
-        if (!cancelled) setMenuItems(items);
+        const [items, restaurantCats] = await Promise.all([
+          getMenuItemsByRestaurant(found.id),
+          getRestaurantCategories(found.id),
+        ]);
+        if (cancelled) return;
+        setMenuItems(items);
+        setEditHasDineIn(found.has_dine_in);
+        setEditHasTakeout(found.has_takeout);
+        setEditHasDelivery(found.has_delivery);
+        setEditCategoryIds(restaurantCats.map((c) => c.id));
       }
+
       const restaurantStats = await getRestaurantStats(token);
       if (!cancelled) setStats(restaurantStats);
     })();
@@ -173,6 +215,87 @@ export default function ManageRestaurantPage({
     }
   }
 
+  async function handleSaveInfo(event: FormEvent<HTMLFormElement>) {
+    event.preventDefault();
+    setInfoError(null);
+    if (!restaurant) return;
+
+    const form = event.currentTarget;
+    const data = new FormData(form);
+    const name = String(data.get("editName") ?? "").trim();
+    const neighborhood = String(data.get("editNeighborhood") ?? "").trim();
+    const priceLevel = String(data.get("editPriceLevel") ?? "");
+    const phoneNumber = String(data.get("editPhone") ?? "").trim();
+    const whatsappNumber = String(data.get("editWhatsapp") ?? "").trim();
+    const hoursText = String(data.get("editHours") ?? "").trim();
+    const mapsLink = String(data.get("editMapsLink") ?? "").trim();
+    const blurb = String(data.get("editBlurb") ?? "").trim();
+    const address = String(data.get("editAddress") ?? "").trim();
+
+    if (!name || !neighborhood || !phoneNumber || !address) {
+      setInfoError("Nombre, barrio, teléfono y dirección son obligatorios.");
+      return;
+    }
+    if (priceLevel !== "$" && priceLevel !== "$$" && priceLevel !== "$$$") {
+      setInfoError("Selecciona un rango de precios.");
+      return;
+    }
+    if (editCategoryIds.length === 0) {
+      setInfoError("Selecciona al menos una categoría.");
+      return;
+    }
+    if (!editHasDineIn && !editHasTakeout && !editHasDelivery) {
+      setInfoError("Selecciona al menos una opción: domicilio, para llevar o comer en el sitio.");
+      return;
+    }
+
+    setSavingInfo(true);
+    const ok = await updateRestaurantInfo(token, {
+      name,
+      neighborhood,
+      priceLevel,
+      whatsappNumber,
+      phoneNumber,
+      hoursText,
+      mapsLink,
+      blurb,
+      address,
+      hasDelivery: editHasDelivery,
+      hasTakeout: editHasTakeout,
+      hasDineIn: editHasDineIn,
+      categoryIds: editCategoryIds,
+    });
+    setSavingInfo(false);
+
+    if (!ok) {
+      setInfoError("No pudimos guardar los cambios. Intenta de nuevo.");
+      return;
+    }
+
+    setRestaurant((current) =>
+      current
+        ? {
+            ...current,
+            name,
+            neighborhood,
+            price_level: priceLevel,
+            whatsapp_number: whatsappNumber || null,
+            phone_number: phoneNumber,
+            hours_text: hoursText || null,
+            maps_link: mapsLink || null,
+            blurb: blurb || null,
+            address,
+            has_delivery: editHasDelivery,
+            has_takeout: editHasTakeout,
+            has_dine_in: editHasDineIn,
+          }
+        : current
+    );
+    setInfoSaved(true);
+    setEditing(false);
+    setTimeout(() => setInfoSaved(false), 4000);
+  }
+
   if (restaurant === undefined) {
     return (
       <main className="wrap manage-page">
@@ -265,6 +388,178 @@ export default function ManageRestaurantPage({
             : "Esta foto aparece en tu página y en las categorías — sube algo que dé ganas de ir a comer."}
         </p>
       </div>
+
+      {infoSaved && <p className="manage-edit-saved">✅ Guardamos tus cambios.</p>}
+
+      {!editing && (
+        <button type="button" className="manage-edit-toggle" onClick={() => setEditing(true)}>
+          ✏️ Editar información del restaurante
+        </button>
+      )}
+
+      {editing && (
+        <form className="manage-edit-form" onSubmit={handleSaveInfo}>
+          <div className="field">
+            <label htmlFor="editName">Nombre del negocio *</label>
+            <input id="editName" name="editName" type="text" required defaultValue={restaurant.name} />
+            <p className="field-hint">
+              El enlace de tu página no cambia aunque cambies el nombre.
+            </p>
+          </div>
+
+          <div className="field">
+            <label htmlFor="editNeighborhood">Barrio *</label>
+            <input
+              id="editNeighborhood"
+              name="editNeighborhood"
+              type="text"
+              required
+              defaultValue={restaurant.neighborhood}
+            />
+          </div>
+
+          <div className="field">
+            <label htmlFor="editPriceLevel">Rango de precios *</label>
+            <select id="editPriceLevel" name="editPriceLevel" required defaultValue={restaurant.price_level}>
+              {PRICE_LEVELS.map((level) => (
+                <option key={level.value} value={level.value}>
+                  {level.label}
+                </option>
+              ))}
+            </select>
+          </div>
+
+          <div className="field">
+            <label htmlFor="editPhone">Teléfono *</label>
+            <input
+              id="editPhone"
+              name="editPhone"
+              type="tel"
+              required
+              defaultValue={restaurant.phone_number}
+            />
+          </div>
+
+          <div className="field">
+            <label htmlFor="editWhatsapp">Número de WhatsApp</label>
+            <input
+              id="editWhatsapp"
+              name="editWhatsapp"
+              type="tel"
+              defaultValue={restaurant.whatsapp_number ?? ""}
+              placeholder="Ej: 3001234567 (sin +57, solo el número)"
+            />
+          </div>
+
+          <div className="field">
+            <label htmlFor="editHours">Horario</label>
+            <input
+              id="editHours"
+              name="editHours"
+              type="text"
+              defaultValue={restaurant.hours_text ?? ""}
+              placeholder="Ej: Lun-Sáb 11am-9pm"
+            />
+          </div>
+
+          <div className="field">
+            <label htmlFor="editAddress">Dirección *</label>
+            <input
+              id="editAddress"
+              name="editAddress"
+              type="text"
+              required
+              defaultValue={restaurant.address ?? ""}
+            />
+          </div>
+
+          <div className="field">
+            <label htmlFor="editMapsLink">Enlace de Google Maps (opcional)</label>
+            <input
+              id="editMapsLink"
+              name="editMapsLink"
+              type="url"
+              defaultValue={restaurant.maps_link ?? ""}
+              placeholder="https://maps.google.com/..."
+            />
+          </div>
+
+          <div className="field">
+            <label htmlFor="editBlurb">Cuéntanos de tu restaurante (opcional)</label>
+            <textarea id="editBlurb" name="editBlurb" rows={3} defaultValue={restaurant.blurb ?? ""} />
+          </div>
+
+          <div className="field">
+            <span className="field-label-static">¿Cómo atiendes? *</span>
+            <div className="service-checks">
+              <label className="service-check">
+                <input
+                  type="checkbox"
+                  checked={editHasDineIn}
+                  onChange={() => setEditHasDineIn((v) => !v)}
+                />
+                <span aria-hidden="true">🍽️</span>
+                <span>Comer en el sitio</span>
+              </label>
+              <label className="service-check">
+                <input
+                  type="checkbox"
+                  checked={editHasTakeout}
+                  onChange={() => setEditHasTakeout((v) => !v)}
+                />
+                <span aria-hidden="true">🥡</span>
+                <span>Para llevar</span>
+              </label>
+              <label className="service-check">
+                <input
+                  type="checkbox"
+                  checked={editHasDelivery}
+                  onChange={() => setEditHasDelivery((v) => !v)}
+                />
+                <span aria-hidden="true">🛵</span>
+                <span>Domicilio</span>
+              </label>
+            </div>
+          </div>
+
+          <div className="field">
+            <span className="field-label-static">Categorías *</span>
+            <div className="category-checks">
+              {categories.map((category) => (
+                <label key={category.id} className="category-check">
+                  <input
+                    type="checkbox"
+                    checked={editCategoryIds.includes(category.id)}
+                    onChange={() => toggleEditCategory(category.id)}
+                  />
+                  <CategoryIcon
+                    category={category}
+                    iconClassName="category-check-icon"
+                    emojiClassName="category-check-emoji"
+                  />
+                  <span className="category-check-label">{category.label}</span>
+                </label>
+              ))}
+            </div>
+          </div>
+
+          {infoError && <p className="form-error">{infoError}</p>}
+
+          <div className="manage-edit-actions">
+            <button type="submit" className="form-submit" disabled={savingInfo}>
+              {savingInfo ? "Guardando..." : "Guardar cambios"}
+            </button>
+            <button
+              type="button"
+              className="manage-edit-cancel"
+              disabled={savingInfo}
+              onClick={() => setEditing(false)}
+            >
+              Cancelar
+            </button>
+          </div>
+        </form>
+      )}
 
       <h2 className="manage-section-title">Tu menú</h2>
 
