@@ -1,9 +1,13 @@
 import Link from "next/link";
+import { SITE_URL } from "@/lib/site";
 
 export const metadata = {
   title: "Términos de uso — Colcocina",
   description:
     "Cómo funciona Colcocina, qué esperar del sitio y qué no cubrimos como directorio de restaurantes.",
+  alternates: {
+    canonical: `${SITE_URL}/terminos`,
+  },
 };
 
 export default function TerminosPage() {
