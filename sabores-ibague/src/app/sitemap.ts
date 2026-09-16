@@ -11,8 +11,13 @@ import { getCategories, getApprovedRestaurantSlugs } from "@/lib/queries";
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   const categories = await getCategories();
 
+  // The bare domain ("/") isn't a real page — it just redirects to
+  // /ibague — so it's deliberately left out here. Listing both in the
+  // sitemap told Google there were two separate pages with the same
+  // content and no declared canonical between them, which is exactly
+  // what Search Console flags as "Duplicate without user-selected
+  // canonical."
   const entries: MetadataRoute.Sitemap = [
-    { url: SITE_URL },
     { url: `${SITE_URL}/agregar` },
     { url: `${SITE_URL}/seguridad` },
     { url: `${SITE_URL}/terminos` },
