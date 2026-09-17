@@ -9,6 +9,7 @@ import {
   priceLevelBadge,
 } from "@/lib/queries";
 import { getCityBySlug } from "@/lib/cities";
+import { getBlogPostByCategorySlug } from "@/lib/blog";
 import { ServiceBadges } from "@/components/ServiceBadges";
 import { LikeButton } from "@/components/LikeButton";
 import { SITE_URL } from "@/lib/site";
@@ -93,6 +94,12 @@ export default async function CategoryPage({
 
   const restaurants = await getApprovedRestaurantsByCategory(category.id, city.name);
 
+  // The one blog article written for this specific category, if it exists
+  // yet — not every category has one. Shown below the listings as a small
+  // "related guide" link, which is what gives that article a real internal
+  // link pointing at it instead of only living in the sitemap.
+  const relatedPost = getBlogPostByCategorySlug(city.slug, category.slug);
+
   // Every restaurant card shown here counts as one "impression" for that
   // restaurant — scheduled with after() so it runs once the page has
   // already been sent to the visitor, instead of adding a database
@@ -172,6 +179,13 @@ export default async function CategoryPage({
               <LikeButton restaurantId={restaurant.id} />
             </div>
           ))}
+        </div>
+      )}
+
+      {relatedPost && (
+        <div className="category-blog-box">
+          <p>Guía relacionada</p>
+          <Link href={`/${city.slug}/blog/${relatedPost.slug}`}>{relatedPost.title}</Link>
         </div>
       )}
     </main>
