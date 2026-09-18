@@ -2,6 +2,7 @@ import type { MetadataRoute } from "next";
 import { SITE_URL } from "@/lib/site";
 import { CITIES } from "@/lib/cities";
 import { getCategories, getApprovedRestaurantSlugs } from "@/lib/queries";
+import { BLOG_POSTS } from "@/lib/blog";
 
 // Generates /sitemap.xml automatically — Next.js's built-in convention for
 // this file. Lists every real page Google should know about: each city's
@@ -35,6 +36,12 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     for (const slug of slugs) {
       entries.push({ url: `${SITE_URL}/${city.slug}/restaurante/${slug}` });
     }
+  }
+
+  // Blog articles — each one already tied to a specific city in its own
+  // data, so this doesn't need to sit inside the per-city loop above.
+  for (const post of BLOG_POSTS) {
+    entries.push({ url: `${SITE_URL}/${post.citySlug}/blog/${post.slug}` });
   }
 
   return entries;
