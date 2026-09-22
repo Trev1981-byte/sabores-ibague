@@ -170,6 +170,29 @@ export default async function RestaurantPage({
       </div>
       <ServiceBadges restaurant={restaurant} />
 
+      {/* Contact moved up here (above the address/hours/blurb block) so a
+          visitor doesn't have to scroll past all of that to find how to
+          reach the restaurant — this is the page's main job. */}
+      <div className="safety-note">
+        <span className="safety-note-icon" aria-hidden="true">
+          ⚠️
+        </span>
+        <p>
+          Preferimos que no pagues ni transfieras dinero por adelantado,
+          sobre todo la primera vez que le compras a este restaurante — paga
+          en persona, ya sea al recibir tu pedido o directamente en el
+          restaurante. Colcocina solo los conecta — el pedido y el pago se
+          hacen directamente con ellos.{" "}
+          <Link href="/seguridad">Más consejos de seguridad →</Link>
+        </p>
+      </div>
+
+      <ContactButtons
+        restaurantId={restaurant.id}
+        callHref={callHref}
+        whatsappHref={whatsappHref}
+      />
+
       <div className="restaurant-meta-list">
         <p>
           <b>Barrio:</b> {restaurant.neighborhood}
@@ -193,26 +216,6 @@ export default async function RestaurantPage({
         )}
         {restaurant.blurb && <p>{restaurant.blurb}</p>}
       </div>
-
-      <div className="safety-note">
-        <span className="safety-note-icon" aria-hidden="true">
-          ⚠️
-        </span>
-        <p>
-          Preferimos que no pagues ni transfieras dinero por adelantado,
-          sobre todo la primera vez que le compras a este restaurante — paga
-          en persona, ya sea al recibir tu pedido o directamente en el
-          restaurante. Colcocina solo los conecta — el pedido y el pago se
-          hacen directamente con ellos.{" "}
-          <Link href="/seguridad">Más consejos de seguridad →</Link>
-        </p>
-      </div>
-
-      <ContactButtons
-        restaurantId={restaurant.id}
-        callHref={callHref}
-        whatsappHref={whatsappHref}
-      />
 
       <h2 className="manage-section-title">Menú</h2>
       {menuItems.length === 0 ? (
