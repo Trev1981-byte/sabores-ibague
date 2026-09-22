@@ -102,6 +102,36 @@ export type Database = {
           },
         ]
       }
+      page_visits: {
+        Row: {
+          city: string | null
+          country: string | null
+          created_at: string
+          id: string
+          path: string
+          referrer: string | null
+          region: string | null
+        }
+        Insert: {
+          city?: string | null
+          country?: string | null
+          created_at?: string
+          id?: string
+          path: string
+          referrer?: string | null
+          region?: string | null
+        }
+        Update: {
+          city?: string | null
+          country?: string | null
+          created_at?: string
+          id?: string
+          path?: string
+          referrer?: string | null
+          region?: string | null
+        }
+        Relationships: []
+      }
       restaurant_categories: {
         Row: {
           category_id: string
@@ -125,6 +155,38 @@ export type Database = {
           },
           {
             foreignKeyName: "restaurant_categories_restaurant_id_fkey"
+            columns: ["restaurant_id"]
+            isOneToOne: false
+            referencedRelation: "restaurants"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      restaurant_edit_history: {
+        Row: {
+          edited_at: string
+          id: string
+          previous_category_ids: string[]
+          previous_data: Json
+          restaurant_id: string
+        }
+        Insert: {
+          edited_at?: string
+          id?: string
+          previous_category_ids?: string[]
+          previous_data: Json
+          restaurant_id: string
+        }
+        Update: {
+          edited_at?: string
+          id?: string
+          previous_category_ids?: string[]
+          previous_data?: Json
+          restaurant_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "restaurant_edit_history_restaurant_id_fkey"
             columns: ["restaurant_id"]
             isOneToOne: false
             referencedRelation: "restaurants"
@@ -307,6 +369,18 @@ export type Database = {
         }
         Returns: string
       }
+      admin_engagement_by_restaurant: {
+        Args: { p_key: string; p_since?: string }
+        Returns: {
+          call_count: number
+          impression_count: number
+          name: string
+          restaurant_id: string
+          slug: string
+          view_count: number
+          whatsapp_count: number
+        }[]
+      }
       admin_list_pending: {
         Args: { p_key: string }
         Returns: {
@@ -328,6 +402,23 @@ export type Database = {
           whatsapp_number: string
         }[]
       }
+      admin_list_recent_edits: {
+        Args: { p_key: string }
+        Returns: {
+          current_blurb: string
+          current_name: string
+          current_phone_number: string
+          current_whatsapp_number: string
+          edited_at: string
+          history_id: string
+          previous_blurb: string
+          previous_name: string
+          previous_phone_number: string
+          previous_whatsapp_number: string
+          restaurant_id: string
+          restaurant_slug: string
+        }[]
+      }
       admin_merge_restaurant: {
         Args: { p_existing_id: string; p_key: string; p_pending_id: string }
         Returns: boolean
@@ -335,6 +426,18 @@ export type Database = {
       admin_reject_restaurant: {
         Args: { p_id: string; p_key: string }
         Returns: undefined
+      }
+      admin_revert_restaurant_edit: {
+        Args: { p_history_id: string; p_key: string }
+        Returns: boolean
+      }
+      admin_visits_by_city: {
+        Args: { p_key: string; p_since?: string }
+        Returns: {
+          city: string
+          region: string
+          visit_count: number
+        }[]
       }
       delete_menu_item_by_token: {
         Args: { p_item_id: string; p_token: string }
@@ -398,6 +501,16 @@ export type Database = {
         Args: { p_kind: string; p_restaurant_id: string }
         Returns: undefined
       }
+      log_page_visit: {
+        Args: {
+          p_city?: string
+          p_country?: string
+          p_path: string
+          p_referrer?: string
+          p_region?: string
+        }
+        Returns: undefined
+      }
       log_restaurant_impressions: {
         Args: { p_restaurant_ids: string[] }
         Returns: undefined
@@ -454,7 +567,7 @@ export type Database = {
           p_token: string
           p_whatsapp_number: string
         }
-        Returns: boolean
+        Returns: string
       }
     }
     Enums: {
@@ -470,7 +583,8 @@ type DatabaseWithoutInternals = Omit<Database, "__InternalSupabase">
 
 type DefaultSchema = DatabaseWithoutInternals[Extract<keyof Database, "public">]
 
-export type Tables<DefaultSchemaTableNameOrOptions extends
+export type Tables
+  DefaultSchemaTableNameOrOptions extends
     | keyof (DefaultSchema["Tables"] & DefaultSchema["Views"])
     | { schema: keyof DatabaseWithoutInternals },
   TableName extends (DefaultSchemaTableNameOrOptions extends {
@@ -498,7 +612,8 @@ export type Tables<DefaultSchemaTableNameOrOptions extends
       : never
     : never
 
-export type TablesInsert<DefaultSchemaTableNameOrOptions extends
+export type TablesInsert
+  DefaultSchemaTableNameOrOptions extends
     | keyof DefaultSchema["Tables"]
     | { schema: keyof DatabaseWithoutInternals },
   TableName extends (DefaultSchemaTableNameOrOptions extends {
@@ -522,7 +637,8 @@ export type TablesInsert<DefaultSchemaTableNameOrOptions extends
       : never
     : never
 
-export type TablesUpdate<DefaultSchemaTableNameOrOptions extends
+export type TablesUpdate
+  DefaultSchemaTableNameOrOptions extends
     | keyof DefaultSchema["Tables"]
     | { schema: keyof DatabaseWithoutInternals },
   TableName extends (DefaultSchemaTableNameOrOptions extends {
@@ -546,7 +662,8 @@ export type TablesUpdate<DefaultSchemaTableNameOrOptions extends
       : never
     : never
 
-export type Enums<DefaultSchemaEnumNameOrOptions extends
+export type Enums
+  DefaultSchemaEnumNameOrOptions extends
     | keyof DefaultSchema["Enums"]
     | { schema: keyof DatabaseWithoutInternals },
   EnumName extends (DefaultSchemaEnumNameOrOptions extends {
@@ -562,7 +679,8 @@ export type Enums<DefaultSchemaEnumNameOrOptions extends
     ? DefaultSchema["Enums"][DefaultSchemaEnumNameOrOptions]
     : never
 
-export type CompositeTypes<PublicCompositeTypeNameOrOptions extends
+export type CompositeTypes
+  PublicCompositeTypeNameOrOptions extends
     | keyof DefaultSchema["CompositeTypes"]
     | { schema: keyof DatabaseWithoutInternals },
   CompositeTypeName extends (PublicCompositeTypeNameOrOptions extends {
