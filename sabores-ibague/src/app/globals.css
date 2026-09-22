@@ -776,7 +776,8 @@ footer {
   padding: 0.35rem 0.6rem;
   border-radius: 999px;
   box-shadow: 0 2px 6px rgba(22, 38, 74, 0.18);
-}   
+}
+
 /* --- add-your-restaurant form ---------------------------------------- */
 .form-page {
   padding-bottom: 3rem;
@@ -1322,6 +1323,7 @@ footer {
 }
 .add-item-form button:hover { opacity: 0.9; }
 .add-item-form button:disabled { opacity: 0.6; cursor: default; }
+
 /* --- public restaurant detail page ------------------------------------ */
 .restaurant-head {
   display: flex;
@@ -1329,9 +1331,10 @@ footer {
   justify-content: space-between;
   flex-wrap: wrap;
   gap: 0.75rem;
-  padding-block: 0.5rem 2rem;
+  padding-block: 0.5rem 0.75rem;
 }
 .restaurant-head h1 { font-size: clamp(1.9rem, 4vw, 2.6rem); color: var(--text); }
+.restaurant-head ~ .price-row + .service-badges { margin-top: 1rem; }
 .share-btn {
   flex: none;
   display: inline-flex;
@@ -1414,8 +1417,6 @@ footer {
   line-height: 1.35;
   color: var(--text-mute);
 }
-/* Same shape as .call-action, for the same reason — the hint sits right
-   under the WhatsApp button instead of floating separately in the row. */
 .whatsapp-action {
   display: flex;
   flex-direction: column;
@@ -1457,27 +1458,21 @@ footer {
 }
 .call-btn:hover { border-color: var(--maiz-deep); }
 .safety-note {
-  display: flex;
-  gap: 0.65rem;
-  align-items: flex-start;
-  background: var(--maiz-pale);
-  border: 1px solid var(--maiz-deep);
-  border-radius: 12px;
-  padding: 0.85rem 1rem;
-  margin: 0 0 1.5rem;
-  max-width: 34rem;
-}
-.safety-note-icon { font-size: 1.15rem; line-height: 1.3; }
-.safety-note p {
-  margin: 0;
-  font-size: 0.87rem;
+  display: block;
+  margin: -0.5rem 0 1.5rem;
+  font-size: 0.82rem;
   line-height: 1.5;
   color: var(--achiote-deep);
+}
+.safety-note-icon {
+  font-size: 0.95rem;
+  margin-right: 0.3rem;
 }
 .safety-note a {
   color: inherit;
   font-weight: 700;
   text-decoration: underline;
+  white-space: nowrap;
 }
 .menu-public-grid {
   display: grid;
@@ -1884,202 +1879,6 @@ footer {
 .legal-page li { margin-bottom: 0.4rem; }
 .legal-page a { color: var(--achiote); font-weight: 600; }
 
-/* --- blog articles ------------------------------------------------------ */
-.blog-page { padding-bottom: 3rem; max-width: 40rem; }
-.blog-page h1 {
-  font-size: clamp(1.8rem, 4vw, 2.4rem);
-  margin: 0 0 0.35rem;
-}
-.blog-byline {
-  color: var(--text-mute);
-  font-size: 0.85rem;
-  margin: 0 0 1.5rem;
-}
-.blog-page p {
-  margin: 0 0 1.1rem;
-  color: var(--text-soft);
-  font-size: 0.97rem;
-  line-height: 1.7;
-}
-.blog-page p a { color: var(--achiote); font-weight: 600; }
-.blog-disclosure {
-  font-size: 0.88rem;
-  color: var(--text-mute);
-  background: var(--surface-sunk);
-  border: 1px solid var(--line);
-  border-radius: 10px;
-  padding: 0.85rem 1rem;
-  margin: 0 0 1.75rem;
-}
-.blog-picks {
-  display: flex;
-  flex-direction: column;
-  gap: 1rem;
-  margin: 0 0 2rem;
-}
-.blog-pick {
-  background: var(--surface);
-  border: 1px solid var(--line);
-  border-radius: 12px;
-  padding: 1rem 1.2rem;
-}
-.blog-pick-head {
-  display: flex;
-  flex-wrap: wrap;
-  align-items: baseline;
-  gap: 0.5rem;
-  margin-bottom: 0.3rem;
-}
-.blog-pick-name { font-weight: 700; color: var(--text); }
-.blog-pick-meta { font-size: 0.85rem; color: var(--text-mute); }
-.blog-pick-note {
-  margin: 0.35rem 0 0.6rem;
-  color: var(--text-soft);
-  font-size: 0.93rem;
-  line-height: 1.6;
-}
-.blog-pick-link { font-size: 0.85rem; font-weight: 600; color: var(--achiote); }
-.blog-closing {
-  border-top: 1px solid var(--line);
-  padding-top: 1.5rem;
-  margin-top: 1rem;
-}
-
-/* --- category page → blog cross-link ------------------------------------ */
-.category-blog-box {
-  margin-top: 2rem;
-  padding: 1.1rem 1.3rem;
-  border: 1px solid var(--line);
-  border-radius: 12px;
-  background: var(--surface-sunk);
-}
-.category-blog-box p {
-  margin: 0 0 0.4rem;
-  font-size: 0.85rem;
-  color: var(--text-mute);
-}
-.category-blog-box a { font-weight: 700; color: var(--achiote); font-size: 1rem; }
-
-/* --- private admin stats page ------------------------------------------ */
-.stats-page {
-  padding-bottom: 3rem;
-  max-width: 48rem;
-}
-.stats-head {
-  display: flex;
-  flex-wrap: wrap;
-  align-items: center;
-  justify-content: space-between;
-  gap: 1rem;
-  padding-block: 1.25rem 1.5rem;
-}
-.stats-head h1 {
-  font-size: clamp(1.5rem, 4vw, 2rem);
-  color: var(--text);
-}
-.stats-range {
-  display: flex;
-  gap: 0.4rem;
-  flex-wrap: wrap;
-}
-.stats-range button {
-  background: var(--surface-sunk);
-  border: 1px solid var(--line);
-  color: var(--text);
-  font-family: var(--font-karla), sans-serif;
-  font-weight: 700;
-  font-size: 0.85rem;
-  padding: 0.5rem 0.9rem;
-  border-radius: 999px;
-  cursor: pointer;
-}
-.stats-range button:hover { border-color: var(--maiz-deep); }
-.stats-range button[aria-pressed="true"] {
-  background: var(--anil);
-  border-color: var(--anil);
-  color: var(--maiz-pale);
-}
-
-.stats-summary {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(9rem, 1fr));
-  gap: 0.9rem;
-  margin-bottom: 2rem;
-}
-.stats-tile {
-  background: var(--surface);
-  border: 1px solid var(--line);
-  border-radius: 12px;
-  padding: 1rem 1.1rem;
-}
-.stats-tile-value {
-  display: block;
-  font-size: 1.7rem;
-  font-weight: 700;
-  color: var(--text);
-  font-variant-numeric: tabular-nums;
-}
-.stats-tile-label {
-  display: block;
-  font-size: 0.8rem;
-  color: var(--text-mute);
-  margin-top: 0.15rem;
-}
-
-.stats-section {
-  margin-bottom: 2.25rem;
-}
-.stats-section h2 {
-  font-size: 1.15rem;
-  color: var(--text);
-  margin-bottom: 0.35rem;
-}
-.stats-section-note {
-  font-size: 0.85rem;
-  color: var(--text-mute);
-  margin-bottom: 0.9rem;
-}
-
-.stats-table-wrap {
-  overflow-x: auto;
-  background: var(--surface);
-  border: 1px solid var(--line);
-  border-radius: 12px;
-}
-.stats-table {
-  width: 100%;
-  border-collapse: collapse;
-  font-size: 0.9rem;
-}
-.stats-table th,
-.stats-table td {
-  text-align: left;
-  padding: 0.65rem 0.9rem;
-  border-bottom: 1px solid var(--line);
-  white-space: nowrap;
-}
-.stats-table th {
-  color: var(--text-mute);
-  font-weight: 700;
-  font-size: 0.78rem;
-  text-transform: uppercase;
-  letter-spacing: 0.03em;
-}
-.stats-table td:not(:first-child),
-.stats-table th:not(:first-child) {
-  text-align: right;
-  font-variant-numeric: tabular-nums;
-}
-.stats-table tbody tr:last-child td { border-bottom: none; }
-.stats-table tbody tr:hover { background: var(--surface-sunk); }
-.stats-table a { color: var(--achiote); font-weight: 700; }
-.stats-empty {
-  padding: 1.5rem;
-  text-align: center;
-  color: var(--text-mute);
-  font-size: 0.9rem;
-}
-
 @media (prefers-reduced-motion: reduce) {
   .cat-tile, .search-board button, .form-submit, .restaurant-card, .search-result-row { transition: none; }
-} 
+}
