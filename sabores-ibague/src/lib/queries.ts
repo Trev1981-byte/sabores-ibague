@@ -354,7 +354,13 @@ export async function updateRestaurantInfo(
     console.error("updateRestaurantInfo failed:", error.message);
     return false;
   }
-  return data === true;
+  // The database function returns the restaurant's id on success (not a
+  // boolean) — same "truthy value = it worked" pattern as
+  // toggleRestaurantLike below. The old `data === true` here always
+  // evaluated to false since data is a string; this didn't fail the
+  // Vercel build only because the previous database.ts had a stale type
+  // that (incorrectly) claimed this function returned a boolean.
+  return Boolean(data);
 }
 
 /** The slugs of every approved restaurant in a given city — used to build the sitemap. */
