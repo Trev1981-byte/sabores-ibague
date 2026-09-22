@@ -26,9 +26,9 @@ export function ContactButtons({
       {whatsappHref && (
         <div className="whatsapp-action">
           <a className="whatsapp-btn" href={whatsappHref} target="_blank" rel="noopener noreferrer" onClick={() => logContactClick(restaurantId, "whatsapp")}>
-            Escribir por WhatsApp
+            💬 Escribir por WhatsApp
           </a>
-          <p className="whatsapp-hint">Contacta al restaurante ahora para más información</p>
+          <p className="whatsapp-hint">Escríbele al restaurante para más información</p>
         </div>
       )}
       <div className="call-action">
