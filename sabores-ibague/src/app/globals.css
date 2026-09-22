@@ -1335,6 +1335,12 @@ footer {
 }
 .restaurant-head h1 { font-size: clamp(1.9rem, 4vw, 2.6rem); color: var(--text); }
 .restaurant-head ~ .price-row + .service-badges { margin-top: 1rem; }
+/* The safety note now sits between the service badges and the contact
+   buttons (moved back above them — see the page's own comment for why),
+   so the gap that used to go straight from badges to buttons is now
+   badges-to-note, then note-to-buttons (the latter comes from
+   .safety-note's own bottom margin, below). */
+.service-badges + .safety-note { margin-top: 1rem; }
 .share-btn {
   flex: none;
   display: inline-flex;
@@ -1459,7 +1465,7 @@ footer {
 .call-btn:hover { border-color: var(--maiz-deep); }
 .safety-note {
   display: block;
-  margin: -0.5rem 0 1.5rem;
+  margin: 0 0 1.25rem;
   font-size: 0.82rem;
   line-height: 1.5;
   color: var(--achiote-deep);
