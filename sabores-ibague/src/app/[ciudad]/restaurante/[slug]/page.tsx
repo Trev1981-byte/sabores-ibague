@@ -172,26 +172,23 @@ export default async function RestaurantPage({
 
       {/* Contact moved up here (above the address/hours/blurb block) so a
           visitor doesn't have to scroll past all of that to find how to
-          reach the restaurant — this is the page's main job. */}
-      <div className="safety-note">
-        <span className="safety-note-icon" aria-hidden="true">
-          ⚠️
-        </span>
-        <p>
-          Preferimos que no pagues ni transfieras dinero por adelantado,
-          sobre todo la primera vez que le compras a este restaurante — paga
-          en persona, ya sea al recibir tu pedido o directamente en el
-          restaurante. Colcocina solo los conecta — el pedido y el pago se
-          hacen directamente con ellos.{" "}
-          <Link href="/seguridad">Más consejos de seguridad →</Link>
-        </p>
-      </div>
-
+          reach the restaurant — this is the page's main job. The safety
+          note sits below it, condensed to one line: on mobile the old
+          three-sentence version pushed contact off the first screen,
+          which defeats the point of moving it up here at all. */}
       <ContactButtons
         restaurantId={restaurant.id}
         callHref={callHref}
         whatsappHref={whatsappHref}
       />
+
+      <p className="safety-note">
+        <span className="safety-note-icon" aria-hidden="true">
+          ⚠️
+        </span>
+        No pagues por adelantado — paga en persona.{" "}
+        <Link href="/seguridad">Más consejos →</Link>
+      </p>
 
       <div className="restaurant-meta-list">
         <p>
