@@ -830,3 +830,90 @@ export async function toggleRestaurantLike(
   }
   return Boolean(data);
 }
+
+export type CityVisitCount = {
+  city: string;
+  region: string;
+  visitCount: number;
+};
+
+/**
+ * How many page views came from each city, most recent stats window
+ * first — this is what answers "is my ad actually reaching Ibagué"
+ * without digging through GA4. The underlying data comes from
+ * src/middleware.ts, which logs one row per real page view using
+ * Vercel's own IP-geolocation headers.
+ *
+ * Same admin-key-gated pattern as the rest of the admin surface: wrong
+ * or missing key just comes back as an empty list.
+ */
+export async function getAdminVisitsByCity(
+  adminKey: string,
+  sinceDays: number | null
+): Promise<CityVisitCount[]> {
+  const since = sinceDays === null ? null : daysAgoIso(sinceDays);
+
+  const { data, error } = await supabase.rpc("admin_visits_by_city", {
+    p_key: adminKey,
+    p_since: since ?? undefined,
+  });
+
+  if (error) {
+    console.error("getAdminVisitsByCity failed:", error.message);
+    return [];
+  }
+
+  return (data ?? []).map((row) => ({
+    city: row.city,
+    region: row.region,
+    visitCount: row.visit_count,
+  }));
+}
+
+export type RestaurantEngagement = {
+  restaurantId: string;
+  name: string;
+  slug: string;
+  viewCount: number;
+  impressionCount: number;
+  callCount: number;
+  whatsappCount: number;
+};
+
+/**
+ * Per-restaurant engagement for every approved listing in one call:
+ * profile views, category-card impressions, calls, and WhatsApp taps.
+ * Powers the admin stats page's restaurant table — same idea as
+ * getRestaurantStats, but for every restaurant at once instead of one
+ * vendor's own listing.
+ */
+export async function getAdminEngagementByRestaurant(
+  adminKey: string,
+  sinceDays: number | null
+): Promise<RestaurantEngagement[]> {
+  const since = sinceDays === null ? null : daysAgoIso(sinceDays);
+
+  const { data, error } = await supabase.rpc("admin_engagement_by_restaurant", {
+    p_key: adminKey,
+    p_since: since ?? undefined,
+  });
+
+  if (error) {
+    console.error("getAdminEngagementByRestaurant failed:", error.message);
+    return [];
+  }
+
+  return (data ?? []).map((row) => ({
+    restaurantId: row.restaurant_id,
+    name: row.name,
+    slug: row.slug,
+    viewCount: row.view_count,
+    impressionCount: row.impression_count,
+    callCount: row.call_count,
+    whatsappCount: row.whatsapp_count,
+  }));
+}
+
+function daysAgoIso(days: number): string {
+  return new Date(Date.now() - days * 24 * 60 * 60 * 1000).toISOString();
+}
