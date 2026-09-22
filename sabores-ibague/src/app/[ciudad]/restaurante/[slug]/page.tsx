@@ -170,18 +170,13 @@ export default async function RestaurantPage({
       </div>
       <ServiceBadges restaurant={restaurant} />
 
-      {/* Contact moved up here (above the address/hours/blurb block) so a
-          visitor doesn't have to scroll past all of that to find how to
-          reach the restaurant — this is the page's main job. The safety
-          note sits below it, condensed to one line: on mobile the old
-          three-sentence version pushed contact off the first screen,
-          which defeats the point of moving it up here at all. */}
-      <ContactButtons
-        restaurantId={restaurant.id}
-        callHref={callHref}
-        whatsappHref={whatsappHref}
-      />
-
+      {/* Contact info still sits up here (above the address/hours/blurb
+          block) so a visitor doesn't have to scroll past all of that to
+          find how to reach the restaurant. The safety note now sits
+          above the buttons instead of below them — short enough now
+          (one line) that it doesn't push the buttons down the way the
+          old boxed paragraph did, and reading it before tapping
+          Llamar/WhatsApp is the more natural order for a warning. */}
       <p className="safety-note">
         <span className="safety-note-icon" aria-hidden="true">
           ⚠️
@@ -189,6 +184,12 @@ export default async function RestaurantPage({
         No pagues por adelantado — paga en persona.{" "}
         <Link href="/seguridad">Más consejos →</Link>
       </p>
+
+      <ContactButtons
+        restaurantId={restaurant.id}
+        callHref={callHref}
+        whatsappHref={whatsappHref}
+      />
 
       <div className="restaurant-meta-list">
         <p>
