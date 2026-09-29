@@ -983,6 +983,54 @@ footer {
   cursor: pointer;
 }
 .edit-link-row button:hover { background: var(--achiote-deep); }
+.edit-link-intro {
+  margin: 0 0 0.4rem;
+  font-weight: 700;
+  font-size: 0.92rem;
+  color: var(--text);
+}
+.edit-link-uses {
+  margin: 0 0 0.85rem;
+  padding-left: 1.2rem;
+  font-size: 0.9rem;
+  color: var(--text-soft);
+}
+.edit-link-uses li + li { margin-top: 0.2rem; }
+.form-retry { margin-top: 1.5rem; }
+
+/* Menu rows on the public signup form — the name takes the spare width,
+   the price stays compact; both override .field input's full width. */
+.signup-menu-row {
+  display: flex;
+  gap: 0.5rem;
+  align-items: center;
+}
+.field .signup-menu-row input:first-child { flex: 2 1 0; width: auto; }
+.field .signup-menu-row input:nth-child(2) { flex: 1 1 0; width: auto; }
+.signup-menu-remove {
+  flex: none;
+  background: none;
+  border: 0;
+  color: var(--text-mute);
+  font-size: 1rem;
+  padding: 0.4rem;
+  cursor: pointer;
+}
+.signup-menu-remove:hover { color: var(--achiote); }
+.signup-menu-add {
+  justify-self: start;
+  align-self: flex-start;
+  background: none;
+  border: 0;
+  padding: 0.2rem 0;
+  font-family: var(--font-karla), sans-serif;
+  font-weight: 700;
+  font-size: 0.9rem;
+  color: var(--anil);
+  cursor: pointer;
+}
+.signup-menu-add:hover { text-decoration: underline; }
+
 .edit-link-hint {
   margin: 0.85rem 0 0;
   font-size: 0.85rem;
