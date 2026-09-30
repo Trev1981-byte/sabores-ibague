@@ -999,14 +999,20 @@ footer {
 .form-retry { margin-top: 1.5rem; }
 
 /* Menu rows on the public signup form — the name takes the spare width,
-   the price stays compact; both override .field input's full width. */
+   the price stays compact. The inputs keep .field input's width: 100%
+   on purpose: with width: auto each one claims its default ~20-character
+   width as a minimum, and two of those side by side stretched the whole
+   form (and the page) wider than a 360px phone. min-width: 0 on the row
+   is a second guard, since it's a grid item inside .field and grid items
+   won't shrink below their content by default. */
 .signup-menu-row {
   display: flex;
   gap: 0.5rem;
   align-items: center;
+  min-width: 0;
 }
-.field .signup-menu-row input:first-child { flex: 2 1 0; width: auto; }
-.field .signup-menu-row input:nth-child(2) { flex: 1 1 0; width: auto; }
+.field .signup-menu-row input:first-child { flex: 2 1 0; }
+.field .signup-menu-row input:nth-child(2) { flex: 1 1 0; }
 .signup-menu-remove {
   flex: none;
   background: none;
@@ -1149,6 +1155,7 @@ footer {
 .cover-photo {
   display: block;
   width: 100%;
+  max-width: 100%;
   height: 100%;
   object-fit: cover;
 }
