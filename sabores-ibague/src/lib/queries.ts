@@ -6,21 +6,28 @@ export type Restaurant = Tables<"restaurants">;
 export type MenuItem = Tables<"menu_items">;
 
 /**
- * A restaurant as public listings show it: every column except
- * edit_token (a vendor's private edit link, which must never reach a
- * listing), plus its place in the display order.
+ * A restaurant as the public site sees it: every column except edit_token
+ * (a vendor's private edit link). Public roles can't read edit_token at
+ * all (supabase/migrations/0003_hide_edit_token.sql), so any query against
+ * restaurants from this file has to name its columns — select("*") would
+ * be refused outright.
  */
-export type ListedRestaurant = Omit<Restaurant, "edit_token"> & {
+export type PublicRestaurant = Omit<Restaurant, "edit_token">;
+
+// The columns public roles are allowed to read on restaurants. A column
+// added to the table later stays private until it's granted in a
+// migration and added here.
+const PUBLIC_RESTAURANT_COLUMNS =
+  "id, name, slug, city, neighborhood, price_level, blurb, whatsapp_number, phone_number, hours_text, maps_link, is_approved, is_featured, created_at, photo_url, has_delivery, has_takeout, has_dine_in, address";
+
+/** A public restaurant plus its place in the display order. */
+export type ListedRestaurant = PublicRestaurant & {
   sort_tier: number;
   daily_shuffle_key: string;
 };
 
-// Everything restaurants_ranked exposes — spelled out rather than "*" so
-// a listing can never quietly start pulling a new column it shouldn't.
-const LISTING_COLUMNS =
-  "id, name, slug, city, neighborhood, price_level, blurb, whatsapp_number, " +
-  "phone_number, hours_text, maps_link, is_approved, is_featured, created_at, " +
-  "photo_url, has_delivery, has_takeout, has_dine_in, address, sort_tier, daily_shuffle_key";
+// Everything restaurants_ranked exposes.
+const LISTING_COLUMNS = `${PUBLIC_RESTAURANT_COLUMNS}, sort_tier, daily_shuffle_key`;
 
 /**
  * Display order for every restaurant listing, site-wide: featured first
@@ -221,10 +228,10 @@ export async function getRestaurantNeighborsInCategory(
 export async function getRestaurantBySlug(
   slug: string,
   cityName: string
-): Promise<Restaurant | null> {
+): Promise<PublicRestaurant | null> {
   const { data, error } = await supabase
     .from("restaurants")
-    .select("*")
+    .select(PUBLIC_RESTAURANT_COLUMNS)
     .eq("slug", slug)
     .eq("city", cityName)
     .eq("is_approved", true)
@@ -513,7 +520,7 @@ export async function getMenuItemsForSearch(cityName: string): Promise<MenuSearc
 export async function getApprovedRestaurantCount(cityName: string): Promise<number> {
   const { count, error } = await supabase
     .from("restaurants")
-    .select("*", { count: "exact", head: true })
+    .select("id", { count: "exact", head: true })
     .eq("is_approved", true)
     .eq("city", cityName);
 
