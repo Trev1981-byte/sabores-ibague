@@ -2,7 +2,12 @@
 
 import { useEffect, useRef, useState } from "react";
 import type { ChangeEvent, FormEvent } from "react";
-import { addMenuItem, setRestaurantPhoto, submitRestaurant } from "@/lib/queries";
+import {
+  addMenuItem,
+  MAX_CATEGORIES_PER_RESTAURANT,
+  setRestaurantPhoto,
+  submitRestaurant,
+} from "@/lib/queries";
 import type { Category } from "@/lib/queries";
 import { uploadPhoto } from "@/lib/uploadPhoto";
 import { CategoryIcon } from "@/components/CategoryIcon";
@@ -99,11 +104,13 @@ export function AddRestaurantForm({ categories }: { categories: Category[] }) {
   }
 
   function toggleCategory(id: string) {
-    setSelectedCategories((current) =>
-      current.includes(id)
-        ? current.filter((c) => c !== id)
-        : [...current, id]
-    );
+    setSelectedCategories((current) => {
+      if (current.includes(id)) return current.filter((c) => c !== id);
+      // Already at the limit — the unchecked boxes are disabled, this
+      // just makes sure nothing slips past that.
+      if (current.length >= MAX_CATEGORIES_PER_RESTAURANT) return current;
+      return [...current, id];
+    });
   }
 
   async function handleSubmit(event: FormEvent<HTMLFormElement>) {
@@ -145,6 +152,10 @@ export function AddRestaurantForm({ categories }: { categories: Category[] }) {
     }
     if (selectedCategories.length === 0) {
       setError("Selecciona al menos una categoría.");
+      return;
+    }
+    if (selectedCategories.length > MAX_CATEGORIES_PER_RESTAURANT) {
+      setError(`Elige máximo ${MAX_CATEGORIES_PER_RESTAURANT} categorías.`);
       return;
     }
     if (!hasDineIn && !hasTakeout && !hasDelivery) {
@@ -559,13 +570,20 @@ export function AddRestaurantForm({ categories }: { categories: Category[] }) {
       </div>
 
       <div className="field">
-        <span className="field-label-static">Categorías *</span>
+        <span className="field-label-static">Categorías * (máximo {MAX_CATEGORIES_PER_RESTAURANT})</span>
+        <p className="field-hint">
+          Elige las {MAX_CATEGORIES_PER_RESTAURANT} que mejor describen lo que más vendes.
+        </p>
         <div className="category-checks">
           {categories.map((category) => (
             <label key={category.id} className="category-check">
               <input
                 type="checkbox"
                 checked={selectedCategories.includes(category.id)}
+                disabled={
+                  !selectedCategories.includes(category.id) &&
+                  selectedCategories.length >= MAX_CATEGORIES_PER_RESTAURANT
+                }
                 onChange={() => toggleCategory(category.id)}
               />
               <CategoryIcon

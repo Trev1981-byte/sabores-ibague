@@ -4,7 +4,11 @@ import { useEffect, useState } from "react";
 import type { FormEvent } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
-import { adminCreateRestaurant, getCategories } from "@/lib/queries";
+import {
+  adminCreateRestaurant,
+  getCategories,
+  MAX_CATEGORIES_PER_RESTAURANT,
+} from "@/lib/queries";
 import type { Category } from "@/lib/queries";
 import { CategoryIcon } from "@/components/CategoryIcon";
 
@@ -39,9 +43,11 @@ export default function AdminAddRestaurantPage() {
   }, []);
 
   function toggleCategory(id: string) {
-    setSelectedCategories((current) =>
-      current.includes(id) ? current.filter((c) => c !== id) : [...current, id]
-    );
+    setSelectedCategories((current) => {
+      if (current.includes(id)) return current.filter((c) => c !== id);
+      if (current.length >= MAX_CATEGORIES_PER_RESTAURANT) return current;
+      return [...current, id];
+    });
   }
 
   async function handleSubmit(event: FormEvent<HTMLFormElement>) {
@@ -268,13 +274,17 @@ export default function AdminAddRestaurantPage() {
           </div>
 
           <div className="field">
-            <span className="field-label-static">Categorías *</span>
+            <span className="field-label-static">Categorías * (máximo {MAX_CATEGORIES_PER_RESTAURANT})</span>
             <div className="category-checks">
               {categories.map((category) => (
                 <label key={category.id} className="category-check">
                   <input
                     type="checkbox"
                     checked={selectedCategories.includes(category.id)}
+                    disabled={
+                      !selectedCategories.includes(category.id) &&
+                      selectedCategories.length >= MAX_CATEGORIES_PER_RESTAURANT
+                    }
                     onChange={() => toggleCategory(category.id)}
                   />
                   <CategoryIcon

@@ -5,6 +5,12 @@ export type Category = Tables<"categories">;
 export type Restaurant = Tables<"restaurants">;
 export type MenuItem = Tables<"menu_items">;
 
+/** Most categories one restaurant can be listed under. Every category
+ *  picker enforces this, and so does the database itself (see
+ *  supabase/migrations/0004_cap_restaurant_categories.sql) — keep the two
+ *  in sync if this ever changes. */
+export const MAX_CATEGORIES_PER_RESTAURANT = 2;
+
 /**
  * A restaurant as the public site sees it: every column except edit_token
  * (a vendor's private edit link). Public roles can't read edit_token at

@@ -14,6 +14,7 @@ import {
   getCategories,
   getRestaurantCategories,
   updateRestaurantInfo,
+  MAX_CATEGORIES_PER_RESTAURANT,
 } from "@/lib/queries";
 import type { Category, Restaurant, MenuItem, RestaurantStats } from "@/lib/queries";
 import { uploadPhoto } from "@/lib/uploadPhoto";
@@ -68,10 +69,14 @@ export default function ManageRestaurantPage({
   const [editHasDelivery, setEditHasDelivery] = useState(false);
   const [editCategoryIds, setEditCategoryIds] = useState<string[]>([]);
 
+  // Listings from before the cap can open with more than the limit
+  // checked — unchecking always works, adding only below the limit.
   function toggleEditCategory(id: string) {
-    setEditCategoryIds((current) =>
-      current.includes(id) ? current.filter((c) => c !== id) : [...current, id]
-    );
+    setEditCategoryIds((current) => {
+      if (current.includes(id)) return current.filter((c) => c !== id);
+      if (current.length >= MAX_CATEGORIES_PER_RESTAURANT) return current;
+      return [...current, id];
+    });
   }
 
   useEffect(() => {
@@ -242,6 +247,12 @@ export default function ManageRestaurantPage({
     }
     if (editCategoryIds.length === 0) {
       setInfoError("Selecciona al menos una categoría.");
+      return;
+    }
+    if (editCategoryIds.length > MAX_CATEGORIES_PER_RESTAURANT) {
+      setInfoError(
+        `Ahora cada restaurante puede tener máximo ${MAX_CATEGORIES_PER_RESTAURANT} categorías — desmarca las que sobran.`
+      );
       return;
     }
     if (!editHasDineIn && !editHasTakeout && !editHasDelivery) {
@@ -523,13 +534,20 @@ export default function ManageRestaurantPage({
           </div>
 
           <div className="field">
-            <span className="field-label-static">Categorías *</span>
+            <span className="field-label-static">Categorías * (máximo {MAX_CATEGORIES_PER_RESTAURANT})</span>
+            <p className="field-hint">
+              Elige las {MAX_CATEGORIES_PER_RESTAURANT} que mejor describen lo que más vendes.
+            </p>
             <div className="category-checks">
               {categories.map((category) => (
                 <label key={category.id} className="category-check">
                   <input
                     type="checkbox"
                     checked={editCategoryIds.includes(category.id)}
+                    disabled={
+                      !editCategoryIds.includes(category.id) &&
+                      editCategoryIds.length >= MAX_CATEGORIES_PER_RESTAURANT
+                    }
                     onChange={() => toggleEditCategory(category.id)}
                   />
                   <CategoryIcon

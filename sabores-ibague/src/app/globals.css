@@ -884,6 +884,11 @@ footer {
   cursor: pointer;
 }
 .category-check input { flex: none; }
+/* Unchecked tiles once the category limit is reached. */
+.category-check:has(input:disabled) {
+  opacity: 0.45;
+  cursor: not-allowed;
+}
 .category-check-icon { width: 1.5rem; height: 1.5rem; flex: none; }
 .category-check-emoji { font-size: 1.5rem; line-height: 1; flex: none; }
 .category-check-label {
