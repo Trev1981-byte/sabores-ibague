@@ -5,6 +5,41 @@ export type Category = Tables<"categories">;
 export type Restaurant = Tables<"restaurants">;
 export type MenuItem = Tables<"menu_items">;
 
+/**
+ * A restaurant as public listings show it: every column except
+ * edit_token (a vendor's private edit link, which must never reach a
+ * listing), plus its place in the display order.
+ */
+export type ListedRestaurant = Omit<Restaurant, "edit_token"> & {
+  sort_tier: number;
+  daily_shuffle_key: string;
+};
+
+// Everything restaurants_ranked exposes — spelled out rather than "*" so
+// a listing can never quietly start pulling a new column it shouldn't.
+const LISTING_COLUMNS =
+  "id, name, slug, city, neighborhood, price_level, blurb, whatsapp_number, " +
+  "phone_number, hours_text, maps_link, is_approved, is_featured, created_at, " +
+  "photo_url, has_delivery, has_takeout, has_dine_in, address, sort_tier, daily_shuffle_key";
+
+/**
+ * Display order for every restaurant listing, site-wide: featured first
+ * (sort_tier 0), then places with WhatsApp (1), then phone-only (2), and
+ * within a tier a shuffle that's the same for everyone all day and
+ * reshuffles at midnight Colombia time — so placement can't be gamed by
+ * renaming a restaurant to start with "A". Both values are computed by
+ * the restaurants_ranked view (supabase/migrations/0002_restaurants_ranked.sql);
+ * this just applies them where results get sorted in JS.
+ */
+function byListingRank(
+  a: { sort_tier: number; daily_shuffle_key: string },
+  b: { sort_tier: number; daily_shuffle_key: string }
+): number {
+  if (a.sort_tier !== b.sort_tier) return a.sort_tier - b.sort_tier;
+  if (a.daily_shuffle_key === b.daily_shuffle_key) return 0;
+  return a.daily_shuffle_key < b.daily_shuffle_key ? -1 : 1;
+}
+
 /** Short label for each price tier — used anywhere the raw "$" / "$$" /
  *  "$$$" symbol needs to read as an actual feature instead of just a stray
  *  currency sign (the public restaurant page, category cards, etc). */
@@ -59,18 +94,18 @@ export async function getCategoryBySlug(slug: string): Promise<Category | null> 
 }
 
 /**
- * Approved restaurants tagged with a given category, in a given city,
- * newest first. Restaurants aren't public until is_approved = true (see
- * supabase/migrations/0001_initial_schema.sql), so this only ever returns
- * what a shopper is actually meant to see.
+ * Approved restaurants tagged with a given category, in a given city, in
+ * listing order (see byListingRank). Restaurants aren't public until
+ * is_approved = true (see supabase/migrations/0001_initial_schema.sql), so
+ * this only ever returns what a shopper is actually meant to see.
  */
 export async function getApprovedRestaurantsByCategory(
   categoryId: string,
   cityName: string
-): Promise<Restaurant[]> {
+): Promise<ListedRestaurant[]> {
   const { data, error } = await supabase
     .from("restaurant_categories")
-    .select("restaurants(*)")
+    .select(`restaurants_ranked(${LISTING_COLUMNS})`)
     .eq("category_id", categoryId);
 
   if (error) {
@@ -78,14 +113,16 @@ export async function getApprovedRestaurantsByCategory(
     return [];
   }
 
-  return (data ?? [])
-    .map((row) => row.restaurants)
-    .filter((r): r is Restaurant => r !== null && r.is_approved && r.city === cityName)
-    // Alphabetical, not insertion order — makes the list predictable for a
-    // shopper scanning it, and gives the restaurant page's prev/next
-    // links (see getRestaurantNeighborsInCategory) something stable to
-    // walk through in the same order this page shows them in.
-    .sort((a, b) => a.name.localeCompare(b.name, "es"));
+  // View columns come back typed as nullable, so this pins them to the
+  // shape the view actually guarantees for real restaurant rows.
+  const rows = (data ?? []) as unknown as { restaurants_ranked: ListedRestaurant | null }[];
+  return rows
+    .map((row) => row.restaurants_ranked)
+    .filter((r): r is ListedRestaurant => r !== null && r.is_approved && r.city === cityName)
+    // The restaurant page's prev/next links (see
+    // getRestaurantNeighborsInCategory) walk this same order, so they
+    // always match what the category page shows that day.
+    .sort(byListingRank);
 }
 
 /**
@@ -148,8 +185,8 @@ export type RestaurantNeighbor = { name: string; slug: string };
 
 /**
  * The restaurant immediately before and after this one within a given
- * category, alphabetically — the same order that category's own page
- * lists them in. Powers the "anterior / siguiente" links at the bottom of
+ * category, in the same order that category's own page lists them in
+ * today. Powers the "anterior / siguiente" links at the bottom of
  * a restaurant's page: real, crawlable links back into that category
  * instead of a dead end, which is also just better internal linking for
  * search engines. No wraparound — the first restaurant in a category
@@ -388,22 +425,27 @@ export type RestaurantSearchResult = {
  * Name + slug for every approved restaurant in a city — lightweight data
  * (no photos, no menu) for the home page's search bar, so typing a
  * restaurant's actual name finds that restaurant directly instead of only
- * matching category names.
+ * matching category names. Comes back in listing order (see
+ * byListingRank), which the search box keeps when it filters.
  */
 export async function getApprovedRestaurantsForSearch(
   cityName: string
 ): Promise<RestaurantSearchResult[]> {
   const { data, error } = await supabase
-    .from("restaurants")
+    .from("restaurants_ranked")
     .select("id, name, slug")
     .eq("is_approved", true)
-    .eq("city", cityName);
+    .eq("city", cityName)
+    .order("sort_tier", { ascending: true })
+    .order("daily_shuffle_key", { ascending: true });
 
   if (error) {
     console.error("getApprovedRestaurantsForSearch failed:", error.message);
     return [];
   }
-  return data ?? [];
+  // View columns come back typed as nullable; id, name and slug are never
+  // null on a real restaurant row.
+  return (data ?? []) as RestaurantSearchResult[];
 }
 
 export type MenuSearchResult = {
@@ -413,13 +455,19 @@ export type MenuSearchResult = {
   restaurantSlug: string;
 };
 
+type MenuSearchRestaurant = {
+  name: string;
+  slug: string;
+  is_approved: boolean;
+  city: string;
+  sort_tier: number;
+  daily_shuffle_key: string;
+};
+
 type MenuItemSearchRow = {
   id: string;
   name: string;
-  restaurants:
-    | { name: string; slug: string; is_approved: boolean; city: string }
-    | { name: string; slug: string; is_approved: boolean; city: string }[]
-    | null;
+  restaurants_ranked: MenuSearchRestaurant | MenuSearchRestaurant[] | null;
 };
 
 /**
@@ -427,14 +475,17 @@ type MenuItemSearchRow = {
  * it — lightweight data for the home page's search bar, so typing a
  * specific food (e.g. "cheeseburger") finds the restaurants that actually
  * serve it, not just a matching category. Joins straight through to
- * restaurants so only approved, in-city dishes ever come back.
+ * restaurants so only approved, in-city dishes ever come back. Dishes are
+ * grouped in their restaurant's listing order (see byListingRank).
  */
 export async function getMenuItemsForSearch(cityName: string): Promise<MenuSearchResult[]> {
   const { data, error } = await supabase
     .from("menu_items")
-    .select("id, name, restaurants!inner(name, slug, is_approved, city)")
-    .eq("restaurants.is_approved", true)
-    .eq("restaurants.city", cityName);
+    .select(
+      "id, name, restaurants_ranked!inner(name, slug, is_approved, city, sort_tier, daily_shuffle_key)"
+    )
+    .eq("restaurants_ranked.is_approved", true)
+    .eq("restaurants_ranked.city", cityName);
 
   if (error) {
     console.error("getMenuItemsForSearch failed:", error.message);
@@ -443,16 +494,19 @@ export async function getMenuItemsForSearch(cityName: string): Promise<MenuSearc
 
   return ((data ?? []) as unknown as MenuItemSearchRow[])
     .map((row) => {
-      const restaurant = Array.isArray(row.restaurants) ? row.restaurants[0] : row.restaurants;
-      if (!restaurant) return null;
-      return {
-        id: row.id,
-        name: row.name,
-        restaurantName: restaurant.name,
-        restaurantSlug: restaurant.slug,
-      };
+      const restaurant = Array.isArray(row.restaurants_ranked)
+        ? row.restaurants_ranked[0]
+        : row.restaurants_ranked;
+      return restaurant ? { row, restaurant } : null;
     })
-    .filter((r): r is MenuSearchResult => r !== null);
+    .filter((r): r is { row: MenuItemSearchRow; restaurant: MenuSearchRestaurant } => r !== null)
+    .sort((a, b) => byListingRank(a.restaurant, b.restaurant))
+    .map(({ row, restaurant }) => ({
+      id: row.id,
+      name: row.name,
+      restaurantName: restaurant.name,
+      restaurantSlug: restaurant.slug,
+    }));
 }
 
 /** How many restaurants are live right now in a given city — used for that city's home page empty state. */

@@ -65,6 +65,13 @@ export type Database = {
             referencedRelation: "restaurants"
             referencedColumns: ["id"]
           },
+          {
+            foreignKeyName: "contact_clicks_restaurant_id_fkey"
+            columns: ["restaurant_id"]
+            isOneToOne: false
+            referencedRelation: "restaurants_ranked"
+            referencedColumns: ["id"]
+          },
         ]
       }
       menu_items: {
@@ -100,6 +107,13 @@ export type Database = {
             referencedRelation: "restaurants"
             referencedColumns: ["id"]
           },
+          {
+            foreignKeyName: "menu_items_restaurant_id_fkey"
+            columns: ["restaurant_id"]
+            isOneToOne: false
+            referencedRelation: "restaurants_ranked"
+            referencedColumns: ["id"]
+          },
         ]
       }
       page_visits: {
@@ -111,6 +125,7 @@ export type Database = {
           path: string
           referrer: string | null
           region: string | null
+          visitor_id: string | null
         }
         Insert: {
           city?: string | null
@@ -120,6 +135,7 @@ export type Database = {
           path: string
           referrer?: string | null
           region?: string | null
+          visitor_id?: string | null
         }
         Update: {
           city?: string | null
@@ -129,6 +145,7 @@ export type Database = {
           path?: string
           referrer?: string | null
           region?: string | null
+          visitor_id?: string | null
         }
         Relationships: []
       }
@@ -158,6 +175,13 @@ export type Database = {
             columns: ["restaurant_id"]
             isOneToOne: false
             referencedRelation: "restaurants"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "restaurant_categories_restaurant_id_fkey"
+            columns: ["restaurant_id"]
+            isOneToOne: false
+            referencedRelation: "restaurants_ranked"
             referencedColumns: ["id"]
           },
         ]
@@ -192,6 +216,13 @@ export type Database = {
             referencedRelation: "restaurants"
             referencedColumns: ["id"]
           },
+          {
+            foreignKeyName: "restaurant_edit_history_restaurant_id_fkey"
+            columns: ["restaurant_id"]
+            isOneToOne: false
+            referencedRelation: "restaurants_ranked"
+            referencedColumns: ["id"]
+          },
         ]
       }
       restaurant_likes: {
@@ -216,6 +247,13 @@ export type Database = {
             columns: ["restaurant_id"]
             isOneToOne: false
             referencedRelation: "restaurants"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "restaurant_likes_restaurant_id_fkey"
+            columns: ["restaurant_id"]
+            isOneToOne: false
+            referencedRelation: "restaurants_ranked"
             referencedColumns: ["id"]
           },
         ]
@@ -245,6 +283,13 @@ export type Database = {
             columns: ["restaurant_id"]
             isOneToOne: false
             referencedRelation: "restaurants"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "restaurant_page_events_restaurant_id_fkey"
+            columns: ["restaurant_id"]
+            isOneToOne: false
+            referencedRelation: "restaurants_ranked"
             referencedColumns: ["id"]
           },
         ]
@@ -320,7 +365,78 @@ export type Database = {
       }
     }
     Views: {
-      [_ in never]: never
+      restaurants_ranked: {
+        Row: {
+          address: string | null
+          blurb: string | null
+          city: string | null
+          created_at: string | null
+          daily_shuffle_key: string | null
+          has_delivery: boolean | null
+          has_dine_in: boolean | null
+          has_takeout: boolean | null
+          hours_text: string | null
+          id: string | null
+          is_approved: boolean | null
+          is_featured: boolean | null
+          maps_link: string | null
+          name: string | null
+          neighborhood: string | null
+          phone_number: string | null
+          photo_url: string | null
+          price_level: string | null
+          slug: string | null
+          sort_tier: number | null
+          whatsapp_number: string | null
+        }
+        Insert: {
+          address?: string | null
+          blurb?: string | null
+          city?: string | null
+          created_at?: string | null
+          daily_shuffle_key?: never
+          has_delivery?: boolean | null
+          has_dine_in?: boolean | null
+          has_takeout?: boolean | null
+          hours_text?: string | null
+          id?: string | null
+          is_approved?: boolean | null
+          is_featured?: boolean | null
+          maps_link?: string | null
+          name?: string | null
+          neighborhood?: string | null
+          phone_number?: string | null
+          photo_url?: string | null
+          price_level?: string | null
+          slug?: string | null
+          sort_tier?: never
+          whatsapp_number?: string | null
+        }
+        Update: {
+          address?: string | null
+          blurb?: string | null
+          city?: string | null
+          created_at?: string | null
+          daily_shuffle_key?: never
+          has_delivery?: boolean | null
+          has_dine_in?: boolean | null
+          has_takeout?: boolean | null
+          hours_text?: string | null
+          id?: string | null
+          is_approved?: boolean | null
+          is_featured?: boolean | null
+          maps_link?: string | null
+          name?: string | null
+          neighborhood?: string | null
+          phone_number?: string | null
+          photo_url?: string | null
+          price_level?: string | null
+          slug?: string | null
+          sort_tier?: never
+          whatsapp_number?: string | null
+        }
+        Relationships: []
+      }
     }
     Functions: {
       add_menu_item_by_token: {
@@ -431,12 +547,17 @@ export type Database = {
         Args: { p_history_id: string; p_key: string }
         Returns: boolean
       }
+      admin_unique_visitor_count: {
+        Args: { p_key: string; p_since?: string }
+        Returns: number
+      }
       admin_visits_by_city: {
         Args: { p_key: string; p_since?: string }
         Returns: {
           city: string
           region: string
           visit_count: number
+          visitor_count: number
         }[]
       }
       delete_menu_item_by_token: {
@@ -501,16 +622,28 @@ export type Database = {
         Args: { p_kind: string; p_restaurant_id: string }
         Returns: undefined
       }
-      log_page_visit: {
-        Args: {
-          p_city?: string
-          p_country?: string
-          p_path: string
-          p_referrer?: string
-          p_region?: string
-        }
-        Returns: undefined
-      }
+      log_page_visit:
+        | {
+            Args: {
+              p_city?: string
+              p_country?: string
+              p_path: string
+              p_referrer?: string
+              p_region?: string
+            }
+            Returns: undefined
+          }
+        | {
+            Args: {
+              p_city?: string
+              p_country?: string
+              p_path: string
+              p_referrer?: string
+              p_region?: string
+              p_visitor_id?: string
+            }
+            Returns: undefined
+          }
       log_restaurant_impressions: {
         Args: { p_restaurant_ids: string[] }
         Returns: undefined
@@ -579,21 +712,122 @@ export type Database = {
   }
 }
 
-type PublicSchema = Database["public"]
+type DatabaseWithoutInternals = Omit<Database, "__InternalSupabase">
 
-export type Tables<T extends keyof (PublicSchema["Tables"] & PublicSchema["Views"])> =
-  (PublicSchema["Tables"] & PublicSchema["Views"])[T] extends { Row: infer R } ? R : never
+type DefaultSchema = DatabaseWithoutInternals[Extract<keyof Database, "public">]
 
-export type TablesInsert<T extends keyof PublicSchema["Tables"]> =
-  PublicSchema["Tables"][T] extends { Insert: infer I } ? I : never
+export type Tables<
+  DefaultSchemaTableNameOrOptions extends
+    | keyof (DefaultSchema["Tables"] & DefaultSchema["Views"])
+    | { schema: keyof DatabaseWithoutInternals },
+  TableName extends (DefaultSchemaTableNameOrOptions extends {
+    schema: keyof DatabaseWithoutInternals
+  }
+    ? keyof (DatabaseWithoutInternals[DefaultSchemaTableNameOrOptions["schema"]]["Tables"] &
+        DatabaseWithoutInternals[DefaultSchemaTableNameOrOptions["schema"]]["Views"])
+    : never) = never,
+> = DefaultSchemaTableNameOrOptions extends {
+  schema: keyof DatabaseWithoutInternals
+}
+  ? (DatabaseWithoutInternals[DefaultSchemaTableNameOrOptions["schema"]]["Tables"] &
+      DatabaseWithoutInternals[DefaultSchemaTableNameOrOptions["schema"]]["Views"])[TableName] extends {
+      Row: infer R
+    }
+    ? R
+    : never
+  : DefaultSchemaTableNameOrOptions extends keyof (DefaultSchema["Tables"] &
+        DefaultSchema["Views"])
+    ? (DefaultSchema["Tables"] &
+        DefaultSchema["Views"])[DefaultSchemaTableNameOrOptions] extends {
+        Row: infer R
+      }
+      ? R
+      : never
+    : never
 
-export type TablesUpdate<T extends keyof PublicSchema["Tables"]> =
-  PublicSchema["Tables"][T] extends { Update: infer U } ? U : never
+export type TablesInsert<
+  DefaultSchemaTableNameOrOptions extends
+    | keyof DefaultSchema["Tables"]
+    | { schema: keyof DatabaseWithoutInternals },
+  TableName extends (DefaultSchemaTableNameOrOptions extends {
+    schema: keyof DatabaseWithoutInternals
+  }
+    ? keyof DatabaseWithoutInternals[DefaultSchemaTableNameOrOptions["schema"]]["Tables"]
+    : never) = never,
+> = DefaultSchemaTableNameOrOptions extends {
+  schema: keyof DatabaseWithoutInternals
+}
+  ? DatabaseWithoutInternals[DefaultSchemaTableNameOrOptions["schema"]]["Tables"][TableName] extends {
+      Insert: infer I
+    }
+    ? I
+    : never
+  : DefaultSchemaTableNameOrOptions extends keyof DefaultSchema["Tables"]
+    ? DefaultSchema["Tables"][DefaultSchemaTableNameOrOptions] extends {
+        Insert: infer I
+      }
+      ? I
+      : never
+    : never
 
-export type Enums<T extends keyof PublicSchema["Enums"]> = PublicSchema["Enums"][T]
+export type TablesUpdate<
+  DefaultSchemaTableNameOrOptions extends
+    | keyof DefaultSchema["Tables"]
+    | { schema: keyof DatabaseWithoutInternals },
+  TableName extends (DefaultSchemaTableNameOrOptions extends {
+    schema: keyof DatabaseWithoutInternals
+  }
+    ? keyof DatabaseWithoutInternals[DefaultSchemaTableNameOrOptions["schema"]]["Tables"]
+    : never) = never,
+> = DefaultSchemaTableNameOrOptions extends {
+  schema: keyof DatabaseWithoutInternals
+}
+  ? DatabaseWithoutInternals[DefaultSchemaTableNameOrOptions["schema"]]["Tables"][TableName] extends {
+      Update: infer U
+    }
+    ? U
+    : never
+  : DefaultSchemaTableNameOrOptions extends keyof DefaultSchema["Tables"]
+    ? DefaultSchema["Tables"][DefaultSchemaTableNameOrOptions] extends {
+        Update: infer U
+      }
+      ? U
+      : never
+    : never
 
-export type CompositeTypes<T extends keyof PublicSchema["CompositeTypes"]> =
-  PublicSchema["CompositeTypes"][T]
+export type Enums<
+  DefaultSchemaEnumNameOrOptions extends
+    | keyof DefaultSchema["Enums"]
+    | { schema: keyof DatabaseWithoutInternals },
+  EnumName extends (DefaultSchemaEnumNameOrOptions extends {
+    schema: keyof DatabaseWithoutInternals
+  }
+    ? keyof DatabaseWithoutInternals[DefaultSchemaEnumNameOrOptions["schema"]]["Enums"]
+    : never) = never,
+> = DefaultSchemaEnumNameOrOptions extends {
+  schema: keyof DatabaseWithoutInternals
+}
+  ? DatabaseWithoutInternals[DefaultSchemaEnumNameOrOptions["schema"]]["Enums"][EnumName]
+  : DefaultSchemaEnumNameOrOptions extends keyof DefaultSchema["Enums"]
+    ? DefaultSchema["Enums"][DefaultSchemaEnumNameOrOptions]
+    : never
+
+export type CompositeTypes<
+  PublicCompositeTypeNameOrOptions extends
+    | keyof DefaultSchema["CompositeTypes"]
+    | { schema: keyof DatabaseWithoutInternals },
+  CompositeTypeName extends (PublicCompositeTypeNameOrOptions extends {
+    schema: keyof DatabaseWithoutInternals
+  }
+    ? keyof DatabaseWithoutInternals[PublicCompositeTypeNameOrOptions["schema"]]["CompositeTypes"]
+    : never) = never,
+> = PublicCompositeTypeNameOrOptions extends {
+  schema: keyof DatabaseWithoutInternals
+}
+  ? DatabaseWithoutInternals[PublicCompositeTypeNameOrOptions["schema"]]["CompositeTypes"][CompositeTypeName]
+  : PublicCompositeTypeNameOrOptions extends keyof DefaultSchema["CompositeTypes"]
+    ? DefaultSchema["CompositeTypes"][PublicCompositeTypeNameOrOptions]
+    : never
 
 export const Constants = {
   public: {
