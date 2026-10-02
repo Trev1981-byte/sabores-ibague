@@ -38,6 +38,32 @@ export type Database = {
         }
         Relationships: []
       }
+      category_descriptions: {
+        Row: {
+          category_id: string
+          city: string
+          description: string
+        }
+        Insert: {
+          category_id: string
+          city: string
+          description: string
+        }
+        Update: {
+          category_id?: string
+          city?: string
+          description?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "category_descriptions_category_id_fkey"
+            columns: ["category_id"]
+            isOneToOne: false
+            referencedRelation: "categories"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       contact_clicks: {
         Row: {
           created_at: string

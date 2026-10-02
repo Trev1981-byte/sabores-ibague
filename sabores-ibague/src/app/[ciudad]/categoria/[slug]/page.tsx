@@ -5,6 +5,7 @@ import { after } from "next/server";
 import {
   getApprovedRestaurantsByCategory,
   getCategoryBySlug,
+  getCategoryDescription,
   logRestaurantImpressions,
   priceLevelBadge,
 } from "@/lib/queries";
@@ -92,7 +93,10 @@ export default async function CategoryPage({
     notFound();
   }
 
-  const restaurants = await getApprovedRestaurantsByCategory(category.id, city.name);
+  const [restaurants, description] = await Promise.all([
+    getApprovedRestaurantsByCategory(category.id, city.name),
+    getCategoryDescription(category.id, city.name),
+  ]);
 
   // The one blog article written for this specific category, if it exists
   // yet — not every category has one. Shown below the listings as a small
@@ -139,8 +143,14 @@ export default async function CategoryPage({
         <span className="detail-emoji" aria-hidden="true">
           {category.emoji}
         </span>
-        <h1>{category.label}</h1>
+        {/* city.name comes from the URL's city segment (src/lib/cities.ts),
+            so every city's page names its own city. */}
+        <h1>
+          {category.label} en {city.name}
+        </h1>
       </div>
+
+      {description && <p className="category-intro">{description}</p>}
 
       {restaurants.length === 0 ? (
         <p className="empty-detail">

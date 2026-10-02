@@ -107,6 +107,30 @@ export async function getCategoryBySlug(slug: string): Promise<Category | null> 
 }
 
 /**
+ * The intro paragraph for one category in one city, or null if none has
+ * been written yet. Descriptions are per city (they name neighborhoods), so
+ * a new city shows no paragraph until it gets its own copy — never another
+ * city's. See supabase/migrations/0007_category_descriptions.sql.
+ */
+export async function getCategoryDescription(
+  categoryId: string,
+  cityName: string
+): Promise<string | null> {
+  const { data, error } = await supabase
+    .from("category_descriptions")
+    .select("description")
+    .eq("category_id", categoryId)
+    .eq("city", cityName)
+    .maybeSingle();
+
+  if (error) {
+    console.error("getCategoryDescription failed:", error.message);
+    return null;
+  }
+  return data?.description ?? null;
+}
+
+/**
  * Approved restaurants tagged with a given category, in a given city, in
  * listing order (see byListingRank). Restaurants aren't public until
  * is_approved = true (see supabase/migrations/0001_initial_schema.sql), so
