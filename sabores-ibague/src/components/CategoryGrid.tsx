@@ -2,6 +2,7 @@
 
 import Link from "next/link";
 import { useMemo, useState } from "react";
+import type { ReactNode } from "react";
 import type { Category, MenuSearchResult, RestaurantSearchResult } from "@/lib/queries";
 import { CategoryIcon } from "@/components/CategoryIcon";
 
@@ -16,16 +17,22 @@ export function CategoryGrid({
   categories,
   restaurantCount,
   citySlug,
-  cityName,
   restaurants,
   menuItems,
+  heroTitle,
+  heroLede,
+  children,
 }: {
   categories: Category[];
   restaurantCount: number;
   citySlug: string;
-  cityName: string;
   restaurants: RestaurantSearchResult[];
   menuItems: MenuSearchResult[];
+  /** The page's one <h1> — per-city copy from src/lib/cityHome.ts. */
+  heroTitle: string;
+  heroLede: string;
+  /** Extra sections rendered after the category grid, inside <main>. */
+  children?: ReactNode;
 }) {
   const [query, setQuery] = useState("");
   const hasQuery = query.trim().length > 0;
@@ -59,12 +66,9 @@ export function CategoryGrid({
       <header className="hero">
         <div className="hero-glow" aria-hidden="true"></div>
         <div className="wrap hero-inner">
-          <span className="eyebrow">Recién empezando en {cityName}</span>
-          <h1>¿Qué se te antoja&nbsp;hoy?</h1>
-          <p className="lede">
-            Tamales, salchipapas, almuerzos corrientes, la parrilla del
-            barrio — encuentra dónde comer en {cityName}, por categoría.
-          </p>
+          <span className="eyebrow">¿Qué se te antoja&nbsp;hoy?</span>
+          <h1>{heroTitle}</h1>
+          <p className="lede">{heroLede}</p>
 
           <form
             className="search-board"
@@ -196,6 +200,8 @@ export function CategoryGrid({
             </p>
           )}
         </div>
+
+        {children}
       </main>
     </>
   );

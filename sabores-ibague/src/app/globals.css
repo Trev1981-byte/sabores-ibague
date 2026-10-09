@@ -444,6 +444,40 @@ img, svg { max-width: 100%; display: block; }
 .cat-emoji { font-size: 1.9rem; line-height: 1; }
 .cat-icon { width: 1.9rem; height: 1.9rem; }
 
+/* Homepage intro + FAQ (src/lib/cityHome.ts), below the category grid.
+   Headings match .section-head h2; body text matches the site's soft
+   paragraph color, kept to a readable line length. */
+.home-copy {
+  padding-bottom: clamp(2.25rem, 5vw, 3.25rem);
+}
+.home-copy h2 {
+  font-size: clamp(1.5rem, 3vw, 1.9rem);
+  color: var(--text);
+  margin-bottom: 0.85rem;
+}
+.home-copy p {
+  max-width: 44rem;
+  margin: 0;
+  color: var(--text-soft);
+  font-size: 1rem;
+}
+.home-faq h2 {
+  margin-bottom: 0.5rem;
+}
+.faq-item {
+  max-width: 44rem;
+  padding-block: 1.1rem;
+  border-bottom: 1px solid var(--line);
+}
+.faq-item:last-child {
+  border-bottom: 0;
+}
+.faq-item h3 {
+  font-size: 1.08rem;
+  color: var(--text);
+  margin-bottom: 0.4rem;
+}
+
 .empty-note {
   margin-top: 1rem;
   font-size: 0.92rem;

@@ -9,6 +9,7 @@ import {
   getMenuItemsForSearch,
 } from "@/lib/queries";
 import { getCityBySlug } from "@/lib/cities";
+import { getCityHomeContent } from "@/lib/cityHome";
 import { SITE_URL } from "@/lib/site";
 
 // Always fetch fresh from Supabase on every visit instead of freezing the
@@ -83,16 +84,63 @@ export default async function CityHome({
     getMenuItemsForSearch(city.name),
   ]);
 
+  // Hand-written copy for this city, if any (src/lib/cityHome.ts). A city
+  // without its own gets a generic hero and skips the intro and FAQ.
+  const content = getCityHomeContent(city.slug);
+  const heroTitle = content?.h1 ?? `Restaurantes en ${city.name}`;
+  const heroLede =
+    content?.lede ??
+    `Tamales, salchipapas, almuerzos corrientes, la parrilla del barrio — encuentra dónde comer en ${city.name}, por categoría.`;
+
+  // FAQPage structured data, built from the same list the visible FAQ
+  // renders, so Google only ever sees questions that are on the page.
+  const faqJsonLd = content && {
+    "@context": "https://schema.org",
+    "@type": "FAQPage",
+    mainEntity: content.faq.items.map((item) => ({
+      "@type": "Question",
+      name: item.question,
+      acceptedAnswer: { "@type": "Answer", text: item.answer },
+    })),
+  };
+
   return (
     <>
+      {faqJsonLd && (
+        <script
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{ __html: JSON.stringify(faqJsonLd) }}
+        />
+      )}
+
       <CategoryGrid
         categories={categories}
         restaurantCount={restaurantCount}
         citySlug={city.slug}
-        cityName={city.name}
         restaurants={restaurants}
         menuItems={menuItems}
-      />
+        heroTitle={heroTitle}
+        heroLede={heroLede}
+      >
+        {content && (
+          <>
+            <section className="wrap home-copy" aria-labelledby="home-about-title">
+              <h2 id="home-about-title">{content.about.heading}</h2>
+              <p>{content.about.paragraph}</p>
+            </section>
+
+            <section className="wrap home-copy home-faq" aria-labelledby="home-faq-title">
+              <h2 id="home-faq-title">{content.faq.heading}</h2>
+              {content.faq.items.map((item) => (
+                <div className="faq-item" key={item.question}>
+                  <h3>{item.question}</h3>
+                  <p>{item.answer}</p>
+                </div>
+              ))}
+            </section>
+          </>
+        )}
+      </CategoryGrid>
 
       <div className="strip">
         <div className="wrap strip-grid">
