@@ -3,6 +3,7 @@ import { SITE_URL } from "@/lib/site";
 import { CITIES } from "@/lib/cities";
 import { getCategories, getApprovedRestaurantSlugs } from "@/lib/queries";
 import { BLOG_POSTS } from "@/lib/blog";
+import { GUIDES, getGuidesForCity } from "@/lib/guides";
 
 // Generates /sitemap.xml automatically — Next.js's built-in convention for
 // this file. Lists every real page Google should know about: each city's
@@ -42,6 +43,17 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   // data, so this doesn't need to sit inside the per-city loop above.
   for (const post of BLOG_POSTS) {
     entries.push({ url: `${SITE_URL}/${post.citySlug}/blog/${post.slug}` });
+  }
+
+  // Guides: each city's /guias index (only cities that have guides), then
+  // every guide.
+  for (const city of CITIES) {
+    if (getGuidesForCity(city.slug).length > 0) {
+      entries.push({ url: `${SITE_URL}/${city.slug}/guias` });
+    }
+  }
+  for (const guide of GUIDES) {
+    entries.push({ url: `${SITE_URL}/${guide.citySlug}/guias/${guide.slug}` });
   }
 
   return entries;

@@ -3,6 +3,7 @@ import { Baloo_2, Karla } from "next/font/google";
 import { GoogleAnalytics } from "@next/third-parties/google";
 import Link from "next/link";
 import { SITE_URL } from "@/lib/site";
+import { DEFAULT_CITY_SLUG } from "@/lib/cities";
 import "./globals.css";
 
 const baloo = Baloo_2({
@@ -69,6 +70,9 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
               </svg>
               <span className="brand-name">Colcocina</span>
             </span>
+            <Link className="foot-link" href={`/${DEFAULT_CITY_SLUG}/guias`}>
+              Guías
+            </Link>
             <Link className="foot-link" href="/seguridad">
               Consejos de seguridad
             </Link>

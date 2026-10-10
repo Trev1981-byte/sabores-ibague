@@ -2006,6 +2006,52 @@ footer {
   line-height: 1.7;
 }
 .blog-page p a { color: var(--achiote); font-weight: 600; }
+
+/* Guides (/<ciudad>/guias and /<ciudad>/guias/<slug>) — built on the
+   .blog-page styles above. */
+.guide-page h1 { margin-bottom: 1rem; }
+.guide-page h2 {
+  font-size: clamp(1.3rem, 2.6vw, 1.55rem);
+  color: var(--text);
+  margin: 2rem 0 0.75rem;
+}
+.guide-page ul {
+  margin: 0 0 1.1rem;
+  padding-left: 1.2rem;
+  color: var(--text-soft);
+  font-size: 0.97rem;
+  line-height: 1.7;
+}
+.guide-page li + li { margin-top: 0.35rem; }
+.guide-page li a { color: var(--achiote); font-weight: 600; }
+.guide-checked {
+  margin-top: 2rem !important;
+  font-size: 0.85rem !important;
+  color: var(--text-mute) !important;
+  border-top: 1px solid var(--line);
+  padding-top: 1rem;
+}
+.guide-back { margin-top: 0.5rem; }
+.guide-list {
+  list-style: none;
+  margin: 1.5rem 0 0;
+  padding: 0;
+  display: grid;
+  gap: 1rem;
+}
+.guide-card {
+  background: var(--surface);
+  border: 1px solid var(--line);
+  border-radius: 12px;
+  padding: 1rem 1.2rem;
+}
+.guide-card h2 {
+  font-size: 1.12rem;
+  margin: 0 0 0.35rem;
+}
+.guide-card h2 a { color: var(--text); text-decoration: none; }
+.guide-card h2 a:hover { color: var(--achiote); }
+.guide-card p { margin: 0 !important; font-size: 0.92rem !important; }
 .blog-disclosure {
   font-size: 0.88rem;
   color: var(--text-mute);
