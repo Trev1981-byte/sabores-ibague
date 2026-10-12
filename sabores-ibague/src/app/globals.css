@@ -1552,6 +1552,13 @@ footer {
   border-radius: 999px;
 }
 .whatsapp-btn:hover { background: #1FB856; }
+/* White WhatsApp glyph on the brand-green (#25D366) button. The label
+   stays dark green: white text on #25D366 is too low-contrast to read. */
+.whatsapp-icon {
+  flex: none;
+  width: 1.3rem;
+  height: 1.3rem;
+}
 
 /* "Consultar disponibilidad" on category-page cards (CardWhatsApp). Sits
    under the card's linked content, full width so it's an easy thumb

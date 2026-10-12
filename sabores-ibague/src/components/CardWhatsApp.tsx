@@ -1,6 +1,7 @@
 "use client";
 
 import { logContactClick } from "@/lib/queries";
+import { WhatsAppIcon } from "@/components/WhatsAppIcon";
 
 /**
  * "Consultar disponibilidad" on a category-page restaurant card, so a
@@ -29,7 +30,8 @@ export function CardWhatsApp({
         aria-label={`Consultar disponibilidad por WhatsApp con ${restaurantName}`}
         onClick={() => logContactClick(restaurantId, "whatsapp")}
       >
-        💬 Consultar disponibilidad
+        <WhatsAppIcon className="whatsapp-icon" />
+        Consultar disponibilidad
       </a>
     </div>
   );

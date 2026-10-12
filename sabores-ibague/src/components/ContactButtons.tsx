@@ -1,6 +1,7 @@
 "use client";
 
 import { logContactClick } from "@/lib/queries";
+import { WhatsAppIcon } from "@/components/WhatsAppIcon";
 
 /**
  * The "Llamar" / "Escribir por WhatsApp" buttons on a restaurant's public
@@ -26,7 +27,8 @@ export function ContactButtons({
       {whatsappHref && (
         <div className="whatsapp-action">
           <a className="whatsapp-btn" href={whatsappHref} target="_blank" rel="noopener noreferrer" onClick={() => logContactClick(restaurantId, "whatsapp")}>
-            💬 Escribir por WhatsApp
+            <WhatsAppIcon className="whatsapp-icon" />
+            Escribir por WhatsApp
           </a>
           <p className="whatsapp-hint">Escríbele al restaurante para más información</p>
         </div>
