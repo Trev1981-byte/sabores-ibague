@@ -13,7 +13,9 @@ import { getCityBySlug } from "@/lib/cities";
 import { getBlogPostByCategorySlug } from "@/lib/blog";
 import { ServiceBadges } from "@/components/ServiceBadges";
 import { LikeButton } from "@/components/LikeButton";
+import { CardWhatsApp } from "@/components/CardWhatsApp";
 import { SITE_URL } from "@/lib/site";
+import { WHATSAPP_MESSAGE, whatsappUrl } from "@/lib/whatsapp";
 
 // Same reasoning as the home page: always ask Supabase fresh, never freeze
 // this page's data at build time.
@@ -159,7 +161,11 @@ export default async function CategoryPage({
         </p>
       ) : (
         <div className="restaurant-list">
-          {restaurants.map((restaurant) => (
+          {restaurants.map((restaurant) => {
+            // Only restaurants with a WhatsApp number get the card button;
+            // phone-only listings keep their card exactly as before.
+            const whatsappHref = whatsappUrl(restaurant.whatsapp_number, WHATSAPP_MESSAGE);
+            return (
             <div className="restaurant-card" key={restaurant.id}>
               <Link href={`/${city.slug}/restaurante/${restaurant.slug}`} className="restaurant-card-link">
                 {restaurant.photo_url ? (
@@ -183,12 +189,20 @@ export default async function CategoryPage({
                   {restaurant.blurb && <p className="blurb">{restaurant.blurb}</p>}
                 </div>
               </Link>
+              {whatsappHref && (
+                <CardWhatsApp
+                  restaurantId={restaurant.id}
+                  restaurantName={restaurant.name}
+                  href={whatsappHref}
+                />
+              )}
               {isNewListing(restaurant.created_at) && (
                 <span className="new-badge">Nuevo</span>
               )}
               <LikeButton restaurantId={restaurant.id} />
             </div>
-          ))}
+            );
+          })}
         </div>
       )}
 

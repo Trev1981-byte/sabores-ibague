@@ -35,9 +35,9 @@ export function ContactButtons({
         <a className="call-btn" href={callHref} onClick={() => logContactClick(restaurantId, "call")}>
           📞 Llamar
         </a>
-        {/* Only next to Call — WhatsApp already opens with "te escribo desde
-            Colcocina.com" pre-filled, so a caller is the only one who needs
-            the nudge to say it out loud themselves. */}
+        {/* Only next to Call — WhatsApp already opens with a message that
+            names ColCocina.com pre-filled (src/lib/whatsapp.ts), so a caller
+            is the only one who needs the nudge to say it out loud. */}
         <p className="call-hint">Cuéntale al restaurante que lo encontraste en Colcocina</p>
       </div>
     </div>

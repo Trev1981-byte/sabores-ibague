@@ -16,6 +16,7 @@ import { ServiceBadges } from "@/components/ServiceBadges";
 import { ContactButtons } from "@/components/ContactButtons";
 import { BackLink } from "@/components/BackLink";
 import { SITE_URL } from "@/lib/site";
+import { WHATSAPP_MESSAGE, whatsappUrl } from "@/lib/whatsapp";
 
 // Same reasoning as the other data-backed pages: never freeze this at
 // build time, since a restaurant's menu can change any time in Supabase.
@@ -112,14 +113,9 @@ export default async function RestaurantPage({
   // the call button always shows. WhatsApp is optional on top of that, and
   // only shows when the restaurant actually has one.
   const callHref = `tel:${restaurant.phone_number.replace(/\D/g, "")}`;
-  // Pre-fills the chat with a line identifying Colcocina as the source —
-  // generic enough to fit any kind of inquiry (not just orders), and the
-  // bare domain text auto-links once WhatsApp sends it.
-  const whatsappHref = restaurant.whatsapp_number
-    ? `https://wa.me/57${restaurant.whatsapp_number.replace(/\D/g, "")}?text=${encodeURIComponent(
-        "Hola, te escribo desde Colcocina.com 👋\n\n"
-      )}`
-    : null;
+  // Same pre-filled "disponibilidad" message as the category cards, which
+  // names Colcocina as the source (see src/lib/whatsapp.ts).
+  const whatsappHref = whatsappUrl(restaurant.whatsapp_number, WHATSAPP_MESSAGE);
 
   // Structured data so Google can understand this as an actual place, not
   // just a page of text — name, address, phone, price tier. Deliberately

@@ -1552,6 +1552,27 @@ footer {
   border-radius: 999px;
 }
 .whatsapp-btn:hover { background: #1FB856; }
+
+/* "Consultar disponibilidad" on category-page cards (CardWhatsApp). Sits
+   under the card's linked content, full width so it's an easy thumb
+   target on phones (min 48px tall), reusing .whatsapp-btn's colors. */
+.card-whatsapp {
+  padding: 0 1.4rem 1.25rem;
+  display: grid;
+  gap: 0.6rem;
+}
+.card-whatsapp-text {
+  margin: 0;
+  font-size: 0.88rem;
+  color: var(--text-soft);
+}
+.card-whatsapp-btn {
+  justify-content: center;
+  width: 100%;
+  min-height: 3rem;
+  text-align: center;
+  white-space: normal;
+}
 .call-btn {
   display: inline-flex;
   align-items: center;
