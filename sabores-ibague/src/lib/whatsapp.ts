@@ -4,14 +4,14 @@
 
 /** Pre-filled message for every WhatsApp button on the site (category
  *  cards and the restaurant page). Asks about availability only — it must
- *  never imply a deal or promotion. The full https:// URL is included so
- *  WhatsApp turns it into a tappable link, and it names Colcocina so the
- *  restaurant knows where the customer came from. */
-// Kept short on purpose: on some phones WhatsApp opens with the cursor at
-// the start of the pre-filled text, and a short, complete message is easy
-// to just send as-is.
+ *  never imply a deal or promotion — and names ColCocina.com so the
+ *  restaurant knows where the customer came from. The https:// makes
+ *  WhatsApp reliably turn it into a tappable link (the capitals are only
+ *  for readability; domains are case-insensitive). Kept short on purpose:
+ *  on some phones WhatsApp opens with the cursor at the start of the
+ *  pre-filled text, and a short, complete message is easy to send as-is. */
 export const WHATSAPP_MESSAGE =
-  "¡Hola! 👋 Vi su restaurante en ColCocina.com: https://colcocina.com ¿Tienen disponibilidad hoy? ¡Gracias!";
+  "¡Hola! 👋 Vi su restaurante en https://ColCocina.com ¿Tienen disponibilidad hoy? ¡Gracias!";
 
 /**
  * https://wa.me/<number>?text=<message>, or null when there's no usable
