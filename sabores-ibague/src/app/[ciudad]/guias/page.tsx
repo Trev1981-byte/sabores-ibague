@@ -4,6 +4,7 @@ import { notFound } from "next/navigation";
 import { CITIES, getCityBySlug } from "@/lib/cities";
 import { getGuidesForCity } from "@/lib/guides";
 import { SITE_URL } from "@/lib/site";
+import { TikTokFollow } from "@/components/TikTokFollow";
 
 // Index of every guide for a city — linked from the site footer so the
 // guides are never orphaned. A city with no guides yet has no index page.
@@ -61,6 +62,13 @@ export default async function GuidesIndexPage({
         <Link href={`/${city.slug}`}>página principal</Link> están todas las
         categorías.
       </p>
+
+      <div className="guide-index-ctas">
+        <Link href={`/${city.slug}`} className="homepage-btn">
+          Ver todos los restaurantes
+        </Link>
+        <TikTokFollow source="guias_index" />
+      </div>
 
       <ul className="guide-list">
         {guides.map((guide) => (

@@ -2060,6 +2060,46 @@ footer {
   padding-top: 1rem;
 }
 .guide-back { margin-top: 0.5rem; }
+/* Top-of-page CTAs on the guides index — a big exit to the real
+   directory for anyone ready to order now, and a lighter TikTok-follow
+   ask for anyone who isn't yet (see TikTokFollow.tsx). */
+.guide-index-ctas {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.75rem;
+  margin: 1.25rem 0 0;
+}
+.homepage-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  background: var(--achiote);
+  color: #FFF8EA;
+  font-weight: 700;
+  font-size: 1rem;
+  text-decoration: none;
+  padding: 0.85rem 1.6rem;
+  border-radius: 999px;
+}
+.homepage-btn:hover { background: var(--achiote-deep); }
+.tiktok-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  background: #000000;
+  color: #FFFFFF;
+  font-weight: 700;
+  font-size: 0.9rem;
+  text-decoration: none;
+  padding: 0.65rem 1.2rem;
+  border-radius: 999px;
+}
+.tiktok-btn:hover { background: #222222; }
+.tiktok-icon {
+  flex: none;
+  width: 1.1rem;
+  height: 1.1rem;
+}
 .guide-list {
   list-style: none;
   margin: 1.5rem 0 0;
