@@ -20,6 +20,14 @@ const karla = Karla({
   style: ["normal", "italic"],
 });
 
+const organizationJsonLd = {
+  "@context": "https://schema.org",
+  "@type": "Organization",
+  name: "Colcocina",
+  url: SITE_URL,
+  logo: `${SITE_URL}/apple-icon.png`,
+};
+
 export const metadata: Metadata = {
   // Every page's metadata builds its own absolute URL by hand (using
   // SITE_URL), so this isn't needed to resolve those — but Next.js still
@@ -38,6 +46,11 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
   return (
     <html lang="es" className={`${baloo.variable} ${karla.variable}`}>
       <body>
+        <script
+          type="application/ld+json"
+          // eslint-disable-next-line react/no-danger
+          dangerouslySetInnerHTML={{ __html: JSON.stringify(organizationJsonLd) }}
+        />
         <div className="topbar">
           <div className="wrap topbar-inner">
             <Link className="brand" href="/">
