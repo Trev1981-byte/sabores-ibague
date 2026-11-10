@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { Baloo_2, Karla } from "next/font/google";
 import { GoogleAnalytics } from "@next/third-parties/google";
+import MetaPixel from "@/components/MetaPixel";
 import Link from "next/link";
 import { SITE_URL } from "@/lib/site";
 import { DEFAULT_CITY_SLUG } from "@/lib/cities";
@@ -92,6 +93,7 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
           on the very first load, since this site never does a full page
           reload after that). */}
       <GoogleAnalytics gaId="G-T1F3737Z8J" />
+      <MetaPixel />
     </html>
   );
 }
