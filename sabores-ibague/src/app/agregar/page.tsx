@@ -1,6 +1,7 @@
 import Link from "next/link";
 import { AddRestaurantForm } from "@/components/AddRestaurantForm";
-import { getCategories } from "@/lib/queries";
+import { getApprovedRestaurantCount, getCategories } from "@/lib/queries";
+import { getCityBySlug, DEFAULT_CITY_SLUG } from "@/lib/cities";
 import { SITE_URL } from "@/lib/site";
 
 export const dynamic = "force-dynamic";
@@ -19,6 +20,8 @@ export const metadata = {
 
 export default async function AddRestaurantPage() {
   const categories = await getCategories();
+  const cityName = getCityBySlug(DEFAULT_CITY_SLUG)?.name ?? "Ibagué";
+  const restaurantCount = await getApprovedRestaurantCount(cityName);
 
   return (
     <main className="wrap form-page">
@@ -33,11 +36,46 @@ export default async function AddRestaurantPage() {
         <h1>Añade tu restaurante</h1>
       </div>
 
+      {/* Same promise the Meta ad makes, so people arriving from it see the
+          message continue instead of a generic page. */}
+      <p className="signup-lead">
+        Recibe pedidos directo por WhatsApp. Sin comisiones.
+      </p>
+
       <p className="form-intro">
         ¿Tienes un restaurante, food truck, carrito o puesto de comida en
         Ibagué? Cuéntanos lo básico y lo revisamos para publicarlo. Gratis, y
         no necesitas crear una cuenta.
       </p>
+
+      {/* Sells the signup and sets expectations *before* the form — the
+          form itself stays exactly as strict as it was (photo, menu,
+          WhatsApp hint), because that strictness is what keeps new
+          listings good. This only helps real owners decide to finish it
+          and show up prepared. */}
+      <section className="signup-pitch" aria-label="Qué incluye publicar tu restaurante">
+        <h2>Qué incluye</h2>
+        <ul>
+          <li>Tu propia página en Colcocina, gratis, con foto, menú y precios.</li>
+          <li>Quien vea tu página puede escribirte por WhatsApp o llamarte directo.</li>
+          <li>
+            Apareces en las categorías de {cityName} (Hamburguesas, Almuerzos,
+            Tamales...) donde la gente busca dónde comer.
+          </li>
+          <li>Ves cuántas personas visitan tu página.</li>
+        </ul>
+        <h2>Ten a la mano</h2>
+        <p>
+          Una foto de tu local o de tu plato estrella, tu número de WhatsApp y
+          tus platos principales con su precio (mejor si son 3 o más). Toma
+          unos 5 minutos.
+        </p>
+        {restaurantCount > 0 && (
+          <p className="signup-pitch-count">
+            Ya hay {restaurantCount} restaurantes en Colcocina.
+          </p>
+        )}
+      </section>
 
       <AddRestaurantForm categories={categories} />
     </main>

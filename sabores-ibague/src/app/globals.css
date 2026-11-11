@@ -831,6 +831,46 @@ footer {
   max-width: 34rem;
   margin: 0 0 2rem;
 }
+.signup-lead {
+  max-width: 34rem;
+  margin: 0 0 0.9rem;
+  font-family: var(--font-baloo), sans-serif;
+  font-size: 1.4rem;
+  font-weight: 700;
+  line-height: 1.25;
+  color: var(--text);
+}
+.signup-pitch {
+  max-width: 34rem;
+  margin: 0 0 2rem;
+  padding: 1.1rem 1.25rem;
+  background: var(--surface-sunk);
+  border: 1.5px solid var(--line);
+  border-radius: 12px;
+}
+.signup-pitch h2 {
+  margin: 0 0 0.5rem;
+  font-size: 1.05rem;
+  color: var(--text);
+}
+.signup-pitch ul {
+  margin: 0 0 1rem;
+  padding-left: 1.2rem;
+  display: grid;
+  gap: 0.3rem;
+  color: var(--text-soft);
+  font-size: 0.95rem;
+}
+.signup-pitch p {
+  margin: 0;
+  color: var(--text-soft);
+  font-size: 0.95rem;
+}
+.signup-pitch .signup-pitch-count {
+  margin-top: 0.9rem;
+  font-weight: 700;
+  color: var(--text);
+}
 .add-form {
   display: grid;
   gap: 1.25rem;
