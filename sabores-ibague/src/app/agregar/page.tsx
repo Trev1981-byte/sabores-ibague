@@ -41,13 +41,14 @@ export default async function AddRestaurantPage() {
       <p className="signup-lead">
         Recibe pedidos directo por WhatsApp. Sin comisiones.
       </p>
-      {/* Audience hook for owners. GA4 showed ~2K active users for the last
-          30 days (it rounds), so this is deliberately rounded DOWN. Check
-          GA4 monthly and keep it true — never round up, and don't turn it
-          into a claim about customers or orders. */}
+      {/* Audience hook for owners. GA4 (28 days to Nov 10) showed 2K active
+          users, 2.1K new users and 2.3K sessions, so real users are about
+          2,050-2,349. 2,000 is the safe true floor. Check GA4 monthly, keep
+          it true, never round up, and don't turn it into a claim about
+          customers or orders. */}
       <p className="signup-reach">
-        Más de 1.500 personas visitaron Colcocina el último mes para ver
-        restaurantes de Ibagué.
+        Más de 2.000 personas visitaron Colcocina en los últimos 30 días para
+        ver restaurantes de Ibagué.
       </p>
 
       <p className="form-intro">
