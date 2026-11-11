@@ -41,6 +41,14 @@ export default async function AddRestaurantPage() {
       <p className="signup-lead">
         Recibe pedidos directo por WhatsApp. Sin comisiones.
       </p>
+      {/* Audience hook for owners. GA4 showed ~2K active users for the last
+          30 days (it rounds), so this is deliberately rounded DOWN. Check
+          GA4 monthly and keep it true — never round up, and don't turn it
+          into a claim about customers or orders. */}
+      <p className="signup-reach">
+        Más de 1.500 personas visitaron Colcocina el último mes para ver
+        restaurantes de Ibagué.
+      </p>
 
       <p className="form-intro">
         ¿Tienes un restaurante, food truck, carrito o puesto de comida en

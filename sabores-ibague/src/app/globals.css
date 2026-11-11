@@ -840,6 +840,13 @@ footer {
   line-height: 1.25;
   color: var(--text);
 }
+.signup-reach {
+  max-width: 34rem;
+  margin: 0 0 1.1rem;
+  font-size: 1.02rem;
+  font-weight: 600;
+  color: var(--text-soft);
+}
 .signup-pitch {
   max-width: 34rem;
   margin: 0 0 2rem;
