@@ -561,6 +561,27 @@ export async function getApprovedRestaurantCount(cityName: string): Promise<numb
   return count ?? 0;
 }
 
+/** Names of the most recently approved restaurants, newest first. Used on
+ *  the signup page as a plain-text "who just joined" line. */
+export async function getRecentRestaurantNames(
+  cityName: string,
+  limit = 5,
+): Promise<string[]> {
+  const { data, error } = await supabase
+    .from("restaurants")
+    .select("name")
+    .eq("is_approved", true)
+    .eq("city", cityName)
+    .order("created_at", { ascending: false })
+    .limit(limit);
+
+  if (error) {
+    console.error("getRecentRestaurantNames failed:", error.message);
+    return [];
+  }
+  return (data ?? []).map((r) => r.name);
+}
+
 export type PendingMenuItem = {
   id: string;
   name: string;

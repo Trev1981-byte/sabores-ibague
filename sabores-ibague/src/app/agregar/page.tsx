@@ -1,6 +1,11 @@
 import Link from "next/link";
 import { AddRestaurantForm } from "@/components/AddRestaurantForm";
-import { getApprovedRestaurantCount, getCategories } from "@/lib/queries";
+import {
+  getApprovedRestaurantCount,
+  getCategories,
+  getRecentRestaurantNames,
+} from "@/lib/queries";
+import { ShareSignupButton } from "@/components/ShareSignupButton";
 import { getCityBySlug, DEFAULT_CITY_SLUG } from "@/lib/cities";
 import { SITE_URL } from "@/lib/site";
 
@@ -22,6 +27,7 @@ export default async function AddRestaurantPage() {
   const categories = await getCategories();
   const cityName = getCityBySlug(DEFAULT_CITY_SLUG)?.name ?? "Ibagué";
   const restaurantCount = await getApprovedRestaurantCount(cityName);
+  const recentNames = await getRecentRestaurantNames(cityName, 5);
 
   return (
     <main className="wrap form-page">
@@ -50,6 +56,13 @@ export default async function AddRestaurantPage() {
         Más de 2.000 personas visitaron Colcocina en los últimos 30 días para
         ver restaurantes de Ibagué.
       </p>
+      {/* Plain text on purpose (no links): keeps people on the form. Real,
+          approved listings only, newest first, so it can't go stale. */}
+      {recentNames.length > 0 && (
+        <p className="signup-recent">
+          <strong>Se unieron recientemente:</strong> {recentNames.join(" · ")}
+        </p>
+      )}
 
       <p className="form-intro">
         ¿Tienes un restaurante, food truck, carrito o puesto de comida en
@@ -87,6 +100,12 @@ export default async function AddRestaurantPage() {
       </section>
 
       <AddRestaurantForm categories={categories} />
+
+      <section className="signup-share" aria-label="Compartir con otros vendedores">
+        <h2>¿Conoces a alguien que venda comida?</h2>
+        <p>Pásale este enlace. Publicar es gratis y toma unos 5 minutos.</p>
+        <ShareSignupButton url={`${SITE_URL}/agregar`} />
+      </section>
     </main>
   );
 }

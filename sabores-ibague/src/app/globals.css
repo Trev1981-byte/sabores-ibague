@@ -847,6 +847,57 @@ footer {
   font-weight: 600;
   color: var(--text-soft);
 }
+.signup-recent {
+  max-width: 34rem;
+  margin: 0 0 1.1rem;
+  font-size: 0.95rem;
+  color: var(--text-soft);
+}
+.signup-recent strong { color: var(--text); }
+.signup-share {
+  max-width: 34rem;
+  margin: 2rem 0 1rem;
+  padding: 1.25rem;
+  background: var(--surface-sunk);
+  border: 1px solid var(--line);
+  border-radius: 14px;
+  text-align: center;
+}
+.signup-share h2 {
+  margin: 0 0 0.35rem;
+  font-size: 1.15rem;
+  color: var(--text);
+}
+.signup-share p {
+  margin: 0 0 1rem;
+  color: var(--text-soft);
+}
+.signup-share-btn {
+  width: 100%;
+  padding: 0.95rem 1rem;
+  font-family: var(--font-karla), sans-serif;
+  font-size: 1.05rem;
+  font-weight: 700;
+  color: var(--text);
+  background: var(--surface);
+  border: 2px solid var(--maiz-deep);
+  border-radius: 12px;
+  cursor: pointer;
+}
+.signup-share-btn:hover { background: var(--surface-sunk); }
+.signup-share-btn.is-copied {
+  color: #1F6B3A;
+  background: #DCF3E2;
+  border-color: #1F6B3A;
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) .signup-share-btn.is-copied {
+    color: #B7EAC8; background: #14351F; border-color: #3E9663;
+  }
+}
+:root[data-theme="dark"] .signup-share-btn.is-copied {
+  color: #B7EAC8; background: #14351F; border-color: #3E9663;
+}
 .signup-pitch {
   max-width: 34rem;
   margin: 0 0 2rem;
