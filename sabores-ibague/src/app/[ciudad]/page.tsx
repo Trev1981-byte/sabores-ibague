@@ -6,6 +6,7 @@ import {
   getApprovedRestaurantCount,
   getApprovedRestaurantsForSearch,
   getCategories,
+  getCategoryRestaurantCounts,
   getMenuItemsForSearch,
 } from "@/lib/queries";
 import { getCityBySlug } from "@/lib/cities";
@@ -77,11 +78,12 @@ export default async function CityHome({
     notFound();
   }
 
-  const [categories, restaurantCount, restaurants, menuItems] = await Promise.all([
+  const [categories, restaurantCount, restaurants, menuItems, categoryCounts] = await Promise.all([
     getCategories(),
     getApprovedRestaurantCount(city.name),
     getApprovedRestaurantsForSearch(city.name),
     getMenuItemsForSearch(city.name),
+    getCategoryRestaurantCounts(city.name),
   ]);
 
   // Hand-written copy for this city, if any (src/lib/cityHome.ts). A city
@@ -116,6 +118,7 @@ export default async function CityHome({
 
       <CategoryGrid
         categories={categories}
+        categoryCounts={categoryCounts}
         restaurantCount={restaurantCount}
         citySlug={city.slug}
         restaurants={restaurants}

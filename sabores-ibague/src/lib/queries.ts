@@ -162,6 +162,75 @@ export async function getApprovedRestaurantsByCategory(
     .sort(byListingRank);
 }
 
+// Words that mark a menu line as a drink, side or add-on rather than a meal.
+// The "Menú desde $X" badge on a restaurant card must be the cheapest real
+// FOOD item — a $2.000 tinto or $5.600 side of fries would make the badge
+// promise a meal at a price nobody can actually eat for. To let drinks and
+// sides count too, make this list empty.
+const NON_MEAL_PATTERN =
+  /\b(gaseosas?|coca|cola|kola|pepsi|sprite|fanta|postobon|jugos?|limonadas?|aguas?|agua|tintos?|cafe|cafes|avena|cerveza|cervezas|bebidas?|malteadas?|te|mekato|adicional|adicion|extra|salsas?|porcion|porciones|arroz|ensalada|papas? a la francesa|papas? fritas?|papitas?|francesa|yuca|platano|tajadas?)\b/;
+
+function isMealName(name: string): boolean {
+  const normalized = name.toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "");
+  return !NON_MEAL_PATTERN.test(normalized);
+}
+
+/**
+ * The cheapest real food price on each restaurant's menu, keyed by
+ * restaurant id. Restaurants with no priced food item are simply absent,
+ * so their cards show no price at all (never a made-up one).
+ */
+export async function getMenuStartPrices(
+  restaurantIds: string[]
+): Promise<Record<string, number>> {
+  if (restaurantIds.length === 0) return {};
+
+  const { data, error } = await supabase
+    .from("menu_items")
+    .select("restaurant_id, name, price")
+    .in("restaurant_id", restaurantIds)
+    .not("price", "is", null);
+
+  if (error) {
+    console.error("getMenuStartPrices failed:", error.message);
+    return {};
+  }
+
+  const cheapest: Record<string, number> = {};
+  for (const row of (data ?? []) as { restaurant_id: string; name: string; price: number | null }[]) {
+    const price = Number(row.price);
+    // Under $1.000 COP is a data-entry slip (or a typo for thousands), not a real price.
+    if (!Number.isFinite(price) || price < 1000) continue;
+    if (!isMealName(row.name)) continue;
+    if (cheapest[row.restaurant_id] === undefined || price < cheapest[row.restaurant_id]) {
+      cheapest[row.restaurant_id] = price;
+    }
+  }
+  return cheapest;
+}
+
+/** How many approved restaurants each category has in a city, keyed by category id — for the "N lugares" label on the home cards. */
+export async function getCategoryRestaurantCounts(
+  cityName: string
+): Promise<Record<string, number>> {
+  const { data, error } = await supabase
+    .from("restaurant_categories")
+    .select("category_id, restaurants!inner(is_approved, city)")
+    .eq("restaurants.is_approved", true)
+    .eq("restaurants.city", cityName);
+
+  if (error) {
+    console.error("getCategoryRestaurantCounts failed:", error.message);
+    return {};
+  }
+
+  const counts: Record<string, number> = {};
+  for (const row of (data ?? []) as { category_id: string }[]) {
+    counts[row.category_id] = (counts[row.category_id] ?? 0) + 1;
+  }
+  return counts;
+}
+
 /**
  * One random approved restaurant in a city, for the "Sorpréndeme" button —
  * picked fresh on every call (each visitor's own click gets its own draw,

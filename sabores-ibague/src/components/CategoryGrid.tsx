@@ -21,6 +21,7 @@ const HOME_FIRST = ["desayunos", "almuerzos", "arepas", "hamburguesas", "empanad
 
 export function CategoryGrid({
   categories,
+  categoryCounts,
   restaurantCount,
   citySlug,
   restaurants,
@@ -31,6 +32,8 @@ export function CategoryGrid({
   children,
 }: {
   categories: Category[];
+  /** Approved restaurants per category id, for the "N lugares" label. */
+  categoryCounts: Record<string, number>;
   restaurantCount: number;
   citySlug: string;
   restaurants: RestaurantSearchResult[];
@@ -112,7 +115,15 @@ export function CategoryGrid({
                       emojiClassName="photo-tile-emoji"
                     />
                   )}
-                  <span className="photo-tile-label">{category.label}</span>
+                  <span className="photo-tile-label">
+                    {category.label}
+                    {categoryCounts[category.id] > 0 && (
+                      <span className="photo-tile-count">
+                        {categoryCounts[category.id]}{" "}
+                        {categoryCounts[category.id] === 1 ? "lugar" : "lugares"}
+                      </span>
+                    )}
+                  </span>
                 </Link>
               );
             })}

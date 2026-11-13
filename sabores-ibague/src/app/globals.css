@@ -688,6 +688,28 @@ footer {
   object-fit: cover;
   background: var(--surface-sunk);
 }
+.restaurant-card-media { position: relative; }
+/* "Menú desde $X" — sits on the photo's bottom-left; the like heart is top-right. */
+.restaurant-card-from {
+  position: absolute;
+  left: 0.6rem;
+  bottom: 0.6rem;
+  background: var(--achiote, #c4491c);
+  color: #fff;
+  font-size: 0.82rem;
+  font-weight: 700;
+  padding: 0.3rem 0.65rem;
+  border-radius: 999px;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.28);
+  font-variant-numeric: tabular-nums;
+}
+.restaurant-card-cta {
+  display: block;
+  margin-top: 0.7rem;
+  font-size: 0.88rem;
+  font-weight: 700;
+  color: var(--achiote, #c4491c);
+}
 .restaurant-card-photo-empty {
   display: flex;
   align-items: center;
@@ -2439,6 +2461,13 @@ footer {
   box-shadow: 0 10px 18px -12px rgba(22,38,74,0.45);
 }
 .photo-tile-img { object-fit: cover; }
+.photo-tile-count {
+  display: block;
+  margin-top: 0.1rem;
+  font-size: 0.78rem;
+  font-weight: 600;
+  opacity: 0.9;
+}
 .photo-tile-label {
   position: relative;
   z-index: 1;

@@ -6,6 +6,7 @@ import {
   getApprovedRestaurantsByCategory,
   getCategoryBySlug,
   getCategoryDescription,
+  getMenuStartPrices,
   logRestaurantImpressions,
   priceLevelBadge,
 } from "@/lib/queries";
@@ -100,6 +101,10 @@ export default async function CategoryPage({
     getCategoryDescription(category.id, city.name),
   ]);
 
+  // Cheapest real food item per restaurant, shown as "Menú desde $X" on the
+  // card photo. Restaurants without a priced menu just get no badge.
+  const startPrices = await getMenuStartPrices(restaurants.map((r) => r.id));
+
   // The one blog article written for this specific category, if it exists
   // yet — not every category has one. Shown below the listings as a small
   // "related guide" link, which is what gives that article a real internal
@@ -165,20 +170,28 @@ export default async function CategoryPage({
             // Only restaurants with a WhatsApp number get the card button;
             // phone-only listings keep their card exactly as before.
             const whatsappHref = whatsappUrl(restaurant.whatsapp_number, WHATSAPP_MESSAGE);
+            const startPrice = startPrices[restaurant.id];
             return (
             <div className="restaurant-card" key={restaurant.id}>
               <Link href={`/${city.slug}/restaurante/${restaurant.slug}`} className="restaurant-card-link">
-                {restaurant.photo_url ? (
-                  <img
-                    src={restaurant.photo_url}
-                    alt={restaurant.name}
-                    className="restaurant-card-photo"
-                  />
-                ) : (
-                  <div className="restaurant-card-photo restaurant-card-photo-empty" aria-hidden="true">
-                    🍽️
-                  </div>
-                )}
+                <div className="restaurant-card-media">
+                  {restaurant.photo_url ? (
+                    <img
+                      src={restaurant.photo_url}
+                      alt={restaurant.name}
+                      className="restaurant-card-photo"
+                    />
+                  ) : (
+                    <div className="restaurant-card-photo restaurant-card-photo-empty" aria-hidden="true">
+                      🍽️
+                    </div>
+                  )}
+                  {startPrice !== undefined && (
+                    <span className="restaurant-card-from">
+                      Menú desde ${startPrice.toLocaleString("es-CO")}
+                    </span>
+                  )}
+                </div>
                 <div className="restaurant-card-body">
                   <p className="name">{restaurant.name}</p>
                   <p className="meta">{restaurant.neighborhood}</p>
@@ -187,6 +200,7 @@ export default async function CategoryPage({
                   </div>
                   <ServiceBadges restaurant={restaurant} />
                   {restaurant.blurb && <p className="blurb">{restaurant.blurb}</p>}
+                  <span className="restaurant-card-cta">Ver menú y pedir →</span>
                 </div>
               </Link>
               {whatsappHref && (
