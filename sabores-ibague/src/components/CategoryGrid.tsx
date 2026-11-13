@@ -1,10 +1,12 @@
 "use client";
 
+import Image from "next/image";
 import Link from "next/link";
 import { useMemo, useState } from "react";
 import type { ReactNode } from "react";
 import type { Category, MenuSearchResult, RestaurantSearchResult } from "@/lib/queries";
 import { CategoryIcon } from "@/components/CategoryIcon";
+import { CATEGORY_PHOTOS } from "@/lib/categoryPhotos";
 
 function normalize(text: string): string {
   return text
@@ -63,10 +65,54 @@ export function CategoryGrid({
 
   return (
     <>
+      <section className="photo-cats" aria-labelledby="photo-cats-title">
+        <div className="wrap">
+          <h2 id="photo-cats-title" className="photo-cats-title">
+            ¿Qué se te antoja&nbsp;hoy?
+          </h2>
+          <div className="photo-grid">
+            {categories.map((category, index) => {
+              const photo = CATEGORY_PHOTOS[category.slug];
+              return (
+                <Link
+                  key={category.id}
+                  className={photo ? "photo-tile" : "photo-tile photo-tile--plain"}
+                  href={`/${citySlug}/categoria/${category.slug}`}
+                >
+                  {photo ? (
+                    <Image
+                      src={photo}
+                      alt=""
+                      fill
+                      sizes="(min-width: 64rem) 20vw, (min-width: 40rem) 33vw, 50vw"
+                      priority={index < 6}
+                      className="photo-tile-img"
+                    />
+                  ) : (
+                    <CategoryIcon
+                      category={category}
+                      iconClassName="photo-tile-icon"
+                      emojiClassName="photo-tile-emoji"
+                    />
+                  )}
+                  <span className="photo-tile-label">{category.label}</span>
+                </Link>
+              );
+            })}
+          </div>
+        </div>
+      </section>
+
+      <div className="fringe fringe-top" aria-hidden="true">
+        <svg viewBox="0 0 200 22" preserveAspectRatio="none">
+          <path d="M0,0 H200 V10 C195,10 190,22 185,22 C180,22 178,10 175,10 C170,10 168,22 163,22 C158,22 156,10 151,10 C146,10 144,22 139,22 C134,22 132,10 127,10 C122,10 120,22 115,22 C110,22 108,10 103,10 C98,10 96,22 91,22 C86,22 84,10 79,10 C74,10 72,22 67,22 C62,22 60,10 55,10 C50,10 48,22 43,22 C38,22 36,10 31,10 C26,10 24,22 19,22 C14,22 12,10 7,10 C4,10 2,10 0,10 Z" />
+        </svg>
+      </div>
+
       <header className="hero">
         <div className="hero-glow" aria-hidden="true"></div>
         <div className="wrap hero-inner">
-          <span className="eyebrow">¿Qué se te antoja&nbsp;hoy?</span>
+          <span className="eyebrow">¿Buscas algo en especial?</span>
           <h1>{heroTitle}</h1>
           <p className="lede">{heroLede}</p>
 
@@ -97,11 +143,6 @@ export function CategoryGrid({
             🎲 Sorpréndeme
           </Link>
 
-          <p className="hero-tags">
-            <span>
-              <b>{categories.length}</b> categorías
-            </span>
-          </p>
         </div>
       </header>
 
@@ -112,7 +153,7 @@ export function CategoryGrid({
       </div>
 
       <main>
-        <div className="wrap section">
+        <div className={hasQuery ? "wrap section" : "wrap"}>
           {hasQuery && totalMatches === 0 ? (
             <p className="no-match">
               No encontramos nada para &ldquo;{query}&rdquo;. Prueba con otra
@@ -158,37 +199,24 @@ export function CategoryGrid({
                 </div>
               )}
 
-              {(!hasQuery || filteredCategories.length > 0) && (
-                <>
-                  <div className="section-head">
-                    <div>
-                      <h2>Explora por categoría</h2>
-                      <p>Cada fonda y restaurante puede aparecer en más de una.</p>
-                    </div>
-                    <span className="count-pill">
-                      {hasQuery
-                        ? `${filteredCategories.length} de ${categories.length} categorías`
-                        : `${categories.length} categorías`}
-                    </span>
-                  </div>
-
-                  <div className="cat-grid">
+              {hasQuery && filteredCategories.length > 0 && (
+                <div className="search-result-block">
+                  <h2 className="search-result-title">Categorías</h2>
+                  <div className="search-result-list">
                     {filteredCategories.map((category) => (
                       <Link
                         key={category.id}
-                        className="cat-tile"
                         href={`/${citySlug}/categoria/${category.slug}`}
+                        className="search-result-row"
                       >
-                        <CategoryIcon
-                          category={category}
-                          iconClassName="cat-icon"
-                          emojiClassName="cat-emoji"
-                        />
-                        <span className="cat-label">{category.label}</span>
+                        <span className="search-result-name">{category.label}</span>
+                        <span className="search-result-arrow" aria-hidden="true">
+                          →
+                        </span>
                       </Link>
                     ))}
                   </div>
-                </>
+                </div>
               )}
             </>
           )}
