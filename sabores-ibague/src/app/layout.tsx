@@ -3,7 +3,7 @@ import { Baloo_2, Karla } from "next/font/google";
 import { GoogleAnalytics } from "@next/third-parties/google";
 import MetaPixel from "@/components/MetaPixel";
 import Link from "next/link";
-import { SITE_URL } from "@/lib/site";
+import { OWNER_WHATSAPP_URL, SITE_URL } from "@/lib/site";
 import { DEFAULT_CITY_SLUG } from "@/lib/cities";
 import "./globals.css";
 
@@ -96,6 +96,14 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
             <Link className="foot-link" href="/privacidad">
               Privacidad
             </Link>
+            <a
+              className="foot-link"
+              href={OWNER_WHATSAPP_URL}
+              target="_blank"
+              rel="noopener noreferrer"
+            >
+              ¿Ayuda? Escríbenos por WhatsApp
+            </a>
             <span>Hecho para Ibagué, Tolima</span>
           </div>
         </footer>
