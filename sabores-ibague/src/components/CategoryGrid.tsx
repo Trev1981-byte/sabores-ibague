@@ -15,6 +15,10 @@ function normalize(text: string): string {
     .replace(/[̀-ͯ]/g, ""); // strip accents so "arepa" matches "Arepas"
 }
 
+// Homepage card order: the meals people look for most come first. Every
+// other category follows in its normal (database sort_order) position.
+const HOME_FIRST = ["desayunos", "almuerzos", "arepas", "hamburguesas", "empanadas"];
+
 export function CategoryGrid({
   categories,
   restaurantCount,
@@ -38,6 +42,16 @@ export function CategoryGrid({
 }) {
   const [query, setQuery] = useState("");
   const hasQuery = query.trim().length > 0;
+
+  // Array.sort is stable, so categories not listed in HOME_FIRST keep their
+  // original relative order.
+  const homeCategories = useMemo(() => {
+    const rank = (slug: string) => {
+      const i = HOME_FIRST.indexOf(slug);
+      return i === -1 ? HOME_FIRST.length : i;
+    };
+    return [...categories].sort((a, b) => rank(a.slug) - rank(b.slug));
+  }, [categories]);
 
   const filteredCategories = useMemo(() => {
     const q = normalize(query.trim());
@@ -71,7 +85,7 @@ export function CategoryGrid({
             ¿Qué se te antoja&nbsp;hoy?
           </h2>
           <div className="photo-grid">
-            {categories.map((category, index) => {
+            {homeCategories.map((category, index) => {
               const photo = CATEGORY_PHOTOS[category.slug];
               return (
                 <Link

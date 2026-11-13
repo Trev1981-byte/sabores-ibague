@@ -15,6 +15,7 @@ export const CATEGORY_PHOTOS: Record<string, string> = {
   empanadas: "/categories/empanadas.jpg",
   arepas: "/categories/arepas.jpg",
   desayunos: "/categories/desayunos.jpg",
+  almuerzos: "/categories/almuerzos.jpg",
   pizza: "/categories/pizza.jpg",
   pollo: "/categories/pollo.jpg",
   parrilla: "/categories/parrilla.jpg",
