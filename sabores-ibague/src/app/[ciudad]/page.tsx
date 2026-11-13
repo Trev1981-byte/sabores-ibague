@@ -87,7 +87,8 @@ export default async function CityHome({
   // Hand-written copy for this city, if any (src/lib/cityHome.ts). A city
   // without its own gets a generic hero and skips the intro and FAQ.
   const content = getCityHomeContent(city.slug);
-  const heroTitle = content?.h1 ?? `Restaurantes en ${city.name}`;
+  const heroTitle = content?.h1 ?? `¿Qué se te antoja hoy en ${city.name}?`;
+  const heroHeading = content?.heroHeading ?? `Restaurantes en ${city.name}`;
   const heroLede =
     content?.lede ??
     `Tamales, salchipapas, almuerzos corrientes, la parrilla del barrio — encuentra dónde comer en ${city.name}, por categoría.`;
@@ -120,6 +121,7 @@ export default async function CityHome({
         restaurants={restaurants}
         menuItems={menuItems}
         heroTitle={heroTitle}
+        heroHeading={heroHeading}
         heroLede={heroLede}
       >
         {content && (

@@ -1,5 +1,5 @@
-// Hand-written homepage copy for each city's /<ciudad> page: the hero H1 and
-// subhead, an intro section, and an FAQ. It's city-specific on purpose
+// Hand-written homepage copy for each city's /<ciudad> page: the page H1
+// (shown above the category cards), the search-section heading, the subhead, an intro section, and an FAQ. It's city-specific on purpose
 // (tamales tolimenses, "la parrilla del barrio"), so it lives per city slug
 // rather than in the page template — a city with no entry here gets a
 // generic hero built from its name and no intro/FAQ sections, never another
@@ -12,6 +12,7 @@ export type FaqItem = { question: string; answer: string };
 
 export type CityHomeContent = {
   h1: string;
+  heroHeading: string;
   lede: string;
   about: { heading: string; paragraph: string };
   faq: { heading: string; items: FaqItem[] };
@@ -19,7 +20,8 @@ export type CityHomeContent = {
 
 const CITY_HOME: Record<string, CityHomeContent> = {
   ibague: {
-    h1: "Los mejores restaurantes de Ibagué",
+    h1: "¿Qué se te antoja hoy, Ibagué?",
+    heroHeading: "Los mejores restaurantes de Ibagué",
     lede:
       "Tamales, salchipapas, almuerzos corrientes, la parrilla del barrio — descubre los mejores restaurantes y fondas de Ibagué, por categoría.",
     about: {

@@ -26,6 +26,7 @@ export function CategoryGrid({
   restaurants,
   menuItems,
   heroTitle,
+  heroHeading,
   heroLede,
   children,
 }: {
@@ -34,8 +35,10 @@ export function CategoryGrid({
   citySlug: string;
   restaurants: RestaurantSearchResult[];
   menuItems: MenuSearchResult[];
-  /** The page's one <h1> — per-city copy from src/lib/cityHome.ts. */
+  /** The page's one <h1>, shown above the category cards (src/lib/cityHome.ts). */
   heroTitle: string;
+  /** Heading of the search section below the cards. */
+  heroHeading: string;
   heroLede: string;
   /** Extra sections rendered after the category grid, inside <main>. */
   children?: ReactNode;
@@ -81,9 +84,9 @@ export function CategoryGrid({
     <>
       <section className="photo-cats" aria-labelledby="photo-cats-title">
         <div className="wrap">
-          <h2 id="photo-cats-title" className="photo-cats-title">
-            ¿Qué se te antoja&nbsp;hoy?
-          </h2>
+          <h1 id="photo-cats-title" className="photo-cats-title">
+            {heroTitle}
+          </h1>
           <div className="photo-grid">
             {homeCategories.map((category, index) => {
               const photo = CATEGORY_PHOTOS[category.slug];
@@ -127,7 +130,7 @@ export function CategoryGrid({
         <div className="hero-glow" aria-hidden="true"></div>
         <div className="wrap hero-inner">
           <span className="eyebrow">¿Buscas algo en especial?</span>
-          <h1>{heroTitle}</h1>
+          <h2>{heroHeading}</h2>
           <p className="lede">{heroLede}</p>
 
           <form
