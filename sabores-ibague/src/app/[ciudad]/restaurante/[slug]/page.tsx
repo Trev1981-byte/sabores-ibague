@@ -228,7 +228,7 @@ export default async function RestaurantPage({
               <div className="menu-public-card-body">
                 <span className="menu-public-card-name">{item.name}</span>
                 <span className="menu-public-card-price">
-                  {item.price !== null ? pesos.format(item.price) : ""}
+                  {restaurant.is_featured && item.price !== null ? pesos.format(item.price) : ""}
                 </span>
               </div>
             </div>

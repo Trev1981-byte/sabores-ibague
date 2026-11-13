@@ -102,8 +102,12 @@ export default async function CategoryPage({
   ]);
 
   // Cheapest real food item per restaurant, shown as "Menú desde $X" on the
-  // card photo. Restaurants without a priced menu just get no badge.
-  const startPrices = await getMenuStartPrices(restaurants.map((r) => r.id));
+  // card photo. Only featured restaurants (the ones whose owners entered
+  // their own menu) show prices — a price on a listing we compiled
+  // ourselves could be stale, and diners would find out on WhatsApp.
+  const startPrices = await getMenuStartPrices(
+    restaurants.filter((r) => r.is_featured).map((r) => r.id)
+  );
 
   // The one blog article written for this specific category, if it exists
   // yet — not every category has one. Shown below the listings as a small

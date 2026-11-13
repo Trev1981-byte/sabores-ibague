@@ -168,7 +168,7 @@ export async function getApprovedRestaurantsByCategory(
 // promise a meal at a price nobody can actually eat for. To let drinks and
 // sides count too, make this list empty.
 const NON_MEAL_PATTERN =
-  /\b(gaseosas?|coca|cola|kola|pepsi|sprite|fanta|postobon|jugos?|limonadas?|aguas?|agua|tintos?|cafe|cafes|avena|cerveza|cervezas|bebidas?|malteadas?|te|mekato|adicional|adicion|extra|salsas?|porcion|porciones|arroz|ensalada|papas? a la francesa|papas? fritas?|papitas?|francesa|yuca|platano|tajadas?)\b/;
+  /\b(gaseosas?|coca|cola|kola|pepsi|sprite|fanta|postobon|jugos?|limonadas?|aguas?|agua|tintos?|cafe|cafes|avena|cerveza|cervezas|bebidas?|malteadas?|te|mekato|adicional|adicion|extra|porcion|porciones|arroz|ensalada|papas? a la francesa|papas? fritas?|papitas?|francesa|yuca|platano|tajadas?)\b/;
 
 function isMealName(name: string): boolean {
   const normalized = name.toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "");
