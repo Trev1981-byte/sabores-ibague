@@ -2438,6 +2438,12 @@ footer {
   color: var(--text);
   text-wrap: balance;
 }
+.photo-cats-sub {
+  margin: -0.55rem 0 1rem;
+  font-size: 1rem;
+  color: var(--text-soft, var(--text));
+  opacity: 0.8;
+}
 .photo-grid {
   display: grid;
   grid-template-columns: repeat(2, 1fr);

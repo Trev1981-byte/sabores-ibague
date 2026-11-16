@@ -90,6 +90,9 @@ export function CategoryGrid({
           <h1 id="photo-cats-title" className="photo-cats-title">
             {heroTitle}
           </h1>
+          <p className="photo-cats-sub">
+            Elige un lugar y pídele directo por WhatsApp.
+          </p>
           <div className="photo-grid">
             {homeCategories.map((category, index) => {
               const photo = CATEGORY_PHOTOS[category.slug];
